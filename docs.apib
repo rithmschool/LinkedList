@@ -43,13 +43,12 @@ Both collections have full CRUD operations.
 #### Companies
 
 - Collection Endpoint: `/companies`
-- Singular Endpoint: `/companies/{companyUsername}`
+- Singular Endpoint: `/companies/{name}`
 - Attributes:
-  - adminFirstName
-  - adminLastName
-  - companyUsername
+  - name
   - password
-  - username (posted by)
+  - email
+  - handle
   - logo
   - employees (array of **User**)
   - jobs (array of **Job**)
@@ -72,14 +71,14 @@ See the [Reference section](/#reference/0/auth) for fully-detailed resource docu
 
 ---
 
-## Auth [/auth]
-Endpoint for authenticating by getting a JWT from the server.
+## UserAuth [/user-auth]
+Endpoint for authenticating a user by getting a JWT from the server.
 
 ### Authorize to Receive a Token [POST]
 
 + Request
     + Attributes
-        + data (Auth)
+        + data (UserAuth)
 + Response 200 (application/json; charset=utf-8)
     + Attributes
         + data
@@ -87,31 +86,64 @@ Endpoint for authenticating by getting a JWT from the server.
 
 + Request Bad Request
     + Attributes
-        + data (Auth)
+        + data (UserAuth)
 + Response 400 (application/json; charset=utf-8)
     + Attributes
         + error (Bad Request)
 
 + Request Unauthorized
     + Attributes
-        + data (Auth)
+        + data (UserAuth)
 + Response 401 (application/json; charset=utf-8)
     + Attributes
         + error (Unauthorized)
 
 + Request Not Found
     + Attributes
-        + data (Auth)
+        + data (UserAuth)
 + Response 404 (application/json; charset=utf-8)
     + Attributes
         + error (Not Found)
 
+## CompanyAuth [/company-auth]
+Endpoint for authenticating a company by getting a JWT from the server.
+
+### Authorize to Receive a Token [POST]
+
++ Request
+    + Attributes
+        + data (CompanyAuth)
++ Response 200 (application/json; charset=utf-8)
+    + Attributes
+        + data
+            + token: `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im1odWV0ZXIiLCJpYXQiOjE1MTAyMDcwMDl9.5oUeihYn2AkqGy6z3g5F5B46gWWgvGKilFr9S4gg-p4` (string, required) - JWT used to authenticate in the future. Put in `Authorization` request header like: `Bearer <TOKEN>`.
+
++ Request Bad Request
+    + Attributes
+        + data (CompanyAuth)
++ Response 400 (application/json; charset=utf-8)
+    + Attributes
+        + error (Bad Request)
+
++ Request Unauthorized
+    + Attributes
+        + data (CompanyAuth)
++ Response 401 (application/json; charset=utf-8)
+    + Attributes
+        + error (Unauthorized)
+
++ Request Not Found
+    + Attributes
+        + data (CompanyAuth)
++ Response 404 (application/json; charset=utf-8)
+    + Attributes
+        + error (Not Found)
 
 ## Users [/users{?skip,limit,q}]
 Endpoint to create a user or query for a list of users.
 
 ### Get a List of Users [GET]
-**Auth Required**. Note: passwords are not visible at this endpoint. By default, `limit` is set to 50.
+**UserAuth Required**. Note: passwords are not visible at this endpoint. By default, `limit` is set to 50.
 
 + Parameters
     + skip: 0 (number, optional) - the list of documents to skip over. Default is 0.
@@ -162,7 +194,7 @@ Endpoint for reading, updating, or deleting a single user.
     + username: mhueter (string, required) - the username to lookup.
 
 ### Get a User [GET]
-**Auth Required**. Retrieve a single user document by `username`.
+**UserAuth Required**. Retrieve a single user document by `username`.
 
 + Request
 + Response 200 (application/json; charset=utf-8)
@@ -183,7 +215,7 @@ Endpoint for reading, updating, or deleting a single user.
 
 
 ### Update a User [PATCH]
-**Auth Required. Correct User Required.** Update a single user document by `username`. Note: `username` and `favorites` are immutable via this endpoint.
+**UserAuth Required. Correct User Required.** Update a single user document by `username`. Note: `username` and `favorites` are immutable via this endpoint.
 
 + Request
     + Attributes
@@ -214,7 +246,7 @@ Endpoint for reading, updating, or deleting a single user.
         + error (Not Found)
 
 ### Delete a User [DELETE]
-**Auth Required. Correct User Required.** Remove a single user document by `username`.
+**UserAuth Required. Correct User Required.** Remove a single user document by `username`.
 
 + Request
 + Response 200 (application/json; charset=utf-8)
@@ -235,11 +267,11 @@ Endpoint for reading, updating, or deleting a single user.
 Endpoint to create a user or query for a list of users.
 
 ### Get a List of Jobs [GET]
-**Auth Required**. Note: passwords are not visible at this endpoint. By default, `limit` is set to 50.
+**UserAuth Required**. By default, `limit` is set to 50.
 
 + Parameters
     + skip: 0 (number, optional) - the list of documents to skip over. Default is 0.
-    + limit: 10 (number, optional) - the number of documents to return. Default and maximum set to 50.
+    + limit: 50 (number, optional) - the number of documents to return. Default and maximum set to 50.
     + q: `Github` (string, optional) - the field to search by
 
 + Request
@@ -258,8 +290,7 @@ Endpoint to create a user or query for a list of users.
         + error (Unauthorized)
 
 ### Create a New Job [POST]
-Note: password will not be present in the response.
-The fields `title`, `company`, `salary`, and `equity` are required.
+**CompanyAuth Required**. The fields `title`, `company`, `salary`, and `equity` are required.
 
 + Request
     + Attributes
@@ -278,14 +309,14 @@ The fields `title`, `company`, `salary`, and `equity` are required.
     + Attributes
         + error (Conflict)
 
-## Job [/company/{id}]
+## Job [/jobs/{id}]
 Endpoint for reading, updating, or deleting a single user.
 
 + Parameters
     + id: 4 (string, required) - the job to lookup.
 
 ### Get a Job [GET]
-**Auth Required**. Retrieve a single company document by `company`.
+**UserAuth Required**. Retrieve a single job document by `id`.
 
 + Request
 + Response 200 (application/json; charset=utf-8)
@@ -306,7 +337,7 @@ Endpoint for reading, updating, or deleting a single user.
 
 
 ### Update a Job [PATCH]
-**Auth Required. Correct User Required.** Update a single user document by `username`. Note: `username` and `favorites` are immutable via this endpoint.
+**CompanyAuth Required. Correct Job Required.** Update a single user document by `id`.
 
 + Request
     + Attributes
@@ -337,7 +368,7 @@ Endpoint for reading, updating, or deleting a single user.
         + error (Not Found)
 
 ### Delete a Job [DELETE]
-**Auth Required. Correct Job Required.** Remove a single job document by `id`.
+**CompanyAuth Required. Correct Job Required.** Remove a single job document by `id`.
 
 + Request
 + Response 200 (application/json; charset=utf-8)
@@ -358,11 +389,11 @@ Endpoint for reading, updating, or deleting a single user.
 Endpoint to create a user or query for a list of users.
 
 ### Get a List of Companies [GET]
-**Auth Required**. Note: passwords are not visible at this endpoint. By default, `limit` is set to 50.
+**Auth Required**. By default, `limit` is set to 50.
 
 + Parameters
     + skip: 0 (number, optional) - the list of documents to skip over. Default is 0.
-    + limit: 10 (number, optional) - the number of documents to return. Default and maximum set to 50.
+    + limit: 50 (number, optional) - the number of documents to return. Default and maximum set to 50.
     + q: `Github` (string, optional) - the field to search by
 
 + Request
@@ -381,15 +412,14 @@ Endpoint to create a user or query for a list of users.
         + error (Unauthorized)
 
 ### Create a New Company [POST]
-Note: password will not be present in the response.
-The fields `title`, `company`, `salary`, and `equity` are required.
+The fields `name`, `password`, `email`, and `handle` are required.
 
 + Request
     + Attributes
-        + data (Job)
+        + data (Company)
 + Response 201 (application/json; charset=utf-8)
     + Attributes
-        + data (Job)
+        + data (Company)
 
 + Request Bad Request
 + Response 400 (application/json; charset=utf-8)
@@ -401,14 +431,14 @@ The fields `title`, `company`, `salary`, and `equity` are required.
     + Attributes
         + error (Conflict)
 
-## Company [/companies/{companyUsername}]
+## Company [/companies/{name}]
 Endpoint for reading, updating, or deleting a single company.
 
 + Parameters
-    + companyUsername: hooli (string, required) - the company to lookup.
+    + name: `hooli` (string, required) - the company to lookup.
 
 ### Get a Company [GET]
-**Auth Required**. Retrieve a single company document by `company`.
+**UserAuth Required**. Retrieve a single company document by `name`.
 
 + Request
 + Response 200 (application/json; charset=utf-8)
@@ -429,7 +459,7 @@ Endpoint for reading, updating, or deleting a single company.
 
 
 ### Update a Company [PATCH]
-**Auth Required. Correct User Required.** Update a single user document by `username`. Note: `username` and `favorites` are immutable via this endpoint.
+**CompanyAuth Required. Correct Company Required.** Update a single company document by `name`
 
 + Request
     + Attributes
@@ -460,7 +490,7 @@ Endpoint for reading, updating, or deleting a single company.
         + error (Not Found)
 
 ### Delete a Company [DELETE]
-**Auth Required. Correct Company Required.** Remove a single user document by `username`.
+**CompanyAuth Required. Correct Company Required.** Remove a single company document by `name`.
 
 + Request
 + Response 200 (application/json; charset=utf-8)
@@ -480,9 +510,13 @@ Endpoint for reading, updating, or deleting a single company.
 
 ## Data Structures
 
-### Auth
+### UserAuth
   + username: `mhueter` (string, optional) - username can only consist of letters and numbers between 1 and 55 characters. **Required to Create a New User. Immutable.**
   + password: `foo123` (string, optional) - between 1 and 55 characters. **Required to Create a New User.**
+
+### CompanyAuth
+  + email: `gavin@hooli.com` (string, optional) - username can only consist of letters and numbers between 1 and 55 characters. **Required to Create a New User. Immutable.**
+  + password: `bloodboy` (string, optional) - between 1 and 55 characters. **Required to Create a New User.**
 
 ### User
   + firstName: `Michael` (string, optional) - the user's first name, between 1 and 55 characters. **Required to Create a New User.**
@@ -492,14 +526,14 @@ Endpoint for reading, updating, or deleting a single company.
   + photo: `https://www.mhueter.com` (string, optional) - A valid URL for a photo
   + experience: (array, optional)
     + (object)
-      + jobTitle: `Commander In Chief`
+      + jobTitle: `Instructor In Chief`
       + company (Company)
       + startDate: `2016-06-15T21:39:25.435000+00:00` (string, optional) - ISO date-format timestamp when experience began.
       + endDate: `2017-06-15T21:39:25.435000+00:00` (string, optional) - ISO date-format timestamp when experience ended.
   + education: (array, optional)
     + (object)
-      + institution: `School of Hard Knocks`
-      + degree: `Bachelors in Science`
+      + institution: `School of Hard Knocks` - the institution where the user enrolled or is currently enrolled in.
+      + degree: `Bachelors in Science` - the degree that the user earned or is currently earning.
       + endDate: `2014-06-15T21:39:25.435000+00:00` (string, optional) - ISO date-format timestamp when education ended.
   + skills: (array[string])
   + createdAt: `017-11-09T18:38:39.409Z` (string, optional) - auto-generated timestamp of when the user was originally created.
@@ -507,17 +541,17 @@ Endpoint for reading, updating, or deleting a single company.
 
 
 ### Company
-  + adminFirstName: `Michael` (string, optional) - the user's first name who is creating the company, between 1 and 55 characters. **Required to Create a New Company.**
-  + adminLastName: `Hueter` (string, optional) - the user's last name who is creating the company, between 1 and 55 characters. **Required to Create a New Company.**
-  + password: `foo123` (string, optional) - between 1 and 55 characters. **Required to Create a New Company.**
-  + companyUsername: `mhueter` (string, optional) - username can only consist of letters and numbers between 1 and 55 characters. **Required to Create a New Company. Immutable.**
+  + name: `Hooli` (string, optional) - username can only consist of letters and numbers between 1 and 55 characters. **Required to Create a New Company. Immutable.**
+  + password: `bloodboy` (string, optional) - between 1 and 55 characters. **Required to Create a New Company.**
+  + email: `gavin@hooli.com` (string, optional) - between 1 and 55 characters. **Required to Create a New Company.**
+  + handle: `@hooli` (string, optional) - between 1 and 55 characters. **Required to Create a New Company.**
   + logo: `https://assets-cdn.github.com/images/modules/logos_page/GitHub-Mark.png` (string, optional) - a valid URL for the logo of the company
   + employees (array[User])
   + jobs (array[Job])
 
 #### Job
   + title: (string, optional) - the title for the job posting.
-  + company (Company)
+  + company: "5a21b155ac27667d3de5bfaa" - This should reference an ObjectId for a company
   + salary: (number, optional) - a number for the salary offered in this post
   + equity: (number, optional) - a float for the equity offered in this post
   + createdAt: `017-11-09T18:38:39.409Z` (string, optional) - auto-generated timestamp of when the user was originally created.
