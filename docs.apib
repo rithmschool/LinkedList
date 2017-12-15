@@ -22,48 +22,48 @@ Both collections have full CRUD operations.
 - Collection Endpoint: `/users`
 - Singular Endpoint: `/users/{username}`
 - Attributes:
-  - firstName
-  - lastName
-  - username
-  - password
-  - photo
-  - experience (array)
-    - jobTitle
-    - company
-    - startDate
-    - endDate
-  - education (array)
-    - institution
-    - degree
-    - endDate
-  - skills (array)
-  - createdAt
-  - updatedAt
+  - firstName - the user's first name, between 1 and 55 characters. **Required to Create a New User.**
+  - lastName - the user's last name, between 1 and 55 characters. **Required to Create a New User.**
+  - password - between 1 and 55 characters. **Required to Create a New User.**
+  - username - username can only consist of letters and numbers between 1 and 55 characters. **Required to Create a New User. Immutable.**
+  - photo - A valid URL for a photo
+  - experience
+      - jobTitle
+      - company (Company)
+      - startDate - ISO date-format timestamp when experience began.
+      - endDate - ISO date-format timestamp when experience ended.
+  - education
+      - institution - the institution where the user enrolled or is currently enrolled in.
+      - degree - the degree that the user earned or is currently earning.
+      - endDate - ISO date-format timestamp when education ended.
+  - skills
+  - createdAt - auto-generated timestamp of when the user was originally created.
+  - updatedAt - auto-generated timestamp of when the user was last updated.
 
 #### Companies
 
 - Collection Endpoint: `/companies`
 - Singular Endpoint: `/companies/{name}`
 - Attributes:
-  - name
-  - password
-  - email
-  - handle
-  - logo
-  - employees (array of **User**)
-  - jobs (array of **Job**)
+  - name - username can only consist of letters and numbers between 1 and 55 characters. **Required to Create a New Company. Immutable.**
+  - password - between 1 and 55 characters. **Required to Create a New Company.**
+  - email - between 1 and 55 characters. **Required to Create a New Company.**
+  - handle - between 1 and 55 characters. **Required to Create a New Company.**
+  - logo - a valid URL for the logo of the company
+  - employees - array of User IDs
+  - jobs - array of Job IDs
 
 #### Jobs
 
 - Collection Endpoint: `/jobs`
 - Singular Endpoint: `/jobs/{jobId}`
 - Attributes:
-  - title
-  - company (**Company**)
-  - salary
-  - equity
-  - createdAt
-  - updatedAt
+  - title - the title for the job posting.
+  - company - This should reference an ObjectId for a company
+  - salary - a number for the salary offered in this post
+  - equity - a float for the equity offered in this post
+  - createdAt - auto-generated timestamp of when the job was originally created.
+  - updatedAt - auto-generated timestamp of when the job was last updated.
 
 See the [Reference section](/#reference/0/auth) for fully-detailed resource documentation.
 
@@ -524,18 +524,18 @@ Endpoint for reading, updating, or deleting a single company.
   + password: `foo123` (string, optional) - between 1 and 55 characters. **Required to Create a New User.**
   + username: `mhueter` (string, optional) - username can only consist of letters and numbers between 1 and 55 characters. **Required to Create a New User. Immutable.**
   + photo: `https://www.mhueter.com` (string, optional) - A valid URL for a photo
-  + experience: (array, optional)
+  + experience (array, optional)
     + (object)
       + jobTitle: `Instructor In Chief`
       + company (Company)
       + startDate: `2016-06-15T21:39:25.435000+00:00` (string, optional) - ISO date-format timestamp when experience began.
       + endDate: `2017-06-15T21:39:25.435000+00:00` (string, optional) - ISO date-format timestamp when experience ended.
-  + education: (array, optional)
+  + education (array, optional)
     + (object)
       + institution: `School of Hard Knocks` - the institution where the user enrolled or is currently enrolled in.
       + degree: `Bachelors in Science` - the degree that the user earned or is currently earning.
       + endDate: `2014-06-15T21:39:25.435000+00:00` (string, optional) - ISO date-format timestamp when education ended.
-  + skills: (array[string])
+  + skills (array[string])
   + createdAt: `017-11-09T18:38:39.409Z` (string, optional) - auto-generated timestamp of when the user was originally created.
   + updatedAt: `017-11-09T18:38:39.409Z`  (string, optional) - auto-generated timestamp of when the user was last updated.
 
@@ -550,12 +550,12 @@ Endpoint for reading, updating, or deleting a single company.
   + jobs (array[Job])
 
 #### Job
-  + title: (string, optional) - the title for the job posting.
-  + company: "5a21b155ac27667d3de5bfaa" - This should reference an ObjectId for a company
-  + salary: (number, optional) - a number for the salary offered in this post
-  + equity: (number, optional) - a float for the equity offered in this post
-  + createdAt: `017-11-09T18:38:39.409Z` (string, optional) - auto-generated timestamp of when the user was originally created.
-  + updatedAt: `017-11-09T18:38:39.409Z`  (string, optional) - auto-generated timestamp of when the user was last updated.
+  + title: `Software Developer` (string, optional) - the title for the job posting.
+  + company: `5a21b155ac27667d3de5bfaa` - This should reference an ObjectId for a company
+  + salary: 150000 (number, optional) - a number for the salary offered in this post
+  + equity: 2.1 (number, optional) - a float for the equity offered in this post
+  + createdAt: `017-11-09T18:38:39.409Z` (string, optional) - auto-generated timestamp of when the job was originally created.
+  + updatedAt: `017-11-09T18:38:39.409Z`  (string, optional) - auto-generated timestamp of when the job was last updated.
 
 ### Bad Request
   + status: 400 (number, required) - HTTP status code
