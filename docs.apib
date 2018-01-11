@@ -19,51 +19,53 @@ Both collections have full CRUD operations.
 
 #### Users
 
-- Collection Endpoint: `/users`
-- Singular Endpoint: `/users/{username}`
-- Attributes:
-  - firstName - the user's first name, between 1 and 55 characters. **Required to Create a New User.**
-  - lastName - the user's last name, between 1 and 55 characters. **Required to Create a New User.**
-  - password - between 1 and 55 characters. **Required to Create a New User.**
-  - username - username can only consist of letters and numbers between 1 and 55 characters. **Required to Create a New User. Immutable.**
-  - photo - A valid URL for a photo
-  - experience
-      - jobTitle
-      - company (Company)
-      - startDate - ISO date-format timestamp when experience began.
-      - endDate - ISO date-format timestamp when experience ended.
-  - education
-      - institution - the institution where the user enrolled or is currently enrolled in.
-      - degree - the degree that the user earned or is currently earning.
-      - endDate - ISO date-format timestamp when education ended.
-  - skills
-  - createdAt - auto-generated timestamp of when the user was originally created.
-  - updatedAt - auto-generated timestamp of when the user was last updated.
+- **Collection Endpoint**: `/users`
+- **Singular Endpoint**: `/users/{username}`
+- **Attributes**:
+  - `firstName` - the user's first name, between 1 and 55 characters. Required to Create a New User.
+  - `lastName` - the user's last name, between 1 and 55 characters. Required to Create a New User.
+  - `username` - username can only consist of letters and numbers between 1 and 55 characters. Required to Create a New User. Immutable.
+  - `email` - between 1 and 55 characters. Required to Create a New User.
+  - `password` - between 1 and 55 characters. Required to Create a New User.
+  - `currentCompany` - this should reference an ObjectId for a company
+  - `photo` - A valid URL for a photo
+  - `experience`
+      - `jobTitle`
+      - `company` (Company)
+      - `startDate` - ISO date-format timestamp when experience began.
+      - `endDate` - ISO date-format timestamp when experience ended.
+  - `education`
+      - `institution` - the institution where the user enrolled or is currently enrolled in.
+      - `degree` - the degree that the user earned or is currently earning.
+      - `endDate` - ISO date-format timestamp when education ended.
+  - `skills`
+  - `createdAt` - auto-generated timestamp of when the user was originally created.
+  - `updatedAt` - auto-generated timestamp of when the user was last updated.
 
 #### Companies
 
-- Collection Endpoint: `/companies`
-- Singular Endpoint: `/companies/{name}`
-- Attributes:
-  - name - username can only consist of letters and numbers between 1 and 55 characters. **Required to Create a New Company. Immutable.**
-  - password - between 1 and 55 characters. **Required to Create a New Company.**
-  - email - between 1 and 55 characters. **Required to Create a New Company.**
-  - handle - between 1 and 55 characters. **Required to Create a New Company.**
-  - logo - a valid URL for the logo of the company
-  - employees - array of User IDs
-  - jobs - array of Job IDs
+- **Collection Endpoint**: `/companies`
+- **Singular Endpoint**: `/companies/{handle}`
+- **Attributes**:
+  - `name` - username can only consist of letters and numbers between 1 and 55 characters. Required to Create a New Company. Immutable.
+  - `email` - between 1 and 55 characters. Required to Create a New Company.
+  - `handle` - between 1 and 55 characters. Required to Create a New Company.
+  - `password` - between 1 and 55 characters. Required to Create a New Company.
+  - `logo` - a valid URL for the logo of the company
+  - `employees` - array of User IDs
+  - `jobs` - array of Job IDs
 
 #### Jobs
 
-- Collection Endpoint: `/jobs`
-- Singular Endpoint: `/jobs/{jobId}`
-- Attributes:
-  - title - the title for the job posting.
-  - company - This should reference an ObjectId for a company
-  - salary - a number for the salary offered in this post
-  - equity - a float for the equity offered in this post
-  - createdAt - auto-generated timestamp of when the job was originally created.
-  - updatedAt - auto-generated timestamp of when the job was last updated.
+- **Collection Endpoint**: `/jobs`
+- **Singular Endpoint**: `/jobs/{jobId}`
+- **Attributes**:
+  - `title` - the title for the job posting.
+  - `company` - this should reference an ObjectId for a company
+  - `salary` - a number for the salary offered in this post
+  - `equity` - a float for the equity offered in this post
+  - `createdAt` - auto-generated timestamp of when the job was originally created.
+  - `updatedAt` - auto-generated timestamp of when the job was last updated.
 
 See the [Reference section](/#reference/0/auth) for fully-detailed resource documentation.
 
@@ -431,14 +433,14 @@ The fields `name`, `password`, `email`, and `handle` are required.
     + Attributes
         + error (Conflict)
 
-## Company [/companies/{name}]
+## Company [/companies/{handle}]
 Endpoint for reading, updating, or deleting a single company.
 
 + Parameters
-    + name: `hooli` (string, required) - the company to lookup.
+    + handle: `hooli` (string, required) - the company to lookup.
 
 ### Get a Company [GET]
-**UserAuth Required**. Retrieve a single company document by `name`.
+**UserAuth Required**. Retrieve a single company document by `handle`.
 
 + Request
 + Response 200 (application/json; charset=utf-8)
@@ -459,7 +461,7 @@ Endpoint for reading, updating, or deleting a single company.
 
 
 ### Update a Company [PATCH]
-**CompanyAuth Required. Correct Company Required.** Update a single company document by `name`
+**CompanyAuth Required. Correct Company Required.** Update a single company document by `handle`
 
 + Request
     + Attributes
@@ -490,7 +492,7 @@ Endpoint for reading, updating, or deleting a single company.
         + error (Not Found)
 
 ### Delete a Company [DELETE]
-**CompanyAuth Required. Correct Company Required.** Remove a single company document by `name`.
+**CompanyAuth Required. Correct Company Required.** Remove a single company document by `handle`.
 
 + Request
 + Response 200 (application/json; charset=utf-8)
@@ -511,23 +513,25 @@ Endpoint for reading, updating, or deleting a single company.
 ## Data Structures
 
 ### UserAuth
-  + username: `mhueter` (string, optional) - username can only consist of letters and numbers between 1 and 55 characters. **Required to Create a New User. Immutable.**
-  + password: `foo123` (string, optional) - between 1 and 55 characters. **Required to Create a New User.**
+  + username: `mhueter` (string, optional) - username can only consist of letters and numbers between 1 and 55 characters.
+  + password: `foo123` (string, optional) - between 1 and 55 characters.
 
 ### CompanyAuth
-  + email: `gavin@hooli.com` (string, optional) - username can only consist of letters and numbers between 1 and 55 characters. **Required to Create a New User. Immutable.**
-  + password: `bloodboy` (string, optional) - between 1 and 55 characters. **Required to Create a New User.**
+  + email: `gavin@hooli.com` (string, optional) - email can only consist of letters and numbers between 1 and 55 characters.
+  + password: `bloodboy` (string, optional) - between 1 and 55 characters.
 
 ### User
   + firstName: `Michael` (string, optional) - the user's first name, between 1 and 55 characters. **Required to Create a New User.**
   + lastName: `Hueter` (string, optional) - the user's last name, between 1 and 55 characters. **Required to Create a New User.**
-  + password: `foo123` (string, optional) - between 1 and 55 characters. **Required to Create a New User.**
   + username: `mhueter` (string, optional) - username can only consist of letters and numbers between 1 and 55 characters. **Required to Create a New User. Immutable.**
+  + email: `michael@rithmschool.com` (string, optional) - email can only consist of letters and numbers between 1 and 55 characters. **Required to Create a New User.**
+  + password: `foo123` (string, optional) - between 1 and 55 characters. **Required to Create a New User.**
+  + currentCompany: `5a21b155ac27667d3de5bfaa` - This should reference an ObjectId for a company
   + photo: `https://www.mhueter.com` (string, optional) - A valid URL for a photo
   + experience (array, optional)
     + (object)
       + jobTitle: `Instructor In Chief`
-      + company (Company)
+      + company: `5a21b155ac27667d3de5bfaa` - This should reference an ObjectId for a company
       + startDate: `2016-06-15T21:39:25.435000+00:00` (string, optional) - ISO date-format timestamp when experience began.
       + endDate: `2017-06-15T21:39:25.435000+00:00` (string, optional) - ISO date-format timestamp when experience ended.
   + education (array, optional)
