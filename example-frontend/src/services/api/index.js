@@ -1,7 +1,7 @@
 import axios from 'axios';
 import processAJAXError from '../../helpers';
 
-const API_URL = process.env.API_URL || 'http://localhost:3001';  // express server URI
+const API_URL = process.env.API_URL || 'http://localhost:3001'; // express server URI
 
 const api = axios.create({
   baseURL: API_URL,
@@ -16,7 +16,7 @@ const api = axios.create({
  * @param {Object} data - data object
  */
 export function postRequest(path, data) {
-  api
+  return api
     .post(path, data)
     .then(response => {
       return response.data;
@@ -27,7 +27,7 @@ export function postRequest(path, data) {
 }
 
 export function getRequest(path) {
-  api
+  return api
     .get(path)
     .then(response => {
       return response.data;
