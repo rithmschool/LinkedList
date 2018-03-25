@@ -4,9 +4,11 @@ LinkedIn/AngelList type of clone.
 
 ## Backend
 
-1.  (_Technical_) - The backend should be a fully RESTful API using JSON.
-1.  (_Technical_) - The server must be Node.js and Express.js, and the database must be MongoDB.
-1.  (_Technical_) - The API must be built to spec according to the [documentation on Apiary](https://linkedlist.docs.apiary.io/).
+1.  (_Technical_) The backend should be a RESTful API using JSON.
+1.  (_Technical_) The server must be Node.js and Express.js, and the database must be MongoDB.
+1.  (_Technical_) The API must be built to spec according to the [documentation on Apiary](https://linkedlist.docs.apiary.io/).
+1.  (_Technical_) The server must implement authentication using JWT and encrypt passwords in the database.
+1.  (_Technical_) The server must be deployed to Heroku with MongoDB extension enabled.
 
 [Here is a resource](https://docs.mongodb.com/manual/text-search/) to help with building search endpoint functionality using MongoDB.
 
@@ -16,8 +18,8 @@ Check out these [mocks](https://app.moqups.com/michael@rithmschool.com/vgRzAjTRT
 
 ### Technical Epic
 
-1.  (_Technical_) - The frontend should be a single page application that utilizes React and Redux.
-1.  (_Technical_) - The frontend should be mobile-optimized.
+1.  (_Technical_) The frontend should be a single page application that utilizes React and Redux.
+1.  (_Technical_) The frontend should be mobile-optimized.
 
 ### Users Epic
 
