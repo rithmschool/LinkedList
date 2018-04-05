@@ -27,11 +27,13 @@ Both collections have full CRUD operations.
   - `username` - username can only consist of letters and numbers between 1 and 55 characters. Required to Create a New User. Immutable.
   - `email` - between 1 and 55 characters. Required to Create a New User.
   - `password` - between 1 and 55 characters. Required to Create a New User.
-  - `currentCompany` - this should reference an ObjectId for a company
+  - `currentCompanyName` - this should be the string name of a company
+  - `currentCompanyId` - this should reference an ObjectId for a company IF IT EXISTS 
   - `photo` - A valid URL for a photo
   - `experience` - array of previous work
       - `jobTitle`
-      - `company` - a string of the company name
+      - `companyName` - this should be the string name of a company
+      - `companyId` - this can reference an ObjectId for a company IF IT EXISTS
       - `startDate` - ISO date-format timestamp when experience began.
       - `endDate` - ISO date-format timestamp when experience ended.
   - `education`
@@ -52,7 +54,7 @@ Both collections have full CRUD operations.
   - `handle` - between 1 and 55 characters. Required to Create a New Company.
   - `password` - between 1 and 55 characters. Required to Create a New Company.
   - `logo` - a valid URL for the logo of the company
-  - `employees` - array of User IDs
+  - `employees` - array of usernames
   - `jobs` - array of Job IDs
 
 #### Jobs
@@ -513,7 +515,7 @@ Endpoint for reading, updating, or deleting a single company.
 ## Data Structures
 
 ### UserAuth
-  + username: `mhueter` (string, optional) - username can only consist of letters and numbers between 1 and 55 characters.
+  + username: `hueter` (string, optional) - username can only consist of letters and numbers between 1 and 55 characters.
   + password: `foo123` (string, optional) - between 1 and 55 characters.
 
 ### CompanyAuth
@@ -523,15 +525,17 @@ Endpoint for reading, updating, or deleting a single company.
 ### User
   + firstName: `Michael` (string, optional) - the user's first name, between 1 and 55 characters. **Required to Create a New User.**
   + lastName: `Hueter` (string, optional) - the user's last name, between 1 and 55 characters. **Required to Create a New User.**
-  + username: `mhueter` (string, optional) - username can only consist of letters and numbers between 1 and 55 characters. **Required to Create a New User. Immutable.**
+  + username: `hueter` (string, optional) - username can only consist of letters and numbers between 1 and 55 characters. **Required to Create a New User. Immutable.**
   + email: `michael@rithmschool.com` (string, optional) - email can only consist of letters and numbers between 1 and 55 characters. **Required to Create a New User.**
   + password: `foo123` (string, optional) - between 1 and 55 characters. **Required to Create a New User.**
-  + currentCompany: `5a21b155ac27667d3de5bfaa` - This should reference an ObjectId for a company
-  + photo: `https://www.mhueter.com` (string, optional) - A valid URL for a photo
+  + currentCompanyName: `Hooli` - This should be the name of a company
+  + currentCompanyId: `5a21b155ac27667d3de5bfaa` - This should reference an ObjectId for a company IF IT EXISTS
+  + photo: `https://www.michaelhueter.com` (string, optional) - A valid URL for a photo
   + experience (array, optional)
     + (object)
       + jobTitle: `Instructor In Chief`
-      + company: `5a21b155ac27667d3de5bfaa` - This should reference an ObjectId for a company
+      + companyName: `Hooli` - The name of a company
+      + companyId: `5a21b155ac27667d3de5bfaa` - This should reference an ObjectId for a company IF IT EXISTS
       + startDate: `2016-06-15T21:39:25.435000+00:00` (string, optional) - ISO date-format timestamp when experience began.
       + endDate: `2017-06-15T21:39:25.435000+00:00` (string, optional) - ISO date-format timestamp when experience ended.
   + education (array, optional)
@@ -550,7 +554,7 @@ Endpoint for reading, updating, or deleting a single company.
   + email: `gavin@hooli.com` (string, optional) - between 1 and 55 characters. **Required to Create a New Company.**
   + handle: `@hooli` (string, optional) - between 1 and 55 characters. **Required to Create a New Company.**
   + logo: `https://assets-cdn.github.com/images/modules/logos_page/GitHub-Mark.png` (string, optional) - a valid URL for the logo of the company
-  + employees (array[User])
+  + employees `` - array of usernames
   + jobs (array[Job])
 
 #### Job
