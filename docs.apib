@@ -29,16 +29,16 @@ Both collections have full CRUD operations.
   - `password` - between 1 and 55 characters. Required to Create a New User.
   - `currentCompany` - this should reference an ObjectId for a company
   - `photo` - A valid URL for a photo
-  - `experience`
+  - `experience` - array of previous work
       - `jobTitle`
-      - `company` (Company)
+      - `company` - a string of the company name
       - `startDate` - ISO date-format timestamp when experience began.
       - `endDate` - ISO date-format timestamp when experience ended.
   - `education`
-      - `institution` - the institution where the user enrolled or is currently enrolled in.
+      - `institution` - a string of the institution where the user enrolled or is currently enrolled in.
       - `degree` - the degree that the user earned or is currently earning.
       - `endDate` - ISO date-format timestamp when education ended.
-  - `skills`
+  - `skills` - array of strings
   - `createdAt` - auto-generated timestamp of when the user was originally created.
   - `updatedAt` - auto-generated timestamp of when the user was last updated.
 
@@ -76,7 +76,7 @@ See the [Reference section](/#reference/0/auth) for fully-detailed resource docu
 ## UserAuth [/user-auth]
 Endpoint for authenticating a user by getting a JWT from the server.
 
-### Authorize to Receive a Token [POST]
+### Auth to Receive Token [POST]
 
 + Request
     + Attributes
@@ -110,7 +110,7 @@ Endpoint for authenticating a user by getting a JWT from the server.
 ## CompanyAuth [/company-auth]
 Endpoint for authenticating a company by getting a JWT from the server.
 
-### Authorize to Receive a Token [POST]
+### Auth to Receive Token [POST]
 
 + Request
     + Attributes
@@ -311,11 +311,11 @@ Endpoint to create a user or query for a list of users.
     + Attributes
         + error (Conflict)
 
-## Job [/jobs/{id}]
+## Job [/jobs/{jobId}]
 Endpoint for reading, updating, or deleting a single user.
 
 + Parameters
-    + id: 4 (string, required) - the job to lookup.
+    + jobId: 4 (string, required) - the job to lookup.
 
 ### Get a Job [GET]
 **UserAuth Required**. Retrieve a single job document by `id`.
