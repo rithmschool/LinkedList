@@ -1,0 +1,27 @@
+{
+  "author": "Michael Hueter <mthueter@gmail.com>",
+  "version": "1.0.0",
+  "name": "linkedlist-server",
+  "description": "LinkedIn/AngelList clone backend",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rithmschool/LinkedList"
+  },
+  "main": "index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "bluebird": "3.5.1",
+    "body-parser": "1.18.2",
+    "dotenv": "5.0.1",
+    "express": "4.16.3",
+    "jsonschema": "1.2.4",
+    "mongoose": "5.0.14"
+  },
+  "devDependencies": {
+    "eslint": "^4.19.1",
+    "jest": "^22.4.3"
+  }
+}
