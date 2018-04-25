@@ -65,7 +65,9 @@
           "type": "string",
           "title": "The Currentcompanyid Schema ",
           "default": "",
-          "examples": ["5a21b155ac27667d3de5bfaa"]
+          "examples": ["5a21b155ac27667d3de5bfaa"],
+          "minLength": 24,
+          "maxLength": 24
         },
         "photo": {
           "$id": "/properties/data/properties/photo",

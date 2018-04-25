@@ -32,7 +32,7 @@ function globalErrorHandler(error, request, response, next) {
   if (!(error instanceof APIError)) {
     err = new APIError(500, error.type, error.message);
   }
-
+  process.env.NODE_ENV === 'development' && console.error(err.stack); //eslint-disable-line no-console
   return response.status(err.status).json(err);
 }
 

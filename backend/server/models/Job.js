@@ -1,6 +1,5 @@
 // npm packages
 const mongoose = require('mongoose');
-const uuidv4 = require('uuid/v4');
 
 // app imports
 const { APIError, processDBError } = require('../helpers');
@@ -11,11 +10,6 @@ const { ObjectId, Decimal128 } = Schema.Types;
 
 const jobSchema = new Schema(
   {
-    id: {
-      type: String,
-      index: true,
-      unique: true
-    },
     title: String,
     company: {
       type: ObjectId,
@@ -41,7 +35,6 @@ jobSchema.statics = {
    */
   async createJob(newJob) {
     try {
-      newJob.id = uuidv4();
       const job = await newJob.save();
       return job.toObject();
     } catch (err) {

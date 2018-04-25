@@ -17,13 +17,6 @@
           "maxLength": 55,
           "examples": ["Software Developer"]
         },
-        "company": {
-          "$id": "/properties/data/properties/company",
-          "type": "string",
-          "title": "The Company Schema ",
-          "default": "",
-          "examples": ["5a21b155ac27667d3de5bfaa"]
-        },
         "salary": {
           "$id": "/properties/data/properties/salary",
           "type": "integer",
@@ -39,7 +32,7 @@
           "examples": [2.0999999046325684]
         }
       },
-      "required": ["title", "company"]
+      "required": ["title"]
     }
   },
   "required": ["data"]

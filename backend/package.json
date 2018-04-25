@@ -13,12 +13,14 @@
   },
   "license": "MIT",
   "dependencies": {
+    "bcrypt": "^2.0.1",
     "bluebird": "3.5.1",
     "body-parser": "1.18.2",
     "dotenv": "5.0.1",
     "express": "4.16.3",
     "jsonschema": "1.2.4",
-    "mongoose": "5.0.14",
+    "jsonwebtoken": "8.2.1",
+    "mongoose": "5.0.16",
     "uuid": "3.2.1"
   },
   "devDependencies": {

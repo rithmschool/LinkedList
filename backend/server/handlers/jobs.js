@@ -4,7 +4,11 @@ const { Validator } = require('jsonschema');
 // app imports
 const { Job } = require('../models');
 const { jobNewSchema, jobUpdateSchema } = require('../schemas');
-const { parseSkipLimit, validateSchema } = require('../helpers');
+const {
+  formatResponse,
+  parseSkipLimit,
+  validateSchema
+} = require('../helpers');
 
 // globals
 const v = new Validator();
@@ -24,7 +28,7 @@ async function readJobs(request, response, next) {
 
   try {
     const jobs = await Job.readJobs({}, {}, skip, limit);
-    return response.json(jobs);
+    return response.json(formatResponse(jobs));
   } catch (err) {
     next(err);
   }
@@ -44,7 +48,7 @@ async function createJob(request, response, next) {
 
   try {
     const newJob = await Job.createJob(new Job(request.body));
-    return response.status(201).json(newJob);
+    return response.status(201).json(formatResponse(newJob));
   } catch (err) {
     return next(err);
   }
@@ -58,7 +62,7 @@ async function readJob(request, response, next) {
   const { id } = request.params;
   try {
     const job = await Job.readJob(id);
-    return response.json(job);
+    return response.json(formatResponse(job));
   } catch (err) {
     return next(err);
   }
@@ -81,7 +85,7 @@ async function updateJob(request, response, next) {
 
   try {
     const job = await Job.updateJob(id, request.body);
-    return response.json(job);
+    return response.json(formatResponse(job));
   } catch (err) {
     return next(err);
   }
@@ -95,7 +99,7 @@ async function deleteJob(request, response, next) {
   const { id } = request.params;
   try {
     const deleteMsg = await Job.deleteJob(id);
-    return response.json(deleteMsg);
+    return response.json(formatResponse(deleteMsg));
   } catch (err) {
     return next(err);
   }

@@ -1,6 +1,6 @@
 // npm packages
+const bcrypt = require('bcrypt');
 const mongoose = require('mongoose');
-const uuidv4 = require('uuid/v4');
 
 // app imports
 const { APIError, processDBError } = require('../helpers');
@@ -8,14 +8,10 @@ const { APIError, processDBError } = require('../helpers');
 // globals
 const { Schema } = mongoose;
 const { ObjectId } = Schema.Types;
+const SALT_WORK_FACTOR = 10;
 
 const userSchema = new Schema(
   {
-    id: {
-      type: String,
-      index: true,
-      unique: true
-    },
     firstName: String,
     lastName: String,
     username: {
@@ -64,6 +60,21 @@ const userSchema = new Schema(
   { timestamps: true }
 );
 
+/**
+ * A wrapper around bcrypt password hashing
+ * @param {function} next callback to next Mongoose middleware
+ */
+
+userSchema.pre('save', async function _hashPassword(next) {
+  try {
+    const hashed = await bcrypt.hash(this.password, SALT_WORK_FACTOR);
+    this.password = hashed;
+    return next();
+  } catch (err) {
+    return next(err);
+  }
+});
+
 userSchema.statics = {
   /**
    * Create a Single New User
@@ -93,8 +104,8 @@ userSchema.statics = {
           `The email address '${email}' has already been registered to a different user.`
         );
       }
-      newUser.id = uuidv4();
       const user = await newUser.save();
+
       return user.toObject();
     } catch (err) {
       return Promise.reject(processDBError(err));
@@ -171,6 +182,12 @@ userSchema.statics = {
    * @returns {Promise<User, APIError>}
    */
   async updateUser(username, userUpdate) {
+    if (userUpdate.password) {
+      userUpdate.password = await bcrypt.hash(
+        userUpdate.password,
+        SALT_WORK_FACTOR
+      );
+    }
     try {
       const user = await this.findOneAndUpdate({ username }, userUpdate, {
         new: true
@@ -186,8 +203,8 @@ userSchema.statics = {
 if (!userSchema.options.toObject) userSchema.options.toObject = {};
 userSchema.options.toObject.transform = (doc, ret) => {
   const transformed = ret;
-  delete transformed._id;
   delete transformed.__v;
+  delete transformed.password;
   return transformed;
 };
 

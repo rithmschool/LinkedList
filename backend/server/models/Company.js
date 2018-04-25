@@ -1,6 +1,6 @@
 // npm packages
+const bcrypt = require('bcrypt');
 const mongoose = require('mongoose');
-const uuidv4 = require('uuid/v4');
 
 // app imports
 const { APIError, processDBError } = require('../helpers');
@@ -8,14 +8,10 @@ const { APIError, processDBError } = require('../helpers');
 // globals
 const { Schema } = mongoose;
 const { ObjectId } = Schema.Types;
+const SALT_WORK_FACTOR = 10;
 
 const companySchema = new Schema(
   {
-    id: {
-      type: String,
-      index: true,
-      unique: true
-    },
     name: String,
     handle: {
       type: String,
@@ -38,6 +34,21 @@ const companySchema = new Schema(
   },
   { timestamps: true }
 );
+
+/**
+ * A wrapper around bcrypt password hashing
+ * @param {function} next callback to next Mongoose middleware
+ */
+
+companySchema.pre('save', async function _hashPassword(next) {
+  try {
+    const hashed = await bcrypt.hash(this.password, SALT_WORK_FACTOR);
+    this.password = hashed;
+    return next();
+  } catch (err) {
+    return next(err);
+  }
+});
 
 companySchema.statics = {
   /**
@@ -68,7 +79,6 @@ companySchema.statics = {
           `The email address '${email}' has already been registered to a different company.`
         );
       }
-      newCompany.id = uuidv4();
       const company = await newCompany.save();
       return company.toObject();
     } catch (err) {

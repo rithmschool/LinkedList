@@ -4,7 +4,12 @@ const { Validator } = require('jsonschema');
 // app imports
 const { User } = require('../models');
 const { userNewSchema, userUpdateSchema } = require('../schemas');
-const { parseSkipLimit, validateSchema } = require('../helpers');
+const {
+  ensureCorrectUser,
+  formatResponse,
+  parseSkipLimit,
+  validateSchema
+} = require('../helpers');
 
 // globals
 const v = new Validator();
@@ -24,7 +29,7 @@ async function readUsers(request, response, next) {
 
   try {
     const users = await User.readUsers({}, {}, skip, limit);
-    return response.json(users);
+    return response.json(formatResponse(users));
   } catch (err) {
     next(err);
   }
@@ -43,8 +48,8 @@ async function createUser(request, response, next) {
   }
 
   try {
-    const newUser = await User.createUser(new User(request.body));
-    return response.status(201).json(newUser);
+    const newUser = await User.createUser(new User(request.body.data));
+    return response.status(201).json(formatResponse(newUser));
   } catch (err) {
     return next(err);
   }
@@ -58,7 +63,7 @@ async function readUser(request, response, next) {
   const { username } = request.params;
   try {
     const user = await User.readUser(username);
-    return response.json(user);
+    return response.json(formatResponse(user));
   } catch (err) {
     return next(err);
   }
@@ -71,6 +76,13 @@ async function readUser(request, response, next) {
 async function updateUser(request, response, next) {
   const { username } = request.params;
 
+  const correctUser = ensureCorrectUser(
+    request.headers.authorization,
+    username
+  );
+  if (correctUser !== 'OK') {
+    return next(correctUser);
+  }
   const validationErrors = validateSchema(
     v.validate(request.body, userUpdateSchema),
     'user'
@@ -80,8 +92,8 @@ async function updateUser(request, response, next) {
   }
 
   try {
-    const user = await User.updateUser(username, request.body);
-    return response.json(user);
+    const user = await User.updateUser(username, request.body.data);
+    return response.json(formatResponse(user));
   } catch (err) {
     return next(err);
   }
@@ -93,9 +105,18 @@ async function updateUser(request, response, next) {
  */
 async function deleteUser(request, response, next) {
   const { username } = request.params;
+
+  const correctUser = ensureCorrectUser(
+    request.headers.authorization,
+    username
+  );
+  if (correctUser !== 'OK') {
+    return next(correctUser);
+  }
+
   try {
     const deleteMsg = await User.deleteUser(username);
-    return response.json(deleteMsg);
+    return response.json(formatResponse(deleteMsg));
   } catch (err) {
     return next(err);
   }

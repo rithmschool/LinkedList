@@ -4,7 +4,12 @@ const { Validator } = require('jsonschema');
 // app imports
 const { Company } = require('../models');
 const { companyNewSchema, companyUpdateSchema } = require('../schemas');
-const { parseSkipLimit, validateSchema } = require('../helpers');
+const {
+  parseSkipLimit,
+  validateSchema,
+  ensureCorrectCompany,
+  formatResponse
+} = require('../helpers');
 
 // globals
 const v = new Validator();
@@ -24,7 +29,7 @@ async function readCompanies(request, response, next) {
 
   try {
     const companies = await Company.readCompanies({}, {}, skip, limit);
-    return response.json(companies);
+    return response.json(formatResponse(companies));
   } catch (err) {
     next(err);
   }
@@ -44,7 +49,7 @@ async function createCompany(request, response, next) {
 
   try {
     const newCompany = await Company.createCompany(new Company(request.body));
-    return response.status(201).json(newCompany);
+    return response.status(201).json(formatResponse(newCompany));
   } catch (err) {
     return next(err);
   }
@@ -58,7 +63,7 @@ async function readCompany(request, response, next) {
   const { handle } = request.params;
   try {
     const company = await Company.readCompany(handle);
-    return response.json(company);
+    return response.json(formatResponse(company));
   } catch (err) {
     return next(err);
   }
@@ -71,6 +76,13 @@ async function readCompany(request, response, next) {
 async function updateCompany(request, response, next) {
   const { handle } = request.params;
 
+  const correctCompany = ensureCorrectCompany(
+    request.headers.authorization,
+    handle
+  );
+  if (correctCompany !== 'OK') {
+    return next(correctCompany);
+  }
   const validationErrors = validateSchema(
     v.validate(request.body, companyUpdateSchema),
     'company'
@@ -81,7 +93,7 @@ async function updateCompany(request, response, next) {
 
   try {
     const company = await Company.updateCompany(handle, request.body);
-    return response.json(company);
+    return response.json(formatResponse(company));
   } catch (err) {
     return next(err);
   }
@@ -93,9 +105,17 @@ async function updateCompany(request, response, next) {
  */
 async function deleteCompany(request, response, next) {
   const { handle } = request.params;
+
+  const correctCompany = ensureCorrectCompany(
+    request.headers.authorization,
+    handle
+  );
+  if (correctCompany !== 'OK') {
+    return next(correctCompany);
+  }
   try {
     const deleteMsg = await Company.deleteCompany(handle);
-    return response.json(deleteMsg);
+    return response.json(formatResponse(deleteMsg));
   } catch (err) {
     return next(err);
   }

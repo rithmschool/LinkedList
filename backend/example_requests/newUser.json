@@ -1,0 +1,21 @@
+{
+  "data": {
+    "firstName": "Michael",
+    "lastName": "Hueter",
+    "username": "hueter",
+    "email": "michael@rithmschool.com",
+    "password": "foo123",
+    "currentCompanyName": "Hooli",
+    "currentCompanyId": "",
+    "photo": "https://avatars0.githubusercontent.com/u/13444851?s=460&v=4",
+    "experience": [],
+    "education": [
+      {
+        "institution": "School of Hard Knocks",
+        "degree": "Bachelors in Science",
+        "endDate": "2014"
+      }
+    ],
+    "skills": ["Python", "JavaScript"]
+  }
+}

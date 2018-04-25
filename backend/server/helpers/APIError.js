@@ -15,6 +15,7 @@ class APIError extends Error {
     this.status = status;
     this.title = title;
     this.message = message;
+    Error.captureStackTrace(this);
   }
   toJSON() {
     const { status, title, message } = this;

@@ -22,7 +22,7 @@ async function auth(request, response, next) {
       return next(validSchema);
     }
     const { username, password } = request.body.data;
-    const user = await User.readUser(username);
+    const user = await User.findOne({ username }).lean();
     const isValid = bcrypt.compareSync(password, user.password);
     if (!isValid) {
       throw new APIError(401, 'Unauthorized', 'Invalid password.');
