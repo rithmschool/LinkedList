@@ -5,8 +5,11 @@
 1.  Fork/Clone the repo
 
 Then either:
+
 2a. Run `docker-compose up` (Assuming you've [installed docker for OSX](https://store.docker.com/editions/community/docker-ce-desktop-mac))
+
 or
+
 2b. Run `nodemon index.js`
 
 3.  Server is accessible at `http://localhost:5000`.
