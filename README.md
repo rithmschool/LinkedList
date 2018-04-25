@@ -10,6 +10,10 @@ LinkedIn/AngelList type of clone.
 
 [Here is a resource](https://docs.mongodb.com/manual/text-search/) to help with building search endpoint functionality using MongoDB.
 
+### Backend Solution
+
+[Here](https://github.com/rithmschool/LinkedList/tree/master/backend) is the instructor solution for the backend. There are instructions in this folder's README for how to run the app locally so you can build the frontend.
+
 ## Frontend
 
 Check out these [mocks](https://app.moqups.com/michael@rithmschool.com/vgRzAjTRTd/view)!
