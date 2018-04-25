@@ -2,7 +2,7 @@
 
 ## How to Install & Run
 
-1.  Fork/Clone the repo
+1.  Fork the repo, clone it onto your machine, then run `git remote add upstream git@github.com:rithmschool/LinkedList.git` and `git pull upstream master`.
 
 Then either:
 

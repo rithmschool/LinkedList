@@ -76,7 +76,7 @@ See the [Reference section](/#reference/0/auth) for fully-detailed resource docu
 
 ## Quickstart
 
-1. Let's create a new user! We're going to post this JSON data to `localhost:5000`:
+I. Let's create a new user! We're going to post this JSON data to `localhost:5000`:
 
 ```json
 {
@@ -134,7 +134,7 @@ curl -X POST \
 '
 ```
 
-2. Let's login the user by posting the `username` and `password` to `/user-auth` 
+II. Let's login the user by posting the `username` and `password` to `/user-auth` 
 
 ```json
 {
@@ -172,7 +172,7 @@ You should get back a token, like this (this is a fake token, obviously):
 }
 ```
 
-3. For all future requests, put the token in the `Authorization` header, with the `Bearer` format, like so:
+III. For all future requests, put the token in the `Authorization` header, with the `Bearer` format, like so:
 
 `Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.zzZ1a2VybmFtZSI6Imh1ZXRlciIsImlhdCI6MTUyNDY5Mzc5OX0.fn0LbvCTbw21W4-fKeDpAz2Fod0iWPl7oBKcnyjGUwI`.
 
