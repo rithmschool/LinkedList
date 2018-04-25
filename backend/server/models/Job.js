@@ -6,7 +6,7 @@ const { APIError, processDBError } = require('../helpers');
 
 // globals
 const { Schema } = mongoose;
-const { ObjectId, Decimal128 } = Schema.Types;
+const { ObjectId } = Schema.Types;
 
 const jobSchema = new Schema(
   {
@@ -22,7 +22,7 @@ const jobSchema = new Schema(
       }
     ],
     salary: Number,
-    equity: Decimal128
+    equity: Number
   },
   { timestamps: true }
 );
@@ -36,7 +36,31 @@ jobSchema.statics = {
   async createJob(newJob) {
     try {
       const job = await newJob.save();
+      await mongoose
+        .model('Company')
+        .addOrRemoveJob(job.company, job._id, 'add');
       return job.toObject();
+    } catch (err) {
+      return Promise.reject(processDBError(err));
+    }
+  },
+  /**
+   * Delete all jobs belonging to a company. Used when you delete
+   *  a company
+   * @param {String} company - company ID for all the jobs to delete
+   */
+  async bulkDelete(company) {
+    try {
+      await this.remove({ company });
+      return {
+        Success: [
+          {
+            status: 200,
+            title: 'Jobs Deleted.',
+            detail: `The jobs belonging to company '${company}' were deleted successfully.`
+          }
+        ]
+      };
     } catch (err) {
       return Promise.reject(processDBError(err));
     }
@@ -48,7 +72,10 @@ jobSchema.statics = {
    */
   async deleteJob(id) {
     try {
-      const deleted = await this.findOneAndRemove({ id }).exec();
+      const deleted = await this.findByIdAndRemove(id).exec();
+      await mongoose
+        .model('Company')
+        .addOrRemoveJob(deleted.companyId, deleted._id, 'remove');
       if (deleted) {
         return {
           Success: [
@@ -72,7 +99,7 @@ jobSchema.statics = {
    */
   async readJob(id) {
     try {
-      const job = await this.findOne({ id }).exec();
+      const job = await this.findById(id).exec();
       if (job) {
         return job.toObject();
       }
@@ -91,15 +118,22 @@ jobSchema.statics = {
    */
   async readJobs(query, fields, skip, limit) {
     try {
-      const jobs = await this.find(query, fields)
-        .skip(skip)
-        .limit(limit)
-        .sort({ id: 1 })
-        .exec();
-      if (!jobs.length) {
-        return [];
+      const Model = this;
+      const [jobs, count] = await Promise.all([
+        Model.find(query, fields)
+          .skip(skip)
+          .limit(limit)
+          .sort({ updatedAt: -1 })
+          .exec(),
+        Model.count(query)
+          .skip(skip)
+          .limit(limit)
+          .exec()
+      ]);
+      if (count === 0) {
+        return { jobs, count };
       }
-      return jobs.map(job => job.toObject());
+      return { jobs: jobs.map(job => job.toObject()), count };
     } catch (err) {
       return Promise.reject(processDBError(err));
     }
@@ -112,7 +146,7 @@ jobSchema.statics = {
    */
   async updateJob(id, jobUpdate) {
     try {
-      const job = await this.findOneAndUpdate({ id }, jobUpdate, {
+      const job = await this.findByIdAndUpdate(id, jobUpdate, {
         new: true
       }).exec();
       return job.toObject();
@@ -126,7 +160,6 @@ jobSchema.statics = {
 if (!jobSchema.options.toObject) jobSchema.options.toObject = {};
 jobSchema.options.toObject.transform = (doc, ret) => {
   const transformed = ret;
-  delete transformed._id;
   delete transformed.__v;
   return transformed;
 };

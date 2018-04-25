@@ -152,6 +152,9 @@ userSchema.statics = {
   async deleteUser(username) {
     try {
       const deleted = await this.findOneAndRemove({ username }).exec();
+      await mongoose
+        .model('Company')
+        .addOrRemoveEmployee(deleted.currentCompanyId, deleted._id, 'remove');
       if (deleted) {
         return {
           Success: [
@@ -211,6 +214,21 @@ userSchema.statics = {
         return { users, count };
       }
       return { users: users.map(user => user.toObject()), count };
+    } catch (err) {
+      return Promise.reject(processDBError(err));
+    }
+  },
+  /**
+   * Use this method when deleting a company. It clears out that company
+   *  ID ref for every user who was an employee
+   * @param {String} currentCompanyId - the Company _id
+   */
+  async bulkClearCompanyId(currentCompanyId) {
+    try {
+      await this.updateMany(
+        { currentCompanyId },
+        { $set: { currentCompanyId: null } }
+      );
     } catch (err) {
       return Promise.reject(processDBError(err));
     }

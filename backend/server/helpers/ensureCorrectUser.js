@@ -1,8 +1,6 @@
-// npm packages
-const jwt = require('jsonwebtoken');
-
 // app imports
-const { APIError } = require('../helpers');
+const APIError = require('./APIError');
+const parseToken = require('./parseToken');
 
 /**
  * Make sure the token lines up with the correct username or handle
@@ -13,32 +11,24 @@ const { APIError } = require('../helpers');
 function ensureCorrectUser(authHeader, correctUser, company) {
   const key = company ? 'handle' : 'username';
 
-  if (!authHeader) {
-    return new APIError(
-      401,
-      'Unauthorized',
-      'Authorization header with valid token required.'
-    );
+  const token = parseToken(authHeader);
+  if (token instanceof APIError) {
+    return token;
   }
-  if (!authHeader.includes('Bearer')) {
-    return new APIError(
-      401,
-      'Unauthorized',
-      'Authorization header must have format: `Bearer token`.'
-    );
-  }
-  const token = authHeader.split(' ')[1];
-  let currentUser;
-  try {
-    currentUser = jwt.decode(token, { json: true })[key];
-  } catch (e) {
-    return e;
-  }
-  if (currentUser !== correctUser) {
+
+  if (token[key] !== correctUser) {
     return new APIError(
       401,
       'Unauthorized',
       'You are not authorized to make changes to this resource because permissions belong to another user.'
+    );
+  }
+
+  if (token.company !== !!company) {
+    return new APIError(
+      401,
+      'Unauthorized',
+      'You do not have the correct privileges to make changes to this resource because of your user type.'
     );
   }
   return 'OK';

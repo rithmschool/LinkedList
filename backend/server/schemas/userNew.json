@@ -42,6 +42,7 @@
           "default": "",
           "minLength": 1,
           "maxLength": 55,
+          "format": "email",
           "examples": ["michael@rithmschool.com"]
         },
         "password": {
@@ -58,6 +59,8 @@
           "type": "string",
           "title": "The Currentcompanyname Schema ",
           "default": "",
+          "minLength": 1,
+          "maxLength": 55,
           "examples": ["Hooli"]
         },
         "currentCompanyId": {
@@ -74,6 +77,9 @@
           "type": "string",
           "title": "The Photo Schema ",
           "default": "",
+          "format": "uri",
+          "minLength": 1,
+          "maxLength": 120,
           "examples": ["https://www.michaelhueter.com"]
         },
         "experience": {

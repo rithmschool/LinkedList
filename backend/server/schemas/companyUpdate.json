@@ -13,6 +13,8 @@
           "type": "string",
           "title": "The Name Schema ",
           "default": "",
+          "minLength": 1,
+          "maxLength": 55,
           "examples": ["Hooli"]
         },
         "password": {
@@ -20,6 +22,8 @@
           "type": "string",
           "title": "The Password Schema ",
           "default": "",
+          "minLength": 1,
+          "maxLength": 55,
           "examples": ["bloodboy"]
         },
         "email": {
@@ -27,6 +31,8 @@
           "type": "string",
           "title": "The Email Schema ",
           "default": "",
+          "minLength": 1,
+          "maxLength": 55,
           "examples": ["gavin@hooli.com"]
         },
         "handle": {
@@ -34,6 +40,8 @@
           "type": "string",
           "title": "The Handle Schema ",
           "default": "",
+          "minLength": 1,
+          "maxLength": 55,
           "examples": ["@hooli"]
         },
         "logo": {
@@ -41,6 +49,8 @@
           "type": "string",
           "title": "The Logo Schema ",
           "default": "",
+          "minLength": 1,
+          "maxLength": 120,
           "examples": [
             "https://assets-cdn.github.com/images/modules/logos_page/GitHub-Mark.png"
           ]

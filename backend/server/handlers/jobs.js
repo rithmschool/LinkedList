@@ -2,11 +2,13 @@
 const { Validator } = require('jsonschema');
 
 // app imports
-const { Job } = require('../models');
+const { Company, Job } = require('../models');
 const { jobNewSchema, jobUpdateSchema } = require('../schemas');
 const {
+  APIError,
   formatResponse,
   parseSkipLimit,
+  ensureCorrectUser,
   validateSchema
 } = require('../helpers');
 
@@ -27,8 +29,8 @@ async function readJobs(request, response, next) {
   }
 
   try {
-    const jobs = await Job.readJobs({}, {}, skip, limit);
-    return response.json(formatResponse(jobs));
+    const { count, jobs } = await Job.readJobs({}, {}, skip, limit);
+    return response.json({ count, ...formatResponse(jobs) });
   } catch (err) {
     next(err);
   }
@@ -42,12 +44,31 @@ async function createJob(request, response, next) {
     v.validate(request.body, jobNewSchema),
     'job'
   );
+
   if (validSchema !== 'OK') {
     return next(validSchema);
   }
 
   try {
-    const newJob = await Job.createJob(new Job(request.body));
+    const company = await Company.findById(request.body.data.company);
+    if (!company) {
+      return next(
+        new APIError(
+          404,
+          'Company Not Found',
+          'The company ID for the job you are trying to post does not exist.'
+        )
+      );
+    }
+    const correctCompany = ensureCorrectUser(
+      request.headers.authorization,
+      company.handle,
+      true
+    );
+    if (correctCompany !== 'OK') {
+      return next(correctCompany);
+    }
+    const newJob = await Job.createJob(new Job(request.body.data));
     return response.status(201).json(formatResponse(newJob));
   } catch (err) {
     return next(err);
@@ -84,7 +105,17 @@ async function updateJob(request, response, next) {
   }
 
   try {
-    const job = await Job.updateJob(id, request.body);
+    const { company } = await Job.findById(id);
+    const jobCompany = await Company.findById(company);
+    const correctCompany = ensureCorrectUser(
+      request.headers.authorization,
+      jobCompany.handle,
+      true
+    );
+    if (correctCompany !== 'OK') {
+      return next(correctCompany);
+    }
+    const job = await Job.updateJob(id, request.body.data);
     return response.json(formatResponse(job));
   } catch (err) {
     return next(err);

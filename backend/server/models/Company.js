@@ -24,7 +24,12 @@ const companySchema = new Schema(
     },
     password: String,
     logo: String,
-    employees: [String],
+    employees: [
+      {
+        type: ObjectId,
+        ref: 'User'
+      }
+    ],
     jobs: [
       {
         type: ObjectId,
@@ -92,23 +97,29 @@ companySchema.statics = {
    */
   async deleteCompany(handle) {
     try {
-      const deleted = await this.findOneAndRemove({ handle }).exec();
-      if (deleted) {
-        return {
-          Success: [
-            {
-              status: 200,
-              title: 'Company Deleted.',
-              detail: `The company '${handle}' was deleted successfully.`
-            }
-          ]
-        };
+      const { _id } = await this.findOne({ handle });
+      if (!_id) {
+        throw new APIError(
+          404,
+          'Company Not Found',
+          `No company '${handle}' found.`
+        );
       }
-      throw new APIError(
-        404,
-        'Company Not Found',
-        `No company '${handle}' found.`
-      );
+      // clear employee's company IDs
+      await mongoose.model('User').bulkClearCompanyId(_id);
+      // remove all jobs matching this company ID
+      await mongoose.model('Job').bulkDelete(_id);
+      // finally remove the company itself
+      await this.findOneAndRemove({ handle }).exec();
+      return {
+        Success: [
+          {
+            status: 200,
+            title: 'Company Deleted.',
+            detail: `The company '${handle}' was deleted successfully.`
+          }
+        ]
+      };
     } catch (err) {
       return Promise.reject(processDBError(err));
     }
@@ -120,7 +131,10 @@ companySchema.statics = {
    */
   async readCompany(handle) {
     try {
-      const company = await this.findOne({ handle }).exec();
+      const company = await this.findOne({ handle })
+        .populate('jobs')
+        .populate('employees', 'username')
+        .exec();
 
       if (company) {
         return company.toObject();
@@ -149,7 +163,9 @@ companySchema.statics = {
         Model.find(query, fields)
           .skip(skip)
           .limit(limit)
-          .sort({ username: 1 })
+          .populate('jobs')
+          .populate('employees', 'username')
+          .sort({ name: 1 })
           .exec(),
         Model.count(query)
           .skip(skip)
@@ -187,6 +203,12 @@ companySchema.statics = {
     }
   },
 
+  /**
+   * Add or remove an employee _id to the list of employees on the Company model
+   * @param {String} id - the Company _id
+   * @param {String} employee - the employee _id
+   * @param {String} action - 'add' or 'remove'
+   */
   async addOrRemoveEmployee(id, employee, action) {
     try {
       const actions = {
@@ -197,6 +219,30 @@ companySchema.statics = {
       const company = await this.findByIdAndUpdate(
         id,
         { [actions[action]]: { employees: employee } },
+        { new: true }
+      );
+      return company.toObject();
+    } catch (err) {
+      return Promise.reject(processDBError(err));
+    }
+  },
+
+  /**
+   * Add or remove a job _id to the list of jobs on the Company model
+   * @param {String} id - the Company _id
+   * @param {String} job - the job _id
+   * @param {String} action - 'add' or 'remove'
+   */
+  async addOrRemoveJob(id, job, action) {
+    try {
+      const actions = {
+        add: '$addToSet',
+        remove: '$pull'
+      };
+
+      const company = await this.findByIdAndUpdate(
+        id,
+        { [actions[action]]: { jobs: job } },
         { new: true }
       );
       return company.toObject();
