@@ -8,8 +8,6 @@ const APIError = require('./APIError');
  */
 function validateSchema(validation, type) {
   let errors;
-  console.log('YOOOOO');
-  console.log(validation.errors);
   if (!validation.valid) {
     errors = validation.errors.map(error => {
       switch (error.name) {
