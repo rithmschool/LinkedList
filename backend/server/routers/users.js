@@ -20,7 +20,7 @@ router
   .get(readUsers)
   .post(createUser);
 
-/* Single User by Name Route */
+/* Single User by Username Route */
 router
   .route('/:username')
   .get(readUser)

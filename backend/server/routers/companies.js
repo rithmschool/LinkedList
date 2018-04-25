@@ -20,7 +20,7 @@ router
   .get(readCompanies)
   .post(createCompany);
 
-/* Single Company by Name Route */
+/* Single Company by Handle Route */
 router
   .route('/:handle')
   .get(readCompany)

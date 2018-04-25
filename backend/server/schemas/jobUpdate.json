@@ -1,0 +1,46 @@
+{
+  "$id": "http://example.com/example.json",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "data": {
+      "$id": "/properties/data",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "title": {
+          "$id": "/properties/data/properties/title",
+          "type": "string",
+          "title": "The Title Schema ",
+          "default": "",
+          "minLength": 1,
+          "maxLength": 55,
+          "examples": ["Software Developer"]
+        },
+        "company": {
+          "$id": "/properties/data/properties/company",
+          "type": "string",
+          "title": "The Company Schema ",
+          "default": "",
+          "examples": ["5a21b155ac27667d3de5bfaa"]
+        },
+        "salary": {
+          "$id": "/properties/data/properties/salary",
+          "type": "integer",
+          "title": "The Salary Schema ",
+          "default": 0,
+          "examples": [150000]
+        },
+        "equity": {
+          "$id": "/properties/data/properties/equity",
+          "type": "number",
+          "title": "The Equity Schema ",
+          "default": 0,
+          "examples": [2.0999999046325684]
+        }
+      },
+      "required": []
+    }
+  },
+  "required": ["data"]
+}

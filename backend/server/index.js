@@ -12,7 +12,7 @@ const {
   companyAuthHandler,
   userAuthHandler
 } = require('./handlers');
-const { companiesRouter, usersRouter } = require('./routers');
+const { companiesRouter, jobsRouter, usersRouter } = require('./routers');
 
 // global config
 dotenv.config();
@@ -54,8 +54,10 @@ async function startServer() {
   });
 
   app.use('/company-auth', companyAuthHandler);
-  app.use('/companies', companiesRouter);
   app.use('/user-auth', userAuthHandler);
+
+  app.use('/companies', companiesRouter);
+  app.use('/jobs', jobsRouter);
   app.use('/users', usersRouter);
 
   // catch-all for 404 "Not Found" errors
