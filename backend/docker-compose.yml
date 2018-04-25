@@ -6,6 +6,7 @@ services:
     environment:
       NODE_ENV: development
       NODE_APP_INSTANCE: ''
+      MONGODB_URI: 'mongodb://mongodb/linkedlist'
     depends_on:
       - mongodb
     ports:
