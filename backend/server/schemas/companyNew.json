@@ -42,21 +42,6 @@
           "examples": [
             "https://assets-cdn.github.com/images/modules/logos_page/GitHub-Mark.png"
           ]
-        },
-        "employees": {
-          "$id": "/properties/data/properties/employees",
-          "type": "array",
-          "items": {
-            "$id": "/properties/data/properties/employees/items",
-            "type": "string",
-            "title": "The 0th Schema ",
-            "default": "",
-            "examples": ["hueter", "elie", "mmmaaatttttt"]
-          }
-        },
-        "jobs": {
-          "$id": "/properties/data/properties/jobs",
-          "type": "array"
         }
       },
       "required": ["name", "password", "email", "handle"]

@@ -222,49 +222,57 @@ userSchema.statics = {
    * @returns {Promise<User, APIError>}
    */
   async updateUser(username, userUpdate) {
-    if (userUpdate.password) {
-      userUpdate.password = await bcrypt.hash(
-        userUpdate.password,
-        SALT_WORK_FACTOR
-      );
-    }
-
-    if (userUpdate.currentCompanyId) {
-      const companyExists = await mongoose
-        .model('Company')
-        .findById(userUpdate.currentCompanyId);
-      if (!companyExists) {
-        throw new APIError(
-          400,
-          'Bad Request',
-          `You passed a Company ID'${
-            userUpdate.currentCompanyId
-          }' that does not exist in the database. Please query for a proper company ID.`
+    try {
+      if (userUpdate.password) {
+        userUpdate.password = await bcrypt.hash(
+          userUpdate.password,
+          SALT_WORK_FACTOR
         );
       }
-    }
 
-    if (userUpdate.experience && userUpdate.experience.length) {
-      userUpdate.experience.forEach(async (exp, i) => {
-        const companyExists = await mongoose
+      let company;
+      if (userUpdate.currentCompanyId) {
+        company = await mongoose
           .model('Company')
-          .findById(exp.companyId);
-        if (!companyExists) {
+          .findById(userUpdate.currentCompanyId);
+        if (!company) {
           throw new APIError(
             400,
             'Bad Request',
             `You passed a Company ID'${
-              exp.companyId
-            }' in the experience array at index ${i} that does not exist in the database. Please query for a proper company ID.`
+              userUpdate.currentCompanyId
+            }' that does not exist in the database. Please query for a proper company ID.`
           );
         }
-      });
-    }
+        userUpdate.currentCompanyName = company.name;
+      }
 
-    try {
+      if (userUpdate.experience && userUpdate.experience.length) {
+        userUpdate.experience.forEach(async (exp, i) => {
+          const companyExists = await mongoose
+            .model('Company')
+            .findById(exp.companyId);
+          if (!companyExists) {
+            throw new APIError(
+              400,
+              'Bad Request',
+              `You passed a Company ID'${
+                exp.companyId
+              }' in the experience array at index ${i} that does not exist in the database. Please query for a proper company ID.`
+            );
+          }
+        });
+      }
+
       const user = await this.findOneAndUpdate({ username }, userUpdate, {
         new: true
       }).exec();
+
+      userUpdate.currentCompanyId &&
+        (await mongoose
+          .model('Company')
+          .addOrRemoveEmployee(user.currentCompanyId, user._id, 'add'));
+
       return user.toObject();
     } catch (err) {
       return Promise.reject(processDBError(err));

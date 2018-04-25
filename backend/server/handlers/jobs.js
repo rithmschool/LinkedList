@@ -99,7 +99,7 @@ async function deleteJob(request, response, next) {
   const { id } = request.params;
   try {
     const deleteMsg = await Job.deleteJob(id);
-    return response.json(formatResponse(deleteMsg));
+    return response.json(deleteMsg);
   } catch (err) {
     return next(err);
   }

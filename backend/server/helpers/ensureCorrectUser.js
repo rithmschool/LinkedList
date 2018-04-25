@@ -4,7 +4,15 @@ const jwt = require('jsonwebtoken');
 // app imports
 const { APIError } = require('../helpers');
 
-function ensureCorrectUser(authHeader, correctUser) {
+/**
+ * Make sure the token lines up with the correct username or handle
+ * @param {String} authHeader Authorization: `Bearer <token>`
+ * @param {String} correctUser the expected username or company handle
+ * @param {Boolean} company is the user a company or just a regular user
+ */
+function ensureCorrectUser(authHeader, correctUser, company) {
+  const key = company ? 'handle' : 'username';
+
   if (!authHeader) {
     return new APIError(
       401,
@@ -12,7 +20,6 @@ function ensureCorrectUser(authHeader, correctUser) {
       'Authorization header with valid token required.'
     );
   }
-  let username;
   if (!authHeader.includes('Bearer')) {
     return new APIError(
       401,
@@ -21,12 +28,13 @@ function ensureCorrectUser(authHeader, correctUser) {
     );
   }
   const token = authHeader.split(' ')[1];
+  let currentUser;
   try {
-    username = jwt.decode(token, { json: true }).username;
+    currentUser = jwt.decode(token, { json: true })[key];
   } catch (e) {
     return e;
   }
-  if (username !== correctUser) {
+  if (currentUser !== correctUser) {
     return new APIError(
       401,
       'Unauthorized',

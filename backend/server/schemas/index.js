@@ -1,3 +1,4 @@
+exports.companyAuthSchema = require('./companyAuth');
 exports.companyNewSchema = require('./companyNew');
 exports.companyUpdateSchema = require('./companyUpdate');
 exports.jobNewSchema = require('./jobNew');

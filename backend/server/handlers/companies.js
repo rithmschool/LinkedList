@@ -7,7 +7,7 @@ const { companyNewSchema, companyUpdateSchema } = require('../schemas');
 const {
   parseSkipLimit,
   validateSchema,
-  ensureCorrectCompany,
+  ensureCorrectUser,
   formatResponse
 } = require('../helpers');
 
@@ -28,8 +28,13 @@ async function readCompanies(request, response, next) {
   }
 
   try {
-    const companies = await Company.readCompanies({}, {}, skip, limit);
-    return response.json(formatResponse(companies));
+    const { count, companies } = await Company.readCompanies(
+      {},
+      {},
+      skip,
+      limit
+    );
+    return response.json({ count, ...formatResponse(companies) });
   } catch (err) {
     next(err);
   }
@@ -78,9 +83,10 @@ async function readCompany(request, response, next) {
 async function updateCompany(request, response, next) {
   const { handle } = request.params;
 
-  const correctCompany = ensureCorrectCompany(
+  const correctCompany = ensureCorrectUser(
     request.headers.authorization,
-    handle
+    handle,
+    true
   );
   if (correctCompany !== 'OK') {
     return next(correctCompany);
@@ -108,16 +114,17 @@ async function updateCompany(request, response, next) {
 async function deleteCompany(request, response, next) {
   const { handle } = request.params;
 
-  const correctCompany = ensureCorrectCompany(
+  const correctCompany = ensureCorrectUser(
     request.headers.authorization,
-    handle
+    handle,
+    true
   );
   if (correctCompany !== 'OK') {
     return next(correctCompany);
   }
   try {
     const deleteMsg = await Company.deleteCompany(handle);
-    return response.json(formatResponse(deleteMsg));
+    return response.json(deleteMsg);
   } catch (err) {
     return next(err);
   }

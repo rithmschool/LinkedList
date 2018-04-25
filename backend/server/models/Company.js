@@ -144,15 +144,22 @@ companySchema.statics = {
    */
   async readCompanies(query, fields, skip, limit) {
     try {
-      const companies = await this.find(query, fields)
-        .skip(skip)
-        .limit(limit)
-        .sort({ handle: 1 })
-        .exec();
-      if (!companies.length) {
-        return [];
+      const Model = this;
+      const [companies, count] = await Promise.all([
+        Model.find(query, fields)
+          .skip(skip)
+          .limit(limit)
+          .sort({ username: 1 })
+          .exec(),
+        Model.count(query)
+          .skip(skip)
+          .limit(limit)
+          .exec()
+      ]);
+      if (count === 0) {
+        return { companies, count };
       }
-      return companies.map(company => company.toObject());
+      return { companies: companies.map(company => company.toObject()), count };
     } catch (err) {
       return Promise.reject(processDBError(err));
     }
@@ -165,9 +172,33 @@ companySchema.statics = {
    */
   async updateCompany(handle, companyUpdate) {
     try {
+      if (companyUpdate.password) {
+        companyUpdate.password = await bcrypt.hash(
+          companyUpdate.password,
+          SALT_WORK_FACTOR
+        );
+      }
       const company = await this.findOneAndUpdate({ handle }, companyUpdate, {
         new: true
       }).exec();
+      return company.toObject();
+    } catch (err) {
+      return Promise.reject(processDBError(err));
+    }
+  },
+
+  async addOrRemoveEmployee(id, employee, action) {
+    try {
+      const actions = {
+        add: '$addToSet',
+        remove: '$pull'
+      };
+
+      const company = await this.findByIdAndUpdate(
+        id,
+        { [actions[action]]: { employees: employee } },
+        { new: true }
+      );
       return company.toObject();
     } catch (err) {
       return Promise.reject(processDBError(err));
@@ -179,8 +210,8 @@ companySchema.statics = {
 if (!companySchema.options.toObject) companySchema.options.toObject = {};
 companySchema.options.toObject.transform = (doc, ret) => {
   const transformed = ret;
-  delete transformed._id;
   delete transformed.__v;
+  delete transformed.password;
   return transformed;
 };
 

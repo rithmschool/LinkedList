@@ -116,7 +116,7 @@ async function deleteUser(request, response, next) {
 
   try {
     const deleteMsg = await User.deleteUser(username);
-    return response.json(formatResponse(deleteMsg));
+    return response.json(deleteMsg);
   } catch (err) {
     return next(err);
   }
