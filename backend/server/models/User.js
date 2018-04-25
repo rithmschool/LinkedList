@@ -104,6 +104,39 @@ userSchema.statics = {
           `The email address '${email}' has already been registered to a different user.`
         );
       }
+
+      if (newUser.currentCompanyId) {
+        const companyExists = await mongoose
+          .model('Company')
+          .findById(newUser.currentCompanyId);
+        if (!companyExists) {
+          throw new APIError(
+            400,
+            'Bad Request',
+            `You passed a Current Company ID'${
+              newUser.currentCompanyId
+            }' that does not exist in the database. Please query for a proper company ID.`
+          );
+        }
+      }
+
+      if (newUser.experience && newUser.experience.length) {
+        newUser.experience.forEach(async (exp, i) => {
+          const companyExists = await mongoose
+            .model('Company')
+            .findById(exp.companyId);
+          if (!companyExists) {
+            throw new APIError(
+              400,
+              'Bad Request',
+              `You passed a Company ID'${
+                exp.companyId
+              }' in the experience array at index ${i} that does not exist in the database. Please query for a proper company ID.`
+            );
+          }
+        });
+      }
+
       const user = await newUser.save();
 
       return user.toObject();
@@ -162,15 +195,22 @@ userSchema.statics = {
    */
   async readUsers(query, fields, skip, limit) {
     try {
-      const users = await this.find(query, fields)
-        .skip(skip)
-        .limit(limit)
-        .sort({ username: 1 })
-        .exec();
-      if (!users.length) {
-        return [];
+      const Model = this;
+      const [users, count] = await Promise.all([
+        Model.find(query, fields)
+          .skip(skip)
+          .limit(limit)
+          .sort({ username: 1 })
+          .exec(),
+        Model.count(query)
+          .skip(skip)
+          .limit(limit)
+          .exec()
+      ]);
+      if (count === 0) {
+        return { users, count };
       }
-      return users.map(user => user.toObject());
+      return { users: users.map(user => user.toObject()), count };
     } catch (err) {
       return Promise.reject(processDBError(err));
     }
@@ -188,6 +228,39 @@ userSchema.statics = {
         SALT_WORK_FACTOR
       );
     }
+
+    if (userUpdate.currentCompanyId) {
+      const companyExists = await mongoose
+        .model('Company')
+        .findById(userUpdate.currentCompanyId);
+      if (!companyExists) {
+        throw new APIError(
+          400,
+          'Bad Request',
+          `You passed a Company ID'${
+            userUpdate.currentCompanyId
+          }' that does not exist in the database. Please query for a proper company ID.`
+        );
+      }
+    }
+
+    if (userUpdate.experience && userUpdate.experience.length) {
+      userUpdate.experience.forEach(async (exp, i) => {
+        const companyExists = await mongoose
+          .model('Company')
+          .findById(exp.companyId);
+        if (!companyExists) {
+          throw new APIError(
+            400,
+            'Bad Request',
+            `You passed a Company ID'${
+              exp.companyId
+            }' in the experience array at index ${i} that does not exist in the database. Please query for a proper company ID.`
+          );
+        }
+      });
+    }
+
     try {
       const user = await this.findOneAndUpdate({ username }, userUpdate, {
         new: true

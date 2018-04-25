@@ -124,7 +124,8 @@
                 "default": "",
                 "examples": ["2017-06-15T21:39:25.435000+00:00"]
               }
-            }
+            },
+            "required": ["jobTitle", "companyName"]
           }
         },
         "education": {
@@ -165,20 +166,8 @@
                 "maxLength": 55,
                 "examples": ["2014-06-15T21:39:25.435000+00:00"]
               }
-            }
-          }
-        },
-        "applied": {
-          "$id": "/properties/data/properties/applied",
-          "type": "array",
-          "items": {
-            "$id": "/properties/data/properties/applied/items",
-            "type": "string",
-            "title": "The 0th Schema ",
-            "default": "",
-            "minLength": 1,
-            "maxLength": 55,
-            "examples": ["5a21b155ac27667d3de5bfaa", "5a21b155ac27667d3de5bfab"]
+            },
+            "required": ["institution"]
           }
         },
         "skills": {

@@ -58,6 +58,8 @@
           "type": "string",
           "title": "The Currentcompanyname Schema ",
           "default": "",
+          "minLength": 1,
+          "maxLength": 55,
           "examples": ["Hooli"]
         },
         "currentCompanyId": {
@@ -65,6 +67,8 @@
           "type": "string",
           "title": "The Currentcompanyid Schema ",
           "default": "",
+          "minLength": 24,
+          "maxLength": 24,
           "examples": ["5a21b155ac27667d3de5bfaa"]
         },
         "photo": {
@@ -72,6 +76,8 @@
           "type": "string",
           "title": "The Photo Schema ",
           "default": "",
+          "minLength": 1,
+          "maxLength": 100,
           "examples": ["https://www.michaelhueter.com"]
         },
         "experience": {
@@ -88,6 +94,8 @@
                 "type": "string",
                 "title": "The Jobtitle Schema ",
                 "default": "",
+                "minLength": 1,
+                "maxLength": 55,
                 "examples": ["Instructor In Chief"]
               },
               "companyName": {
@@ -96,6 +104,8 @@
                 "type": "string",
                 "title": "The Companyname Schema ",
                 "default": "",
+                "minLength": 1,
+                "maxLength": 55,
                 "examples": ["Hooli"]
               },
               "companyId": {
@@ -104,6 +114,8 @@
                 "type": "string",
                 "title": "The Companyid Schema ",
                 "default": "",
+                "minLength": 24,
+                "maxLength": 24,
                 "examples": ["5a21b155ac27667d3de5bfaa"]
               },
               "startDate": {
@@ -122,7 +134,8 @@
                 "default": "",
                 "examples": ["2017-06-15T21:39:25.435000+00:00"]
               }
-            }
+            },
+            "required": ["jobTitle", "companyName"]
           }
         },
         "education": {
@@ -163,7 +176,8 @@
                 "maxLength": 55,
                 "examples": ["2014-06-15T21:39:25.435000+00:00"]
               }
-            }
+            },
+            "required": ["jobTitle", "companyName"]
           }
         },
         "applied": {
@@ -174,8 +188,8 @@
             "type": "string",
             "title": "The 0th Schema ",
             "default": "",
-            "minLength": 1,
-            "maxLength": 55,
+            "minLength": 24,
+            "maxLength": 24,
             "examples": ["5a21b155ac27667d3de5bfaa", "5a21b155ac27667d3de5bfab"]
           }
         },

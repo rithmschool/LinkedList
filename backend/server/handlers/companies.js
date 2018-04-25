@@ -48,7 +48,9 @@ async function createCompany(request, response, next) {
   }
 
   try {
-    const newCompany = await Company.createCompany(new Company(request.body));
+    const newCompany = await Company.createCompany(
+      new Company(request.body.data)
+    );
     return response.status(201).json(formatResponse(newCompany));
   } catch (err) {
     return next(err);
@@ -92,7 +94,7 @@ async function updateCompany(request, response, next) {
   }
 
   try {
-    const company = await Company.updateCompany(handle, request.body);
+    const company = await Company.updateCompany(handle, request.body.data);
     return response.json(formatResponse(company));
   } catch (err) {
     return next(err);

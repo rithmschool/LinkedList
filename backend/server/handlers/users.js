@@ -28,8 +28,8 @@ async function readUsers(request, response, next) {
   }
 
   try {
-    const users = await User.readUsers({}, {}, skip, limit);
-    return response.json(formatResponse(users));
+    const { count, users } = await User.readUsers({}, {}, skip, limit);
+    return response.json({ count, ...formatResponse(users) });
   } catch (err) {
     next(err);
   }
