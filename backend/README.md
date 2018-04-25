@@ -1,12 +1,16 @@
-# Dockerized Node 9 + Express + MongoDB + Nginx
-
-## Purpose
-
-This is boilerplate code that you can feel free to pick apart and re-use for building Node.js APIs with Docker, Node/Express, Mongoose, and Nginx. The JavaScript files use ES8 syntax.
-There are basic GET/POST/PATCH/DELETE endpoints and corresponding database methods.
+# LinkedList Backend (Instructor Solution)
 
 ## How to Install & Run
 
-0.  Fork/Clone the repo
-1.  Run `docker-compose up` (Assuming you've installed docker for OSX/Windows or Docker toolkit)
-1.  Server is accessible at `http://localhost:5000` if you have Docker for Windows or Mac. Use `http://localhost` without specifying the port to hit the NGINX proxy. If you are using Docker toolkit, you'll need to hit the IP of the docker-machine (port rules are the same.)
+1.  Fork/Clone the repo
+
+Then either:
+2a. Run `docker-compose up` (Assuming you've [installed docker for OSX](https://store.docker.com/editions/community/docker-ce-desktop-mac))
+or
+2b. Run `nodemon index.js`
+
+3.  Server is accessible at `http://localhost:5000`.
+
+4.  Example API POST request payloads are in the `example_requests` folder.
+
+## Please let us know of any bugs and document them in the GitHub issues tab! Thank you and enjoy!
