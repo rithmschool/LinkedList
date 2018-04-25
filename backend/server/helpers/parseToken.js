@@ -16,7 +16,7 @@ function parseToken(authHeader) {
       'Authorization header with valid token required.'
     );
   }
-  if (!authHeader.includes('Bearer')) {
+  if (!authHeader.includes('Bearer ')) {
     return new APIError(
       401,
       'Unauthorized',
@@ -29,6 +29,13 @@ function parseToken(authHeader) {
     currentUser = jwt.decode(token, { json: true });
   } catch (e) {
     return e;
+  }
+  if (!currentUser) {
+    return new APIError(
+      401,
+      'Unauthorized',
+      'Authorization header with valid token required.'
+    );
   }
   if (currentUser.handle) {
     return { company: true, handle: currentUser.handle };

@@ -152,6 +152,14 @@ jobSchema.statics = {
       const job = await this.findByIdAndUpdate(id, jobUpdate, {
         new: true
       }).exec();
+
+      if (!job) {
+        throw new APIError(
+          404,
+          'Job Not Found',
+          `No job with ID '${id}' found.`
+        );
+      }
       return job.toObject();
     } catch (err) {
       return Promise.reject(processDBError(err));

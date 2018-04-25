@@ -8,7 +8,8 @@ const APIError = require('./APIError');
  */
 function validateSchema(validation, type) {
   let errors;
-
+  console.log('YOOOOO');
+  console.log(validation.errors);
   if (!validation.valid) {
     errors = validation.errors.map(error => {
       switch (error.name) {
@@ -19,7 +20,7 @@ function validateSchema(validation, type) {
         case 'anyOf':
           return `The '${error.property
             .split('.')
-            .pop()}' field must be a string or null`;
+            .pop()}' field must be a non-empty string or null`;
         default:
           return error.stack.replace(/"/g, "'").replace('instance.', '');
       }

@@ -74,6 +74,124 @@ See the [Reference section](/#reference/0/auth) for fully-detailed resource docu
 
 &nbsp;
 
+## Quickstart
+
+1. Let's create a new user! We're going to post this JSON data to `localhost:5000`:
+
+```json
+{
+  "data": {
+    "firstName": "Michael",
+    "lastName": "Hueter",
+    "username": "hueter",
+    "email": "michael+1@rithmschool.com",
+    "password": "foo123",
+    "currentCompanyName": "Hooli",
+    "currentCompany": "",
+    "photo": "https://avatars0.githubusercontent.com/u/13444851?s=460&v=4",
+    "experience": [],
+    "education": [
+      {
+        "institution": "School of Hard Knocks",
+        "degree": "Bachelors in Science",
+        "endDate": "2014"
+      }
+    ],
+    "skills": ["Python", "JavaScript"]
+  }
+}
+```
+
+Here's what a cURL request for that looks like: 
+
+```sh
+curl -X POST \
+  http://localhost:5000/users \
+  -H 'Cache-Control: no-cache' \
+  -H 'Content-Type: application/json' \
+  -H 'Postman-Token: fe89b64e-1aae-4a7d-80f2-f56c34b878a6' \
+  -d '{
+  "data": {
+    "firstName": "Michael",
+    "lastName": "Hueter",
+    "username": "hueter",
+    "email": "michael+1@rithmschool.com",
+    "password": "foo123",
+    "currentCompanyName": "Hooli",
+    "currentCompany": "",
+    "photo": "https://avatars0.githubusercontent.com/u/13444851?s=460&v=4",
+    "experience": [],
+    "education": [
+      {
+        "institution": "School of Hard Knocks",
+        "degree": "Bachelors in Science",
+        "endDate": "2014"
+      }
+    ],
+    "skills": ["Python", "JavaScript"]
+  }
+}
+'
+```
+
+2. Let's login the user by posting the `username` and `password` to `/user-auth` 
+
+```json
+{
+  "data": {
+    "username": "hueter",
+    "password": "foo123"
+  }
+}
+```
+
+Here's the curl request (again assuming you're running the server on `localhost`).
+
+```sh
+curl -X POST \
+  http://localhost:5000/user-auth \
+  -H 'Cache-Control: no-cache' \
+  -H 'Content-Type: application/json' \
+  -H 'Postman-Token: 67668ba9-5e1f-4963-887e-57ce02eb2c76' \
+  -d '{
+  "data": {
+    "username": "hueter",
+    "password": "foo123"
+  }
+}
+'
+```
+
+You should get back a token, like this (this is a fake token, obviously):
+
+```json
+{
+  "data": {
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.zzZ1a2VybmFtZSI6Imh1ZXRlciIsImlhdCI6MTUyNDY5Mzc5OX0.fn0LbvCTbw21W4-fKeDpAz2Fod0iWPl7oBKcnyjGUwI"
+  }
+}
+```
+
+3. For all future requests, put the token in the `Authorization` header, with the `Bearer` format, like so:
+
+`Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.zzZ1a2VybmFtZSI6Imh1ZXRlciIsImlhdCI6MTUyNDY5Mzc5OX0.fn0LbvCTbw21W4-fKeDpAz2Fod0iWPl7oBKcnyjGUwI`.
+
+Here's what an update password request looks like:
+
+```sh
+curl -X PATCH \
+  http://localhost:5000/users/hueter \
+  -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.zzZ1a2VybmFtZSI6Imh1ZXRlciIsImlhdCI6MTUyNDY5Mzc5OX0.fn0LbvCTbw21W4-fKeDpAz2Fod0iWPl7oBKcnyjGUwI' \
+  -H 'Cache-Control: no-cache' \
+  -H 'Content-Type: application/json' \
+  -H 'Postman-Token: f3200bbf-6e2b-4def-afb6-39dccbf94597' \
+  -d '{
+    "data": {
+        "password": "foo23"
+    }
+}'
+```
+
 ---
 
 ## UserAuth [/user-auth]

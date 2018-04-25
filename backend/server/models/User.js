@@ -290,6 +290,14 @@ userSchema.statics = {
         new: true
       }).exec();
 
+      if (!user) {
+        throw new APIError(
+          404,
+          'User Not Found',
+          `No user '${username}' found.`
+        );
+      }
+
       userUpdate.currentCompany &&
         (await mongoose
           .model('Company')

@@ -96,12 +96,12 @@ async function readJob(request, response, next) {
 async function updateJob(request, response, next) {
   const { id } = request.params;
 
-  const validationErrors = validateSchema(
+  const validSchema = validateSchema(
     v.validate(request.body, jobUpdateSchema),
     'job'
   );
-  if (validationErrors.length > 0) {
-    return next(validationErrors);
+  if (validSchema !== 'OK') {
+    return next(validSchema);
   }
 
   try {

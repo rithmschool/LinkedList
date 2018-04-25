@@ -83,12 +83,12 @@ async function updateUser(request, response, next) {
   if (correctUser !== 'OK') {
     return next(correctUser);
   }
-  const validationErrors = validateSchema(
+  const validSchema = validateSchema(
     v.validate(request.body, userUpdateSchema),
     'user'
   );
-  if (validationErrors.length > 0) {
-    return next(validationErrors);
+  if (validSchema !== 'OK') {
+    return next(validSchema);
   }
 
   try {

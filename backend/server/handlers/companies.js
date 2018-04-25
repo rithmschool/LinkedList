@@ -91,12 +91,12 @@ async function updateCompany(request, response, next) {
   if (correctCompany !== 'OK') {
     return next(correctCompany);
   }
-  const validationErrors = validateSchema(
+  const validSchema = validateSchema(
     v.validate(request.body, companyUpdateSchema),
     'company'
   );
-  if (validationErrors.length > 0) {
-    return next(validationErrors);
+  if (validSchema !== 'OK') {
+    return next(validSchema);
   }
 
   try {

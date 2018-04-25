@@ -197,6 +197,13 @@ companySchema.statics = {
       const company = await this.findOneAndUpdate({ handle }, companyUpdate, {
         new: true
       }).exec();
+      if (!company) {
+        throw new APIError(
+          404,
+          'Company Not Found',
+          `No company with handle '${handle}' found.`
+        );
+      }
       return company.toObject();
     } catch (err) {
       return Promise.reject(processDBError(err));
