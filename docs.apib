@@ -12,6 +12,8 @@ This is the RESTful API backend to the [LinkedList project](https://github.com/r
 
 ## Resource Structure
 
+&nbsp;
+
 ### Collections
 
 The API provides access to the following collections.
@@ -76,7 +78,13 @@ See the [Reference section](/#reference/0/auth) for fully-detailed resource docu
 
 ## Quickstart
 
-I. Let's create a new user! We're going to post this JSON data to `localhost:5000`:
+&nbsp;
+
+### I. Creating a New User
+
+&nbsp;
+
+**We're going to post this JSON data to `localhost:5000`:**
 
 ```json
 {
@@ -102,7 +110,9 @@ I. Let's create a new user! We're going to post this JSON data to `localhost:500
 }
 ```
 
-Here's what a cURL request for that looks like: 
+&nbsp;
+
+**Here's what a cURL request for that looks like:**
 
 ```sh
 curl -X POST \
@@ -134,7 +144,13 @@ curl -X POST \
 '
 ```
 
-II. Let's login the user by posting the `username` and `password` to `/user-auth` 
+&nbsp;
+
+### II. Authenticating
+
+&nbsp;
+
+**We'll be posting the `username` and `password` to `/user-auth`**
 
 ```json
 {
@@ -145,7 +161,9 @@ II. Let's login the user by posting the `username` and `password` to `/user-auth
 }
 ```
 
-Here's the curl request (again assuming you're running the server on `localhost`).
+&nbsp;
+
+**Here's the curl request (again assuming you're running the server on `localhost`).**
 
 ```sh
 curl -X POST \
@@ -162,7 +180,11 @@ curl -X POST \
 '
 ```
 
-You should get back a token, like this (this is a fake token, obviously):
+&nbsp;
+
+**You should get back a token, like this (this is a fake token, obviously):**
+
+&nbsp;
 
 ```json
 {
@@ -172,11 +194,19 @@ You should get back a token, like this (this is a fake token, obviously):
 }
 ```
 
-III. For all future requests, put the token in the `Authorization` header, with the `Bearer` format, like so:
+&nbsp;
+
+### III. Auth Headers
+
+&nbsp;
+
+**For all future requests, put the token in the `Authorization` header, with the `Bearer` format, like so:**
 
 `Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.zzZ1a2VybmFtZSI6Imh1ZXRlciIsImlhdCI6MTUyNDY5Mzc5OX0.fn0LbvCTbw21W4-fKeDpAz2Fod0iWPl7oBKcnyjGUwI`.
 
-Here's what an update password request looks like:
+&nbsp;
+
+**Here's what an update password request looks like:**
 
 ```sh
 curl -X PATCH \
