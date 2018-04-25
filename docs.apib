@@ -147,13 +147,13 @@ Endpoint for authenticating a company by getting a JWT from the server.
 ## Users [/users{?skip,limit,q}]
 Endpoint to create a user or query for a list of users.
 
-### Get a List of Users [GET]
-**UserAuth Required**. Note: passwords are not visible at this endpoint. By default, `limit` is set to 50.
-
 + Parameters
     + skip: 0 (number, optional) - the list of documents to skip over. Default is 0.
     + limit: 10 (number, optional) - the number of documents to return. Default and maximum set to 50.
     + q: `Matt Lane` (string, optional) - the field to search by.
+
+### Get a List of Users [GET]
+**UserAuth Required**. Note: passwords are not visible at this endpoint. By default, `limit` is set to 50.
 
 + Request
 + Response 200 (application/json; charset=utf-8)
@@ -271,13 +271,13 @@ Endpoint for reading, updating, or deleting a single user.
 ## Jobs [/jobs{?skip,limit,q}]
 Endpoint to create a user or query for a list of users.
 
-### Get a List of Jobs [GET]
-**UserAuth Required**. By default, `limit` is set to 50.
-
 + Parameters
     + skip: 0 (number, optional) - the list of documents to skip over. Default is 0.
     + limit: 50 (number, optional) - the number of documents to return. Default and maximum set to 50.
     + q: `Github` (string, optional) - the field to search by
+
+### Get a List of Jobs [GET]
+**UserAuth Required**. By default, `limit` is set to 50.
 
 + Request
 + Response 200 (application/json; charset=utf-8)
@@ -393,13 +393,13 @@ Endpoint for reading, updating, or deleting a single user.
 ## Companies [/companies{?skip,limit,q}]
 Endpoint to create a user or query for a list of users.
 
-### Get a List of Companies [GET]
-**Auth Required**. By default, `limit` is set to 50.
-
 + Parameters
     + skip: 0 (number, optional) - the list of documents to skip over. Default is 0.
     + limit: 50 (number, optional) - the number of documents to return. Default and maximum set to 50.
     + q: `Github` (string, optional) - the field to search by
+
+### Get a List of Companies [GET]
+**Auth Required**. By default, `limit` is set to 50.
 
 + Request
 + Response 200 (application/json; charset=utf-8)
@@ -574,7 +574,7 @@ Endpoint for reading, updating, or deleting a single company.
   + handle: `@hooli` (string, optional) - between 1 and 55 characters. **Required to Create a New Company.**
   + logo: `https://assets-cdn.github.com/images/modules/logos_page/GitHub-Mark.png` (string, optional) - a valid URL for the logo of the company
   + employees: hueter, elie, mmmaaatttttt (array[string], optional) - array of usernames
-  + jobs 5a21b155ac27667d3de5bfaa, 5a21b155ac27667d3de5bfab (array[string]) - array of Job IDs
+  + jobs: 5a21b155ac27667d3de5bfaa, 5a21b155ac27667d3de5bfab (array[string]) - array of Job IDs
 
 #### Job
   + title: `Software Developer` (string, optional) - the title for the job posting.
