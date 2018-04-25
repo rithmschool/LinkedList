@@ -16,4 +16,4 @@ or
 
 4.  Example API POST request payloads are in the `example_requests` folder.
 
-### Please let us know of any bugs and document them in the GitHub issues tab! Thank you and enjoy!
+### Please let us know of any bugs and document them in the [GitHub issues tab](https://github.com/rithmschool/LinkedList/issues)! Thank you and enjoy!
