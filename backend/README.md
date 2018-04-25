@@ -10,7 +10,7 @@ Then either:
 
 or
 
-2.  Run `nodemon index.js`
+2.  Run `npm install` followed by `nodemon index.js`. Also make sure `mongod` is running.
 
 3.  Server is accessible at `http://localhost:5000`.
 
