@@ -16,6 +16,10 @@ function validateSchema(validation, type) {
           return `The ${error.property
             .split('.')
             .pop()} field only supports letters and numbers`;
+        case 'anyOf':
+          return `The '${error.property
+            .split('.')
+            .pop()}' field must be a string or null`;
         default:
           return error.stack.replace(/"/g, "'").replace('instance.', '');
       }
