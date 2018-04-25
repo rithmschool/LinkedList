@@ -106,7 +106,7 @@ companySchema.statics = {
         );
       }
       // clear employee's company IDs
-      await mongoose.model('User').bulkClearCompanyId(_id);
+      await mongoose.model('User').bulkClearCompany(_id);
       // remove all jobs matching this company ID
       await mongoose.model('Job').bulkDelete(_id);
       // finally remove the company itself

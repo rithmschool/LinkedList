@@ -75,7 +75,7 @@ jobSchema.statics = {
       const deleted = await this.findByIdAndRemove(id).exec();
       await mongoose
         .model('Company')
-        .addOrRemoveJob(deleted.companyId, deleted._id, 'remove');
+        .addOrRemoveJob(deleted.company, deleted._id, 'remove');
       if (deleted) {
         return {
           Success: [
@@ -99,7 +99,9 @@ jobSchema.statics = {
    */
   async readJob(id) {
     try {
-      const job = await this.findById(id).exec();
+      const job = await this.findById(id)
+        .populate('company', 'handle')
+        .exec();
       if (job) {
         return job.toObject();
       }
@@ -123,6 +125,7 @@ jobSchema.statics = {
         Model.find(query, fields)
           .skip(skip)
           .limit(limit)
+          .populate('company', 'handle')
           .sort({ updatedAt: -1 })
           .exec(),
         Model.count(query)

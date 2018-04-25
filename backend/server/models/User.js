@@ -25,7 +25,7 @@ const userSchema = new Schema(
     },
     password: String,
     currentCompanyName: String,
-    currentCompanyId: {
+    currentCompany: {
       type: ObjectId,
       ref: 'Company'
     },
@@ -34,7 +34,7 @@ const userSchema = new Schema(
       {
         jobTitle: String,
         companyName: String,
-        companyId: {
+        company: {
           type: ObjectId,
           ref: 'Company'
         },
@@ -105,16 +105,16 @@ userSchema.statics = {
         );
       }
 
-      if (newUser.currentCompanyId) {
+      if (newUser.currentCompany) {
         const companyExists = await mongoose
           .model('Company')
-          .findById(newUser.currentCompanyId);
+          .findById(newUser.currentCompany);
         if (!companyExists) {
           throw new APIError(
             400,
             'Bad Request',
             `You passed a Current Company ID'${
-              newUser.currentCompanyId
+              newUser.currentCompany
             }' that does not exist in the database. Please query for a proper company ID.`
           );
         }
@@ -124,13 +124,13 @@ userSchema.statics = {
         newUser.experience.forEach(async (exp, i) => {
           const companyExists = await mongoose
             .model('Company')
-            .findById(exp.companyId);
+            .findById(exp.company);
           if (!companyExists) {
             throw new APIError(
               400,
               'Bad Request',
               `You passed a Company ID'${
-                exp.companyId
+                exp.company
               }' in the experience array at index ${i} that does not exist in the database. Please query for a proper company ID.`
             );
           }
@@ -152,9 +152,10 @@ userSchema.statics = {
   async deleteUser(username) {
     try {
       const deleted = await this.findOneAndRemove({ username }).exec();
-      await mongoose
-        .model('Company')
-        .addOrRemoveEmployee(deleted.currentCompanyId, deleted._id, 'remove');
+      deleted.currentCompany &&
+        (await mongoose
+          .model('Company')
+          .addOrRemoveEmployee(deleted.currentCompany, deleted._id, 'remove'));
       if (deleted) {
         return {
           Success: [
@@ -178,7 +179,9 @@ userSchema.statics = {
    */
   async readUser(username) {
     try {
-      const user = await this.findOne({ username }).exec();
+      const user = await this.findOne({ username })
+        .populate('currentCompany', 'handle')
+        .exec();
 
       if (user) {
         return user.toObject();
@@ -203,6 +206,7 @@ userSchema.statics = {
         Model.find(query, fields)
           .skip(skip)
           .limit(limit)
+          .populate('currentCompany', 'handle')
           .sort({ username: 1 })
           .exec(),
         Model.count(query)
@@ -221,13 +225,13 @@ userSchema.statics = {
   /**
    * Use this method when deleting a company. It clears out that company
    *  ID ref for every user who was an employee
-   * @param {String} currentCompanyId - the Company _id
+   * @param {String} currentCompany - the Company _id
    */
-  async bulkClearCompanyId(currentCompanyId) {
+  async bulkClearCompany(currentCompany) {
     try {
       await this.updateMany(
-        { currentCompanyId },
-        { $set: { currentCompanyId: null } }
+        { currentCompany },
+        { $set: { currentCompany: null } }
       );
     } catch (err) {
       return Promise.reject(processDBError(err));
@@ -249,16 +253,16 @@ userSchema.statics = {
       }
 
       let company;
-      if (userUpdate.currentCompanyId) {
+      if (userUpdate.currentCompany) {
         company = await mongoose
           .model('Company')
-          .findById(userUpdate.currentCompanyId);
+          .findById(userUpdate.currentCompany);
         if (!company) {
           throw new APIError(
             400,
             'Bad Request',
             `You passed a Company ID'${
-              userUpdate.currentCompanyId
+              userUpdate.currentCompany
             }' that does not exist in the database. Please query for a proper company ID.`
           );
         }
@@ -269,13 +273,13 @@ userSchema.statics = {
         userUpdate.experience.forEach(async (exp, i) => {
           const companyExists = await mongoose
             .model('Company')
-            .findById(exp.companyId);
+            .findById(exp.company);
           if (!companyExists) {
             throw new APIError(
               400,
               'Bad Request',
               `You passed a Company ID'${
-                exp.companyId
+                exp.company
               }' in the experience array at index ${i} that does not exist in the database. Please query for a proper company ID.`
             );
           }
@@ -286,10 +290,10 @@ userSchema.statics = {
         new: true
       }).exec();
 
-      userUpdate.currentCompanyId &&
+      userUpdate.currentCompany &&
         (await mongoose
           .model('Company')
-          .addOrRemoveEmployee(user.currentCompanyId, user._id, 'add'));
+          .addOrRemoveEmployee(user.currentCompany, user._id, 'add'));
 
       return user.toObject();
     } catch (err) {

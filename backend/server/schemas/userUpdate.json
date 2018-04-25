@@ -63,14 +63,22 @@
           "maxLength": 55,
           "examples": ["Hooli"]
         },
-        "currentCompanyId": {
-          "$id": "/properties/data/properties/currentCompanyId",
-          "type": "string",
-          "title": "The Currentcompanyid Schema ",
-          "default": "",
-          "minLength": 24,
-          "maxLength": 24,
-          "examples": ["5a21b155ac27667d3de5bfaa"]
+        "currentCompany": {
+          "anyOf": [
+            {
+              "type": "string",
+              "$id": "/properties/data/properties/currentCompany",
+
+              "title": "The currentCompany Schema ",
+              "default": "",
+              "minLength": 24,
+              "maxLength": 24,
+              "examples": ["5a21b155ac27667d3de5bfaa"]
+            },
+            {
+              "type": "null"
+            }
+          ]
         },
         "photo": {
           "$id": "/properties/data/properties/photo",
@@ -110,15 +118,22 @@
                 "maxLength": 55,
                 "examples": ["Hooli"]
               },
-              "companyId": {
-                "$id":
-                  "/properties/data/properties/experience/items/properties/companyId",
-                "type": "string",
-                "title": "The Companyid Schema ",
-                "default": "",
-                "minLength": 24,
-                "maxLength": 24,
-                "examples": ["5a21b155ac27667d3de5bfaa"]
+              "company": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "$id": "/properties/data/properties/currentCompany",
+
+                    "title": "The Company Schema ",
+                    "default": "",
+                    "minLength": 24,
+                    "maxLength": 24,
+                    "examples": ["5a21b155ac27667d3de5bfaa"]
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
               },
               "startDate": {
                 "$id":
