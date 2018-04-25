@@ -1,3 +1,5 @@
+exports.companyAuthHandler = require('./companyAuth');
+exports.companiesHandler = require('./companies');
 exports.errorHandler = require('./error');
-exports.thingHandler = require('./thing');
-exports.thingsHandler = require('./things');
+exports.usersHandler = require('./users');
+exports.userAuthHandler = require('./userAuth');

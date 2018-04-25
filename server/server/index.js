@@ -7,8 +7,12 @@ Promise = require('bluebird'); // eslint-disable-line
 
 // app imports
 const { ENV, PORT, MONGODB_URI } = require('./config');
-const { errorHandler } = require('./handlers');
-const { thingsRouter } = require('./routers');
+const {
+  errorHandler,
+  companyAuthHandler,
+  userAuthHandler
+} = require('./handlers');
+const { companiesRouter, usersRouter } = require('./routers');
 
 // global config
 dotenv.config();
@@ -49,7 +53,10 @@ async function startServer() {
     return next();
   });
 
-  app.use('/things', thingsRouter);
+  app.use('/company-auth', companyAuthHandler);
+  app.use('/companies', companiesRouter);
+  app.use('/user-auth', userAuthHandler);
+  app.use('/users', usersRouter);
 
   // catch-all for 404 "Not Found" errors
   app.get('*', fourOhFourHandler);

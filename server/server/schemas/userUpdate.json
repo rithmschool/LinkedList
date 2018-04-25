@@ -1,0 +1,200 @@
+{
+  "$id": "http://example.com/example.json",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "data": {
+      "$id": "/properties/data",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "firstName": {
+          "$id": "/properties/data/properties/firstName",
+          "type": "string",
+          "title": "The Firstname Schema ",
+          "default": "",
+          "examples": ["Michael"],
+          "minLength": 1,
+          "maxLength": 55
+        },
+        "lastName": {
+          "$id": "/properties/data/properties/lastName",
+          "type": "string",
+          "title": "The Lastname Schema ",
+          "default": "",
+          "examples": ["Hueter"],
+          "minLength": 1,
+          "maxLength": 55
+        },
+        "username": {
+          "$id": "/properties/data/properties/username",
+          "type": "string",
+          "title": "The Username Schema ",
+          "default": "",
+          "minLength": 1,
+          "maxLength": 55,
+          "examples": ["hueter"]
+        },
+        "email": {
+          "$id": "/properties/data/properties/email",
+          "type": "string",
+          "title": "The Email Schema ",
+          "default": "",
+          "minLength": 1,
+          "maxLength": 55,
+          "examples": ["michael@rithmschool.com"]
+        },
+        "password": {
+          "$id": "/properties/data/properties/password",
+          "type": "string",
+          "title": "The Password Schema ",
+          "default": "",
+          "minLength": 1,
+          "maxLength": 55,
+          "examples": ["foo123"]
+        },
+        "currentCompanyName": {
+          "$id": "/properties/data/properties/currentCompanyName",
+          "type": "string",
+          "title": "The Currentcompanyname Schema ",
+          "default": "",
+          "examples": ["Hooli"]
+        },
+        "currentCompanyId": {
+          "$id": "/properties/data/properties/currentCompanyId",
+          "type": "string",
+          "title": "The Currentcompanyid Schema ",
+          "default": "",
+          "examples": ["5a21b155ac27667d3de5bfaa"]
+        },
+        "photo": {
+          "$id": "/properties/data/properties/photo",
+          "type": "string",
+          "title": "The Photo Schema ",
+          "default": "",
+          "examples": ["https://www.michaelhueter.com"]
+        },
+        "experience": {
+          "$id": "/properties/data/properties/experience",
+          "type": "array",
+          "items": {
+            "$id": "/properties/data/properties/experience/items",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "jobTitle": {
+                "$id":
+                  "/properties/data/properties/experience/items/properties/jobTitle",
+                "type": "string",
+                "title": "The Jobtitle Schema ",
+                "default": "",
+                "examples": ["Instructor In Chief"]
+              },
+              "companyName": {
+                "$id":
+                  "/properties/data/properties/experience/items/properties/companyName",
+                "type": "string",
+                "title": "The Companyname Schema ",
+                "default": "",
+                "examples": ["Hooli"]
+              },
+              "companyId": {
+                "$id":
+                  "/properties/data/properties/experience/items/properties/companyId",
+                "type": "string",
+                "title": "The Companyid Schema ",
+                "default": "",
+                "examples": ["5a21b155ac27667d3de5bfaa"]
+              },
+              "startDate": {
+                "$id":
+                  "/properties/data/properties/experience/items/properties/startDate",
+                "type": "string",
+                "title": "The Startdate Schema ",
+                "default": "",
+                "examples": ["2016-06-15T21:39:25.435000+00:00"]
+              },
+              "endDate": {
+                "$id":
+                  "/properties/data/properties/experience/items/properties/endDate",
+                "type": "string",
+                "title": "The Enddate Schema ",
+                "default": "",
+                "examples": ["2017-06-15T21:39:25.435000+00:00"]
+              }
+            }
+          }
+        },
+        "education": {
+          "$id": "/properties/data/properties/education",
+          "type": "array",
+          "items": {
+            "$id": "/properties/data/properties/education/items",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "institution": {
+                "$id":
+                  "/properties/data/properties/education/items/properties/institution",
+                "type": "string",
+                "title": "The Institution Schema ",
+                "default": "",
+                "minLength": 1,
+                "maxLength": 55,
+                "examples": ["School of Hard Knocks"]
+              },
+              "degree": {
+                "$id":
+                  "/properties/data/properties/education/items/properties/degree",
+                "type": "string",
+                "title": "The Degree Schema ",
+                "default": "",
+                "minLength": 1,
+                "maxLength": 55,
+                "examples": ["Bachelors in Science"]
+              },
+              "endDate": {
+                "$id":
+                  "/properties/data/properties/education/items/properties/endDate",
+                "type": "string",
+                "title": "The Enddate Schema ",
+                "default": "",
+                "minLength": 1,
+                "maxLength": 55,
+                "examples": ["2014-06-15T21:39:25.435000+00:00"]
+              }
+            }
+          }
+        },
+        "applied": {
+          "$id": "/properties/data/properties/applied",
+          "type": "array",
+          "items": {
+            "$id": "/properties/data/properties/applied/items",
+            "type": "string",
+            "title": "The 0th Schema ",
+            "default": "",
+            "minLength": 1,
+            "maxLength": 55,
+            "examples": ["5a21b155ac27667d3de5bfaa", "5a21b155ac27667d3de5bfab"]
+          }
+        },
+        "skills": {
+          "$id": "/properties/data/properties/skills",
+          "type": "array",
+          "items": {
+            "$id": "/properties/data/properties/skills/items",
+            "type": "string",
+            "title": "The 0th Schema ",
+            "default": "",
+            "minLength": 1,
+            "maxLength": 55,
+            "examples": ["Python", "JavaScript"]
+          }
+        }
+      },
+      "required": []
+    }
+  },
+  "required": ["data"]
+}

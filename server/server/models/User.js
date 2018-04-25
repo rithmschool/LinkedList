@@ -11,6 +11,11 @@ const { ObjectId } = Schema.Types;
 
 const userSchema = new Schema(
   {
+    id: {
+      type: String,
+      index: true,
+      unique: true
+    },
     firstName: String,
     lastName: String,
     username: {
@@ -88,7 +93,7 @@ userSchema.statics = {
           `The email address '${email}' has already been registered to a different user.`
         );
       }
-      newUser.id =
+      newUser.id = uuidv4();
       const user = await newUser.save();
       return user.toObject();
     } catch (err) {
@@ -97,41 +102,41 @@ userSchema.statics = {
   },
   /**
    * Delete a single User
-   * @param {String} name - the User's name
+   * @param {String} username - the User's username
    * @returns {Promise<User, APIError>}
    */
-  async deleteUser(name) {
+  async deleteUser(username) {
     try {
-      const deleted = await this.findOneAndRemove({ name }).exec();
+      const deleted = await this.findOneAndRemove({ username }).exec();
       if (deleted) {
         return {
           Success: [
             {
               status: 200,
               title: 'User Deleted.',
-              detail: `The user '${name}' was deleted successfully.`
+              detail: `The user '${username}' was deleted successfully.`
             }
           ]
         };
       }
-      throw new APIError(404, 'User Not Found', `No user '${name}' found.`);
+      throw new APIError(404, 'User Not Found', `No user '${username}' found.`);
     } catch (err) {
       return Promise.reject(processDBError(err));
     }
   },
   /**
-   * Get a single User by name
-   * @param {String} name - the User's name
+   * Get a single User by username
+   * @param {String} username - the User's username
    * @returns {Promise<User, APIError>}
    */
-  async readUser(name) {
+  async readUser(username) {
     try {
-      const user = await this.findOne({ name }).exec();
+      const user = await this.findOne({ username }).exec();
 
       if (user) {
         return user.toObject();
       }
-      throw new APIError(404, 'User Not Found', `No user '${name}' found.`);
+      throw new APIError(404, 'User Not Found', `No user '${username}' found.`);
     } catch (err) {
       return Promise.reject(processDBError(err));
     }
@@ -149,7 +154,7 @@ userSchema.statics = {
       const users = await this.find(query, fields)
         .skip(skip)
         .limit(limit)
-        .sort({ name: 1 })
+        .sort({ username: 1 })
         .exec();
       if (!users.length) {
         return [];
@@ -161,13 +166,13 @@ userSchema.statics = {
   },
   /**
    * Patch/Update a single User
-   * @param {String} name - the User's name
+   * @param {String} username - the User's username
    * @param {Object} userUpdate - the json containing the User attributes
    * @returns {Promise<User, APIError>}
    */
-  async updateUser(name, userUpdate) {
+  async updateUser(username, userUpdate) {
     try {
-      const user = await this.findOneAndUpdate({ name }, userUpdate, {
+      const user = await this.findOneAndUpdate({ username }, userUpdate, {
         new: true
       }).exec();
       return user.toObject();
@@ -185,8 +190,5 @@ userSchema.options.toObject.transform = (doc, ret) => {
   delete transformed.__v;
   return transformed;
 };
-
-/** Ensure MongoDB Indices **/
-userSchema.index({ name: 1, number: 1 }, { unique: true }); // example compound idx
 
 module.exports = mongoose.model('User', userSchema);
