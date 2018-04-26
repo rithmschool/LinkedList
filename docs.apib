@@ -92,10 +92,10 @@ See the [Reference section](/#reference/0/auth) for fully-detailed resource docu
     "firstName": "Michael",
     "lastName": "Hueter",
     "username": "hueter",
-    "email": "michael+1@rithmschool.com",
+    "email": "michael@rithmschool.com",
     "password": "foo123",
     "currentCompanyName": "Hooli",
-    "currentCompany": "",
+    "currentCompany": null,
     "photo": "https://avatars0.githubusercontent.com/u/13444851?s=460&v=4",
     "experience": [],
     "education": [
@@ -430,7 +430,7 @@ Endpoint to create a user or query for a list of users.
 + Request
 + Response 200 (application/json; charset=utf-8)
     + Attributes
-        + data (array[User])
+        + data (array[Job])
 
 + Request Bad Request
 + Response 400 (application/json; charset=utf-8)
@@ -552,7 +552,7 @@ Endpoint to create a user or query for a list of users.
 + Request
 + Response 200 (application/json; charset=utf-8)
     + Attributes
-        + data (array[User])
+        + data (array[Company])
 
 + Request Bad Request
 + Response 400 (application/json; charset=utf-8)

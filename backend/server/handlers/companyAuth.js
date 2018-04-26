@@ -23,6 +23,13 @@ async function auth(request, response, next) {
     }
     const { handle, password } = request.body.data;
     const company = await Company.findOne({ handle }).lean();
+    if (!company) {
+      throw new APIError(
+        404,
+        'User Not Found',
+        `Company '${handle}' does not exist.`
+      );
+    }
     const isValid = bcrypt.compareSync(password, company.password);
     if (!isValid) {
       throw new APIError(401, 'Unauthorized', 'Invalid password.');

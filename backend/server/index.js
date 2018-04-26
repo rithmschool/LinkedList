@@ -3,6 +3,7 @@ const bodyParser = require('body-parser');
 const dotenv = require('dotenv');
 const express = require('express');
 const mongoose = require('mongoose');
+const morgan = require('morgan');
 Promise = require('bluebird'); // eslint-disable-line
 
 // app imports
@@ -37,6 +38,10 @@ async function startServer() {
   app.use(bodyParser.urlencoded({ extended: true }));
   app.use(bodyParser.json({ type: '*/*' }));
   app.use(bodyParserHandler); // error handling specific to body parser only
+
+  if (ENV === 'development') {
+    app.use(morgan('tiny'));
+  }
 
   // response headers setup; CORS
   app.use((request, response, next) => {
