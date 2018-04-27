@@ -149,6 +149,34 @@ companySchema.statics = {
     }
   },
   /**
+   * Search for Companies using MongoDB text index
+   * @param {String} searchText - req.query
+   * @param {Number} skip - number of docs to skip (for pagination)
+   * @param {Number} limit - number of docs to limit result to
+   */
+  async searchCompanies(searchText, skip, limit) {
+    const Model = this;
+    try {
+      const searchQuery = { $text: { $search: searchText } };
+      const [companies, count] = await Promise.all([
+        Model.find(searchQuery, { score: { $meta: 'textScore' } })
+          .skip(skip)
+          .limit(limit)
+          .populate('jobs')
+          .sort({ score: { $meta: 'textScore' } })
+          .exec(),
+        Model.count(searchQuery).exec()
+      ]);
+
+      if (count === 0) {
+        return { companies, count };
+      }
+      return { companies: companies.map(company => company.toObject()), count };
+    } catch (err) {
+      return Promise.reject(processDBError(err));
+    }
+  },
+  /**
    * Get a list of Companies
    * @param {Object} query - pre-formatted query to retrieve companies.
    * @param {Object} fields - a list of fields to select or not in object form
@@ -267,5 +295,10 @@ companySchema.options.toObject.transform = (doc, ret) => {
   delete transformed.password;
   return transformed;
 };
+
+companySchema.index({
+  name: 'text',
+  handle: 'text'
+});
 
 module.exports = mongoose.model('Company', companySchema);

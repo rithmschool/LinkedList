@@ -111,6 +111,34 @@ jobSchema.statics = {
     }
   },
   /**
+   * Search for Jobs using MongoDB text index
+   * @param {String} searchText - req.query
+   * @param {Number} skip - number of docs to skip (for pagination)
+   * @param {Number} limit - number of docs to limit result to
+   */
+  async searchJobs(searchText, skip, limit) {
+    const Model = this;
+    try {
+      const searchQuery = { $text: { $search: searchText } };
+      const [jobs, count] = await Promise.all([
+        Model.find(searchQuery, { score: { $meta: 'textScore' } })
+          .skip(skip)
+          .limit(limit)
+          .populate('company', 'handle')
+          .sort({ score: { $meta: 'textScore' } })
+          .exec(),
+        Model.count(searchQuery).exec()
+      ]);
+
+      if (count === 0) {
+        return { jobs, count };
+      }
+      return { jobs: jobs.map(job => job.toObject()), count };
+    } catch (err) {
+      return Promise.reject(processDBError(err));
+    }
+  },
+  /**
    * Get a list of Jobs
    * @param {Object} query - pre-formatted query to retrieve jobs.
    * @param {Object} fields - a list of fields to select or not in object form
@@ -128,10 +156,7 @@ jobSchema.statics = {
           .populate('company', 'handle')
           .sort({ updatedAt: -1 })
           .exec(),
-        Model.count(query)
-          .skip(skip)
-          .limit(limit)
-          .exec()
+        Model.count(query).exec()
       ]);
       if (count === 0) {
         return { jobs, count };
@@ -175,4 +200,5 @@ jobSchema.options.toObject.transform = (doc, ret) => {
   return transformed;
 };
 
+jobSchema.index({ title: 'text' });
 module.exports = mongoose.model('Job', jobSchema);

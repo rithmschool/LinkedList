@@ -27,6 +27,19 @@ async function readUsers(request, response, next) {
     return next(limit);
   }
 
+  if (request.query.q) {
+    try {
+      const { count, users } = await User.searchUsers(
+        request.query.q,
+        skip,
+        limit
+      );
+      return response.json({ count, ...formatResponse(users) });
+    } catch (err) {
+      return next(err);
+    }
+  }
+
   try {
     const { count, users } = await User.readUsers({}, {}, skip, limit);
     return response.json({ count, ...formatResponse(users) });
