@@ -28,11 +28,24 @@ async function readJobs(request, response, next) {
     return next(limit);
   }
 
+  if (request.query.q) {
+    try {
+      const { count, jobs } = await Job.searchJobs(
+        request.query.q,
+        skip,
+        limit
+      );
+      return response.json({ count, ...formatResponse(jobs) });
+    } catch (err) {
+      return next(err);
+    }
+  }
+
   try {
     const { count, jobs } = await Job.readJobs({}, {}, skip, limit);
     return response.json({ count, ...formatResponse(jobs) });
   } catch (err) {
-    next(err);
+    return next(err);
   }
 }
 

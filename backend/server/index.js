@@ -74,7 +74,7 @@ async function startServer() {
 
   try {
     await mongoose.connect(MONGODB_URI, {
-      autoIndex: process.env.NODE_ENV === 'development'
+      autoIndex: ENV === 'development'
     });
     console.log('Connected to database');
     return app.listen(PORT, () => {

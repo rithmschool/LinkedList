@@ -43,12 +43,14 @@ const userSchema = new Schema(
         _id: false
       }
     ],
-    education: {
-      institution: String,
-      degree: String,
-      endDate: Date,
-      _id: false
-    },
+    education: [
+      {
+        institution: String,
+        degree: String,
+        endDate: Date,
+        _id: false
+      }
+    ],
     skills: [String],
     applied: [
       {
@@ -192,6 +194,34 @@ userSchema.statics = {
     }
   },
   /**
+   * Search for Users using MongoDB text index
+   * @param {String} searchText - req.query
+   * @param {Number} skip - number of docs to skip (for pagination)
+   * @param {Number} limit - number of docs to limit result to
+   */
+  async searchUsers(searchText, skip, limit) {
+    const Model = this;
+    try {
+      const searchQuery = { $text: { $search: searchText } };
+      const [users, count] = await Promise.all([
+        Model.find(searchQuery, { score: { $meta: 'textScore' } })
+          .skip(skip)
+          .limit(limit)
+          .populate('company', 'handle')
+          .sort({ score: { $meta: 'textScore' } })
+          .exec(),
+        Model.count(searchQuery).exec()
+      ]);
+
+      if (count === 0) {
+        return { users, count };
+      }
+      return { users: users.map(user => user.toObject()), count };
+    } catch (err) {
+      return Promise.reject(processDBError(err));
+    }
+  },
+  /**
    * Get a list of Users
    * @param {Object} query - pre-formatted query to retrieve users.
    * @param {Object} fields - a list of fields to select or not in object form
@@ -318,5 +348,13 @@ userSchema.options.toObject.transform = (doc, ret) => {
   delete transformed.password;
   return transformed;
 };
+
+userSchema.index({
+  firstName: 'text',
+  lastName: 'text',
+  username: 'text',
+  email: 'text',
+  currentCompanyName: 'text'
+});
 
 module.exports = mongoose.model('User', userSchema);

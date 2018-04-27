@@ -27,6 +27,19 @@ async function readCompanies(request, response, next) {
     return next(limit);
   }
 
+  if (request.query.q) {
+    try {
+      const { count, companies } = await Company.searchCompanies(
+        request.query.q,
+        skip,
+        limit
+      );
+      return response.json({ count, ...formatResponse(companies) });
+    } catch (err) {
+      return next(err);
+    }
+  }
+
   try {
     const { count, companies } = await Company.readCompanies(
       {},
