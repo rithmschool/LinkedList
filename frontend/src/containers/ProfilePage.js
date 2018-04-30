@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
+import { editUser } from "../store/actions/users";
 import withAuth from "../hocs/withAuth";
 import SkillsForm from "../components/SkillsForm";
 
@@ -25,6 +26,11 @@ class ProfilePage extends Component {
     this.setState(prevState => {
       return { [target]: !prevState[target] };
     });
+  };
+
+  updateUser = async data => {
+    debugger;
+    await this.props.editUser(this.props.username, data);
   };
 
   editUser() {
@@ -95,7 +101,7 @@ class ProfilePage extends Component {
             </div>
           ) : (
             <div>
-              <SkillsForm skills={skills} />
+              <SkillsForm updateUser={this.updateUser} skills={skills} />
             </div>
           )}
           <button onClick={() => this.toggleForm("isEditingSkills")}>
@@ -115,4 +121,4 @@ function mapStateToProps(state) {
   };
 }
 
-export default connect(mapStateToProps)(withAuth(ProfilePage));
+export default connect(mapStateToProps, { editUser })(withAuth(ProfilePage));

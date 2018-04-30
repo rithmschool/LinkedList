@@ -12,13 +12,20 @@ export default class SkillsForm extends Component {
       [e.target.name]: e.target.value
     });
   };
+
   addSkill = e => {
     e.preventDefault();
+    this.props.updateUser({ skills: this.state.skill });
   };
+
+  removeSkill = i => {
+    this.props.removeSkill(i);
+  };
+
   render() {
     let skills = this.props.skills.map((v, i) => (
       <li key={i}>
-        {v} <button>X</button>
+        {v} <button onClick={() => this.removeSkill(i)}>X</button>
       </li>
     ));
     return (
