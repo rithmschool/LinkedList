@@ -13,6 +13,9 @@ class Navbar extends Component {
   render() {
     return (
       <nav>
+        <li>
+          <Link to="/">Home</Link>
+        </li>
         {this.props.currentUser.isAuthenticated ? (
           <ul>
             <li>
