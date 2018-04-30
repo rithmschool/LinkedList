@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import { fetchJobs, applyToJob } from "../store/actions/jobs";
 import Job from "../components/Job";
+import withAuth from "../hocs/withAuth";
 
 class JobsList extends Component {
   constructor(props) {
@@ -36,4 +37,6 @@ function mapStateToProps(state) {
   };
 }
 
-export default connect(mapStateToProps, { fetchJobs, applyToJob })(JobsList);
+export default connect(mapStateToProps, { fetchJobs, applyToJob })(
+  withAuth(JobsList)
+);

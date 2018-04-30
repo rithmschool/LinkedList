@@ -1,6 +1,7 @@
 import React, { Component } from "react";
+import withAuth from "../hocs/withAuth";
 
-export default class Job extends Component {
+class ApplyForm extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -40,3 +41,5 @@ export default class Job extends Component {
     );
   }
 }
+
+export default withAuth(ApplyForm);

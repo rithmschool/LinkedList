@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
+import withAuth from "../hocs/withAuth";
 
 class ProfilePage extends Component {
   constructor(props) {
@@ -117,4 +118,4 @@ function mapStateToProps(state) {
   };
 }
 
-export default connect(mapStateToProps)(ProfilePage);
+export default connect(mapStateToProps)(withAuth(ProfilePage));
