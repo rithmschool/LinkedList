@@ -1,3 +1,5 @@
+const ObjectId = require("mongoose").Types.ObjectId;
+
 /**
  * This function sorts the keys in an object,
  *  or if it's an array of objects it sorts every object in the array.
@@ -14,7 +16,7 @@ function recursiveSort(obj) {
       prev[cur] = obj[cur];
       if (Array.isArray(prev[cur])) {
         prev[cur] = prev[cur].map(v => {
-          if (typeof v === 'object') {
+          if (typeof v === "object" && !ObjectId.isValid(v)) {
             return recursiveSort(v);
           }
           return v;

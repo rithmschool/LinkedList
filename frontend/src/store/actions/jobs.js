@@ -1,5 +1,5 @@
 import { apiCall } from "../../services/api";
-import { FETCH_JOBS, APPLY_TO_JOB } from "../actionTypes";
+import { FETCH_JOBS, APPLY_TO_JOB, FETCH_USER } from "../actionTypes";
 
 export function getJobs(jobs) {
   return {
@@ -23,11 +23,17 @@ export function fetchJobs() {
 export function applyToJob(username, job_id) {
   return async dispatch => {
     try {
-      // TODO - make sure this endpoint updates the applied field
+      let user = await apiCall("get", `/users/${username}`);
+      user.data.applied.push(job_id);
+
+      let job = await apiCall("get", `/jobs/${job_id}`);
+
       let jobs = await apiCall("patch", `/users/${username}`, {
-        data: { applied: [job_id] }
+        data: { applied: user.data.applied }
       });
+
       dispatch(getJobs(jobs.data));
+
       return;
     } catch (err) {
       return Promise.reject(err); // indicate the API call failed

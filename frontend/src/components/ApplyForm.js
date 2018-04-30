@@ -15,9 +15,12 @@ class ApplyForm extends Component {
     });
   };
 
-  handleSubmit = e => {
+  handleSubmit = async e => {
     e.preventDefault();
-    this.props.applyToJob(this.props.username, this.props.match.params.id);
+    await this.props.applyToJob(
+      this.props.username,
+      this.props.match.params.id
+    );
     this.props.history.push("/");
   };
 
