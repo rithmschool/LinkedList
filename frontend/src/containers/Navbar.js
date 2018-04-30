@@ -1,13 +1,14 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import { Link } from "react-router-dom";
+import { Link, withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import { logout } from "../store/actions/auth";
 
 class Navbar extends Component {
-  logout = e => {
+  logout = async e => {
     e.preventDefault();
-    this.props.logout();
+    await this.props.logout();
+    this.props.history.push("/");
   };
 
   render() {
@@ -53,4 +54,4 @@ Navbar.propTypes = {
   logout: PropTypes.func.isRequired
 };
 
-export default connect(mapStateToProps, { logout })(Navbar);
+export default withRouter(connect(mapStateToProps, { logout })(Navbar));
