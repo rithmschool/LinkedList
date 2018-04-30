@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import withAuth from "../hocs/withAuth";
+import SkillsForm from "../components/SkillsForm";
 
 class ProfilePage extends Component {
   constructor(props) {
@@ -19,12 +20,6 @@ class ProfilePage extends Component {
       isLoading: true
     });
   }
-
-  onChange = e => {
-    this.setState({
-      [e.target.name]: e.target.value
-    });
-  };
 
   toggleForm = target => {
     this.setState(prevState => {
@@ -99,7 +94,9 @@ class ProfilePage extends Component {
               <ul>{userSkills}</ul>
             </div>
           ) : (
-            <div>Todo!</div>
+            <div>
+              <SkillsForm skills={skills} />
+            </div>
           )}
           <button onClick={() => this.toggleForm("isEditingSkills")}>
             Edit
