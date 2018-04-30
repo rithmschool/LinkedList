@@ -35,8 +35,7 @@ export default function(ComponentToBeRendered) {
   }
 
   Authenticate.propTypes = {
-    isAuthenticated: PropTypes.bool.isRequired,
-    history: PropTypes.object.isRequired
+    isAuthenticated: PropTypes.bool.isRequired
   };
 
   return connect(mapStateToProps)(Authenticate);

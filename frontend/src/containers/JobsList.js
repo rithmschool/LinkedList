@@ -19,6 +19,7 @@ class JobsList extends Component {
         salary={job.salary}
         equity={job.equity}
         id={job._id}
+        company={job.company.handle}
       />
     ));
     return (

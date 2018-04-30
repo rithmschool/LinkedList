@@ -22,9 +22,10 @@ class ApplyForm extends Component {
   };
 
   render() {
+    let company = this.props.location.search.split("=")[1];
     return (
       <div>
-        <h1>Apply To {this.props.title}</h1>
+        <h1>Apply To @{company}</h1>
         <form onSubmit={this.handleSubmit}>
           <textarea
             name="content"
