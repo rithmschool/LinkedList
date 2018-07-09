@@ -1,0 +1,20 @@
+{
+  "data": {
+    "firstName": "Michael",
+    "lastName": "Hueter",
+    "username": "hueter",
+    "email": "michael@rithmschool.com",
+    "password": "foo123",
+    "currentCompanyId": 2,
+    "photo": "https://avatars0.githubusercontent.com/u/13444851?s=460&v=4",
+    "experience": [
+      {
+        "companyName": "Rithm",
+        "endDate": "2018",
+        "jobTitle": "Instructor in Chief",
+        "startDate": "2014"
+      }
+    ],
+    "skills": ["Python", "JavaScript"]
+  }
+}

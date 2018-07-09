@@ -1,5 +1,0 @@
-apps:
-  - script   : './index.js'
-    name     : 'LinkedList API'
-    exec_mode: 'cluster'
-    instances: 'max'
