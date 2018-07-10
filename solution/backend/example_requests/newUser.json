@@ -1,8 +1,8 @@
 {
-  "currentCompanyId": 2,
+  "current_company": "rithm",
   "email": "michael@rithmschool.com",
-  "firstName": "Michael",
-  "lastName": "Hueter",
+  "first_name": "Michael",
+  "last_name": "Hueter",
   "password": "foo123",
   "photo": "https://avatars0.githubusercontent.com/u/13444851?s=460&v=4",
   "username": "hueter"

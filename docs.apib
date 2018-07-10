@@ -77,7 +77,7 @@ See the [Reference section](/#reference/0/auth) for fully-detailed resource docu
     "username": "hueter",
     "email": "michael@rithmschool.com",
     "password": "foo123",
-    "current_company_handle": null,
+    "current_company": null,
     "photo": "https://avatars0.githubusercontent.com/u/13444851?s=460&v=4"
 }
 ```
@@ -92,10 +92,10 @@ curl -X POST \
   -H 'Cache-Control: no-cache' \
   -H 'Content-Type: application/json' \
   -d '{
-        "currentCompanyId": 2,
+        "current_company": "rithm",
         "email": "michael@rithmschool.com",
-        "firstName": "Michael",
-        "lastName": "Hueter",
+        "first_name": "Michael",
+        "last_name": "Hueter",
         "password": "foo123",
         "photo": "https://avatars0.githubusercontent.com/u/13444851?s=460&v=4",
         "username": "hueter"
@@ -243,12 +243,12 @@ Endpoint for authenticating a company by getting a JWT from the server.
 Endpoint to create a user or query for a list of users.
 
 + Parameters
-    + offset: 0 (number, optional) - the list of documents to offset over. Default is 0.
-    + limit: 10 (number, optional) - the number of documents to return. Default and maximum set to 50.
+    + offset: 0 (number, optional) - the list of results to skip over. Default is 0.
+    + limit: 10 (number, optional) - the number of results to return. Default and maximum set to 50.
     + q: `Matt Lane` (string, optional) - the field to search by.
 
 ### Get a List of Users [GET]
-**UserAuth Required**. Note: passwords are not visible at this endpoint. By default, `limit` is set to 50.
+**Auth Required**. Note: passwords are not visible at this endpoint. By default, `limit` is set to 50.
 
 + Request
 + Response 200 (application/json; charset=utf-8)
@@ -267,7 +267,7 @@ Endpoint to create a user or query for a list of users.
 
 ### Create a New User [POST]
 Note: password will not be present in the response.
-The fields `username`, `password`, and `name` are required.
+The fields `username`, `password`, and `name` cannot be null.
 
 + Request
     + Attributes
@@ -294,7 +294,7 @@ Endpoint for reading, updating, or deleting a single user.
     + username: hueter (string, required) - the username to lookup.
 
 ### Get a User [GET]
-**UserAuth Required**. Retrieve a single user document by `username`.
+**Auth Required**. Retrieve a single user by their `username`.
 
 + Request
 + Response 200 (application/json; charset=utf-8)
@@ -315,7 +315,7 @@ Endpoint for reading, updating, or deleting a single user.
 
 
 ### Update a User [PATCH]
-**UserAuth Required. Correct User Required.** Update a single user document by `username`. Note: `username` and `favorites` are immutable via this endpoint.
+**Auth Required. Correct User Required.** Update a single user by its `username`.
 
 + Request
     + Attributes
@@ -346,7 +346,7 @@ Endpoint for reading, updating, or deleting a single user.
         + error (Not Found)
 
 ### Delete a User [DELETE]
-**UserAuth Required. Correct User Required.** Remove a single user document by `username`.
+**Auth Required. Correct User Required.** Remove a single user by their `username`.
 
 + Request
 + Response 200 (application/json; charset=utf-8)
@@ -372,7 +372,7 @@ Endpoint to create a user or query for a list of users.
     + q: `Github` (string, optional) - the field to search by
 
 ### Get a List of Jobs [GET]
-**UserAuth Required**. By default, `limit` is set to 50.
+**Auth Required**. By default, `limit` is set to 50.
 
 + Request
 + Response 200 (application/json; charset=utf-8)
@@ -390,7 +390,7 @@ Endpoint to create a user or query for a list of users.
         + error (Unauthorized)
 
 ### Create a New Job [POST]
-**CompanyAuth Required**. The fields `title`, `company`, `salary`, and `equity` are required.
+**Auth Required (Companies Only)**. The fields `title`, `company`, and `salary` cannot be null.
 
 + Request
     + Attributes
@@ -416,7 +416,7 @@ Endpoint for reading, updating, or deleting a single user.
     + id: 4 (string, required) - the job to lookup.
 
 ### Get a Job [GET]
-**UserAuth Required**. Retrieve a single job document by `id`.
+**Auth Required**. Retrieve a single job by its `id`.
 
 + Request
 + Response 200 (application/json; charset=utf-8)
@@ -437,7 +437,7 @@ Endpoint for reading, updating, or deleting a single user.
 
 
 ### Update a Job [PATCH]
-**CompanyAuth Required. Correct Job Required.** Update a single user document by `id`.
+**Auth Required. Correct Company Required.** Update a single job by `id`.
 
 + Request
     + Attributes
@@ -468,7 +468,7 @@ Endpoint for reading, updating, or deleting a single user.
         + error (Not Found)
 
 ### Delete a Job [DELETE]
-**CompanyAuth Required. Correct Job Required.** Remove a single job document by `id`.
+**Auth Required. Correct Company Required.** Remove a single job by its `id`.
 
 + Request
 + Response 200 (application/json; charset=utf-8)
@@ -489,8 +489,8 @@ Endpoint for reading, updating, or deleting a single user.
 Endpoint to create a user or query for a list of users.
 
 + Parameters
-    + offset: 0 (number, optional) - the list of documents to offset over. Default is 0.
-    + limit: 50 (number, optional) - the number of documents to return. Default and maximum set to 50.
+    + offset: 0 (number, optional) - the list of results to skip over. Default is 0.
+    + limit: 50 (number, optional) - the number of results to return. Default and maximum set to 50.
     + q: `Github` (string, optional) - the field to search by
 
 ### Get a List of Companies [GET]
@@ -512,7 +512,7 @@ Endpoint to create a user or query for a list of users.
         + error (Unauthorized)
 
 ### Create a New Company [POST]
-The fields `name`, `password`, `email`, and `handle` are required.
+The fields `name`, `password`, `email`, and `handle` are cannot be null.
 
 + Request
     + Attributes
@@ -538,7 +538,7 @@ Endpoint for reading, updating, or deleting a single company.
     + handle: `hooli` (string, required) - the company to lookup.
 
 ### Get a Company [GET]
-**UserAuth Required**. Retrieve a single company document by `handle`.
+**Auth Required**. Retrieve a single company by its `handle`.
 
 + Request
 + Response 200 (application/json; charset=utf-8)
@@ -559,7 +559,7 @@ Endpoint for reading, updating, or deleting a single company.
 
 
 ### Update a Company [PATCH]
-**CompanyAuth Required. Correct Company Required.** Update a single company document by `handle`
+**Auth Required. Correct Company Required.** Update a single company by its `handle`
 
 + Request
     + Attributes
@@ -590,7 +590,7 @@ Endpoint for reading, updating, or deleting a single company.
         + error (Not Found)
 
 ### Delete a Company [DELETE]
-**CompanyAuth Required. Correct Company Required.** Remove a single company document by `handle`.
+**Auth Required. Correct Company Required.** Remove a single company by its `handle`.
 
 + Request
 + Response 200 (application/json; charset=utf-8)
@@ -619,7 +619,7 @@ Endpoint for reading, updating, or deleting a single company.
   + password: `bloodboy` (string, optional) - between 1 and 55 characters.
 
 ### NewUser
-  + current_company_handle: 2 (number, optional) - This should reference an id for a company IF IT EXISTS
+  + current_company: rithm (string, optional) - This should reference a handle for a company IF IT EXISTS
   + email: `michael@rithmschool.com` (string, optional) - email can only consist of letters and numbers between 1 and 55 characters. **Required to Create a New User.**
   + first_name: `Michael` (string, optional) - the user's first name, between 1 and 55 characters. **Required to Create a New User.**
   + last_name: `Hueter` (string, optional) - the user's last name, between 1 and 55 characters. **Required to Create a New User.**
@@ -629,7 +629,7 @@ Endpoint for reading, updating, or deleting a single company.
 
 ### User
   + applied: 2, 3 (array[number], optional) - an array of job IDs the user has applied to
-  + current_company_handle: 2 (number, optional) - This should reference an id for a company IF IT EXISTS
+  + current_company: rithm (string, optional) - This should reference a handle for a company IF IT EXISTS
   + email: `michael@rithmschool.com` (string, optional) - email can only consist of letters and numbers between 1 and 55 characters. **Required to Create a New User.**
   + first_name: `Michael` (string, optional) - the user's first name, between 1 and 55 characters. **Required to Create a New User.**
   + last_name: `Hueter` (string, optional) - the user's last name, between 1 and 55 characters. **Required to Create a New User.**
@@ -673,12 +673,12 @@ Endpoint for reading, updating, or deleting a single company.
 ### Not Found
   + status: 404 (number, required) - HTTP status code
   + title: 'Not Found' (string, required) - text accompanying the status code
-  + message: 'Document with that ID was not found.' (string, required) - description of the error
+  + message: 'Record with that ID was not found.' (string, required) - description of the error
 
 ### Conflict
   + status: 409 (number, required) - HTTP status code
   + title: 'Conflict' (string, required) - text accompanying the status code
-  + message: 'Another document with the same ID already exists.' (string, required) - description of the error
+  + message: 'Another record with the same ID already exists.' (string, required) - description of the error
 
 ### Success
   + status: 200 (number, required) - HTTP status code
