@@ -32,7 +32,6 @@ async function readUsers(req, res, next) {
       query += ` OFFSET ${offset}`;
     }
 
-    console.log(query);
     const results = await db.query(query);
     const users = results.rows;
     return res.json(formatResponse(users));

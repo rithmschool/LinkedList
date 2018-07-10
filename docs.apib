@@ -24,53 +24,37 @@ Both collections have full CRUD operations.
 - **Collection Endpoint**: `/users`
 - **Singular Endpoint**: `/users/{username}`
 - **Attributes**:
-  - `firstName` - the user's first name, between 1 and 55 characters. Required to Create a New User.
-  - `lastName` - the user's last name, between 1 and 55 characters. Required to Create a New User.
-  - `username` - username can only consist of letters and numbers between 1 and 55 characters. Required to Create a New User. Immutable.
+  - `first_name` - the user's first name, between 1 and 55 characters. Required to Create a New User.
+  - `last_name` - the user's last name, between 1 and 55 characters. Required to Create a New User.
+  - `username` - username can only consist of letters and numbers between 1 and 55 characters. Required to Create a New User. MUST BE UNIQUE.
   - `email` - between 1 and 55 characters. Required to Create a New User.
   - `password` - between 1 and 55 characters. Required to Create a New User.
-  - `currentCompanyName` - this should be the string name of a company
-  - `currentCompany` - this should reference an ObjectId for a company IF IT EXISTS 
   - `photo` - A valid URL for a photo
-  - `experience` - array of previous work
-      - `jobTitle`
-      - `companyName` - this should be the string name of a company
-      - `company` - this can reference an ObjectId for a company IF IT EXISTS
-      - `startDate` - ISO date-format timestamp when experience began.
-      - `endDate` - ISO date-format timestamp when experience ended.
-  - `education`
-      - `institution` - a string of the institution where the user enrolled or is currently enrolled in.
-      - `degree` - the degree that the user earned or is currently earning.
-      - `endDate` - ISO date-format timestamp when education ended.
-  - `skills` - array of strings
-  - `applied` - array of Job IDs that user applied to
-  - `createdAt` - auto-generated timestamp of when the user was originally created.
-  - `updatedAt` - auto-generated timestamp of when the user was last updated.
+  - `current_company` - this should reference a company handle IF IT EXISTS 
+  - `applied_to` - array of Job IDs that user applied to
 
 #### Companies
 
 - **Collection Endpoint**: `/companies`
 - **Singular Endpoint**: `/companies/{handle}`
 - **Attributes**:
-  - `name` - username can only consist of letters and numbers between 1 and 55 characters. Required to Create a New Company. Immutable.
-  - `email` - between 1 and 55 characters. Required to Create a New Company.
+  - `name` - username can only consist of letters and numbers between 1 and 55 characters. Required to Create a New Company.
+  - `email` - between 1 and 55 characters. Required to Create a New Company. MUST BE UNIQUE.
   - `handle` - between 1 and 55 characters. Required to Create a New Company.
   - `password` - between 1 and 55 characters. Required to Create a New Company.
   - `logo` - a valid URL for the logo of the company
-  - `employees` - array of usernames
+  - `employees` - array of usernames who work at the company
   - `jobs` - array of Job IDs company has listed
 
 #### Jobs
 
 - **Collection Endpoint**: `/jobs`
-- **Singular Endpoint**: `/jobs/{jobId}`
+- **Singular Endpoint**: `/jobs/{id}`
 - **Attributes**:
   - `title` - the title for the job posting.
-  - `company` - this should reference an ObjectId for a company
+  - `company` - this should reference an id for a company
   - `salary` - a number for the salary offered in this post
   - `equity` - a float for the equity offered in this post
-  - `createdAt` - auto-generated timestamp of when the job was originally created.
-  - `updatedAt` - auto-generated timestamp of when the job was last updated.
 
 See the [Reference section](/#reference/0/auth) for fully-detailed resource documentation.
 
@@ -84,29 +68,17 @@ See the [Reference section](/#reference/0/auth) for fully-detailed resource docu
 
 &nbsp;
 
-**We're going to post this JSON data to `localhost:5000`:**
+**We're going to post this JSON data to `localhost:3000`:**
 
 ```json
 {
-  "data": {
-    "firstName": "Michael",
-    "lastName": "Hueter",
+    "first_name": "Michael",
+    "last_name": "Hueter",
     "username": "hueter",
     "email": "michael@rithmschool.com",
     "password": "foo123",
-    "currentCompanyName": "Hooli",
-    "currentCompany": null,
-    "photo": "https://avatars0.githubusercontent.com/u/13444851?s=460&v=4",
-    "experience": [],
-    "education": [
-      {
-        "institution": "School of Hard Knocks",
-        "degree": "Bachelors in Science",
-        "endDate": "2014"
-      }
-    ],
-    "skills": ["Python", "JavaScript"]
-  }
+    "current_company_handle": null,
+    "photo": "https://avatars0.githubusercontent.com/u/13444851?s=460&v=4"
 }
 ```
 
@@ -116,31 +88,18 @@ See the [Reference section](/#reference/0/auth) for fully-detailed resource docu
 
 ```sh
 curl -X POST \
-  http://localhost:5000/users \
+  http://localhost:3000/users \
   -H 'Cache-Control: no-cache' \
   -H 'Content-Type: application/json' \
-  -H 'Postman-Token: fe89b64e-1aae-4a7d-80f2-f56c34b878a6' \
   -d '{
-  "data": {
-    "firstName": "Michael",
-    "lastName": "Hueter",
-    "username": "hueter",
-    "email": "michael+1@rithmschool.com",
-    "password": "foo123",
-    "currentCompanyName": "Hooli",
-    "currentCompany": "",
-    "photo": "https://avatars0.githubusercontent.com/u/13444851?s=460&v=4",
-    "experience": [],
-    "education": [
-      {
-        "institution": "School of Hard Knocks",
-        "degree": "Bachelors in Science",
-        "endDate": "2014"
-      }
-    ],
-    "skills": ["Python", "JavaScript"]
-  }
-}
+        "currentCompanyId": 2,
+        "email": "michael@rithmschool.com",
+        "firstName": "Michael",
+        "lastName": "Hueter",
+        "password": "foo123",
+        "photo": "https://avatars0.githubusercontent.com/u/13444851?s=460&v=4",
+        "username": "hueter"
+    }
 '
 ```
 
@@ -154,10 +113,8 @@ curl -X POST \
 
 ```json
 {
-  "data": {
     "username": "hueter",
     "password": "foo123"
-  }
 }
 ```
 
@@ -167,15 +124,12 @@ curl -X POST \
 
 ```sh
 curl -X POST \
-  http://localhost:5000/user-auth \
+  http://localhost:3000/user-auth \
   -H 'Cache-Control: no-cache' \
   -H 'Content-Type: application/json' \
-  -H 'Postman-Token: 67668ba9-5e1f-4963-887e-57ce02eb2c76' \
   -d '{
-  "data": {
     "username": "hueter",
     "password": "foo123"
-  }
 }
 '
 ```
@@ -188,9 +142,7 @@ curl -X POST \
 
 ```json
 {
-  "data": {
-      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.zzZ1a2VybmFtZSI6Imh1ZXRlciIsImlhdCI6MTUyNDY5Mzc5OX0.fn0LbvCTbw21W4-fKeDpAz2Fod0iWPl7oBKcnyjGUwI"
-  }
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.zzZ1a2VybmFtZSI6Imh1ZXRlciIsImlhdCI6MTUyNDY5Mzc5OX0.fn0LbvCTbw21W4-fKeDpAz2Fod0iWPl7oBKcnyjGUwI"
 }
 ```
 
@@ -210,16 +162,13 @@ curl -X POST \
 
 ```sh
 curl -X PATCH \
-  http://localhost:5000/users/hueter \
+  http://localhost:3000/users/hueter \
   -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.zzZ1a2VybmFtZSI6Imh1ZXRlciIsImlhdCI6MTUyNDY5Mzc5OX0.fn0LbvCTbw21W4-fKeDpAz2Fod0iWPl7oBKcnyjGUwI' \
   -H 'Cache-Control: no-cache' \
   -H 'Content-Type: application/json' \
-  -H 'Postman-Token: f3200bbf-6e2b-4def-afb6-39dccbf94597' \
   -d '{
-    "data": {
         "password": "foo23"
-    }
-}'
+      }'
 ```
 
 ---
@@ -231,29 +180,28 @@ Endpoint for authenticating a user by getting a JWT from the server.
 
 + Request
     + Attributes
-        + data (UserAuth)
+        + UserAuth
 + Response 200 (application/json; charset=utf-8)
     + Attributes
-        + data
-            + token: `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im1odWV0ZXIiLCJpYXQiOjE1MTAyMDcwMDl9.5oUeihYn2AkqGy6z3g5F5B46gWWgvGKilFr9S4gg-p4` (string, required) - JWT used to authenticate in the future. Put in `Authorization` request header like: `Bearer <TOKEN>`.
+        + token: `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im1odWV0ZXIiLCJpYXQiOjE1MTAyMDcwMDl9.5oUeihYn2AkqGy6z3g5F5B46gWWgvGKilFr9S4gg-p4` (string, required) - JWT used to authenticate in the future. Put in `Authorization` request header like: `Bearer <TOKEN>`.
 
 + Request Bad Request
     + Attributes
-        + data (UserAuth)
+        + UserAuth
 + Response 400 (application/json; charset=utf-8)
     + Attributes
         + error (Bad Request)
 
 + Request Unauthorized
     + Attributes
-        + data (UserAuth)
+        + UserAuth
 + Response 401 (application/json; charset=utf-8)
     + Attributes
         + error (Unauthorized)
 
 + Request Not Found
     + Attributes
-        + data (UserAuth)
+        + UserAuth
 + Response 404 (application/json; charset=utf-8)
     + Attributes
         + error (Not Found)
@@ -265,38 +213,37 @@ Endpoint for authenticating a company by getting a JWT from the server.
 
 + Request
     + Attributes
-        + data (CompanyAuth)
+        + CompanyAuth
 + Response 200 (application/json; charset=utf-8)
     + Attributes
-        + data
-            + token: `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im1odWV0ZXIiLCJpYXQiOjE1MTAyMDcwMDl9.5oUeihYn2AkqGy6z3g5F5B46gWWgvGKilFr9S4gg-p4` (string, required) - JWT used to authenticate in the future. Put in `Authorization` request header like: `Bearer <TOKEN>`.
+        + token: `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im1odWV0ZXIiLCJpYXQiOjE1MTAyMDcwMDl9.5oUeihYn2AkqGy6z3g5F5B46gWWgvGKilFr9S4gg-p4` (string, required) - JWT used to authenticate in the future. Put in `Authorization` request header like: `Bearer <TOKEN>`.
 
 + Request Bad Request
     + Attributes
-        + data (CompanyAuth)
+        + CompanyAuth
 + Response 400 (application/json; charset=utf-8)
     + Attributes
         + error (Bad Request)
 
 + Request Unauthorized
     + Attributes
-        + data (CompanyAuth)
+        + CompanyAuth
 + Response 401 (application/json; charset=utf-8)
     + Attributes
         + error (Unauthorized)
 
 + Request Not Found
     + Attributes
-        + data (CompanyAuth)
+        + CompanyAuth
 + Response 404 (application/json; charset=utf-8)
     + Attributes
         + error (Not Found)
 
-## Users [/users{?skip,limit,q}]
+## Users [/users{?offset,limit,q}]
 Endpoint to create a user or query for a list of users.
 
 + Parameters
-    + skip: 0 (number, optional) - the list of documents to skip over. Default is 0.
+    + offset: 0 (number, optional) - the list of documents to offset over. Default is 0.
     + limit: 10 (number, optional) - the number of documents to return. Default and maximum set to 50.
     + q: `Matt Lane` (string, optional) - the field to search by.
 
@@ -306,7 +253,7 @@ Endpoint to create a user or query for a list of users.
 + Request
 + Response 200 (application/json; charset=utf-8)
     + Attributes
-        + data (array[User])
+        + array[User]
 
 + Request Bad Request
 + Response 400 (application/json; charset=utf-8)
@@ -324,10 +271,10 @@ The fields `username`, `password`, and `name` are required.
 
 + Request
     + Attributes
-        + data (NewUser)
+        + NewUser
 + Response 201 (application/json; charset=utf-8)
     + Attributes
-        + data (User)
+        + User
 
 + Request Bad Request
 + Response 400 (application/json; charset=utf-8)
@@ -344,7 +291,7 @@ The fields `username`, `password`, and `name` are required.
 Endpoint for reading, updating, or deleting a single user.
 
 + Parameters
-    + username: mhueter (string, required) - the username to lookup.
+    + username: hueter (string, required) - the username to lookup.
 
 ### Get a User [GET]
 **UserAuth Required**. Retrieve a single user document by `username`.
@@ -352,11 +299,11 @@ Endpoint for reading, updating, or deleting a single user.
 + Request
 + Response 200 (application/json; charset=utf-8)
     + Attributes
-        + data (User)
+        + User
 
 + Request Unauthorized
     + Attributes
-        + data (User)
+        + User
 + Response 401 (application/json; charset=utf-8)
     + Attributes
         + error (Unauthorized)
@@ -372,28 +319,28 @@ Endpoint for reading, updating, or deleting a single user.
 
 + Request
     + Attributes
-        + data (User)
+        + User
 + Response 200 (application/json; charset=utf-8)
     + Attributes
-        + data (User)
+        + User
 
 + Request Bad Request
     + Attributes
-        + data (User)
+        + User
 + Response 400 (application/json; charset=utf-8)
     + Attributes
         + error (Bad Request)
 
 + Request Unauthorized
     + Attributes
-        + data (User)
+        + User
 + Response 401 (application/json; charset=utf-8)
     + Attributes
         + error (Unauthorized)
 
 + Request Not Found
     + Attributes
-        + data (User)
+        + User
 + Response 404 (application/json; charset=utf-8)
     + Attributes
         + error (Not Found)
@@ -404,7 +351,7 @@ Endpoint for reading, updating, or deleting a single user.
 + Request
 + Response 200 (application/json; charset=utf-8)
     + Attributes
-        + data (Success)
+        + Success
 
 + Request Unauthorized
 + Response 401 (application/json; charset=utf-8)
@@ -416,11 +363,11 @@ Endpoint for reading, updating, or deleting a single user.
     + Attributes
         + error (Not Found)
 
-## Jobs [/jobs{?skip,limit,q}]
+## Jobs [/jobs{?offset,limit,q}]
 Endpoint to create a user or query for a list of users.
 
 + Parameters
-    + skip: 0 (number, optional) - the list of documents to skip over. Default is 0.
+    + offset: 0 (number, optional) - the list of documents to offset over. Default is 0.
     + limit: 50 (number, optional) - the number of documents to return. Default and maximum set to 50.
     + q: `Github` (string, optional) - the field to search by
 
@@ -430,7 +377,7 @@ Endpoint to create a user or query for a list of users.
 + Request
 + Response 200 (application/json; charset=utf-8)
     + Attributes
-        + data (array[Job])
+        + array[Job]
 
 + Request Bad Request
 + Response 400 (application/json; charset=utf-8)
@@ -447,10 +394,10 @@ Endpoint to create a user or query for a list of users.
 
 + Request
     + Attributes
-        + data (Job)
+        + Job
 + Response 201 (application/json; charset=utf-8)
     + Attributes
-        + data (Job)
+        + Job
 
 + Request Bad Request
 + Response 400 (application/json; charset=utf-8)
@@ -462,11 +409,11 @@ Endpoint to create a user or query for a list of users.
     + Attributes
         + error (Conflict)
 
-## Job [/jobs/{jobId}]
+## Job [/jobs/{id}]
 Endpoint for reading, updating, or deleting a single user.
 
 + Parameters
-    + jobId: 4 (string, required) - the job to lookup.
+    + id: 4 (string, required) - the job to lookup.
 
 ### Get a Job [GET]
 **UserAuth Required**. Retrieve a single job document by `id`.
@@ -474,11 +421,11 @@ Endpoint for reading, updating, or deleting a single user.
 + Request
 + Response 200 (application/json; charset=utf-8)
     + Attributes
-        + data (Job)
+        + Job
 
 + Request Unauthorized
     + Attributes
-        + data (Job)
+        + Job
 + Response 401 (application/json; charset=utf-8)
     + Attributes
         + error (Unauthorized)
@@ -494,28 +441,28 @@ Endpoint for reading, updating, or deleting a single user.
 
 + Request
     + Attributes
-        + data (Job)
+        + Job
 + Response 200 (application/json; charset=utf-8)
     + Attributes
-        + data (Job)
+        + Job
 
 + Request Bad Request
     + Attributes
-        + data (Job)
+        + Job
 + Response 400 (application/json; charset=utf-8)
     + Attributes
         + error (Bad Request)
 
 + Request Unauthorized
     + Attributes
-        + data (Job)
+        + Job
 + Response 401 (application/json; charset=utf-8)
     + Attributes
         + error (Unauthorized)
 
 + Request Not Found
     + Attributes
-        + data (Job)
+        + Job
 + Response 404 (application/json; charset=utf-8)
     + Attributes
         + error (Not Found)
@@ -526,7 +473,7 @@ Endpoint for reading, updating, or deleting a single user.
 + Request
 + Response 200 (application/json; charset=utf-8)
     + Attributes
-        + data (Success)
+        + Success
 
 + Request Unauthorized
 + Response 401 (application/json; charset=utf-8)
@@ -538,11 +485,11 @@ Endpoint for reading, updating, or deleting a single user.
     + Attributes
         + error (Not Found)
 
-## Companies [/companies{?skip,limit,q}]
+## Companies [/companies{?offset,limit,q}]
 Endpoint to create a user or query for a list of users.
 
 + Parameters
-    + skip: 0 (number, optional) - the list of documents to skip over. Default is 0.
+    + offset: 0 (number, optional) - the list of documents to offset over. Default is 0.
     + limit: 50 (number, optional) - the number of documents to return. Default and maximum set to 50.
     + q: `Github` (string, optional) - the field to search by
 
@@ -552,7 +499,7 @@ Endpoint to create a user or query for a list of users.
 + Request
 + Response 200 (application/json; charset=utf-8)
     + Attributes
-        + data (array[Company])
+        + array[Company]
 
 + Request Bad Request
 + Response 400 (application/json; charset=utf-8)
@@ -569,10 +516,10 @@ The fields `name`, `password`, `email`, and `handle` are required.
 
 + Request
     + Attributes
-        + data (NewCompany)
+        + NewCompany
 + Response 201 (application/json; charset=utf-8)
     + Attributes
-        + data (Company)
+        + Company
 
 + Request Bad Request
 + Response 400 (application/json; charset=utf-8)
@@ -596,11 +543,11 @@ Endpoint for reading, updating, or deleting a single company.
 + Request
 + Response 200 (application/json; charset=utf-8)
     + Attributes
-        + data (Company)
+        + Company
 
 + Request Unauthorized
     + Attributes
-        + data (Company)
+        + Company
 + Response 401 (application/json; charset=utf-8)
     + Attributes
         + error (Unauthorized)
@@ -616,28 +563,28 @@ Endpoint for reading, updating, or deleting a single company.
 
 + Request
     + Attributes
-        + data (Company)
+        + Company
 + Response 200 (application/json; charset=utf-8)
     + Attributes
-        + data (Company)
+        + Company
 
 + Request Bad Request
     + Attributes
-        + data (Company)
+        + Company
 + Response 400 (application/json; charset=utf-8)
     + Attributes
         + error (Bad Request)
 
 + Request Unauthorized
     + Attributes
-        + data (Company)
+        + Company
 + Response 401 (application/json; charset=utf-8)
     + Attributes
         + error (Unauthorized)
 
 + Request Not Found
     + Attributes
-        + data (Company)
+        + Company
 + Response 404 (application/json; charset=utf-8)
     + Attributes
         + error (Not Found)
@@ -648,7 +595,7 @@ Endpoint for reading, updating, or deleting a single company.
 + Request
 + Response 200 (application/json; charset=utf-8)
     + Attributes
-        + data (Success)
+        + Success
 
 + Request Unauthorized
 + Response 401 (application/json; charset=utf-8)
@@ -668,69 +615,50 @@ Endpoint for reading, updating, or deleting a single company.
   + password: `foo123` (string, optional) - between 1 and 55 characters.
 
 ### CompanyAuth
-  + handle: `@hooli` (string, optional) - email can only consist of letters and numbers between 1 and 55 characters.
+  + handle: `hooli` (string, optional) - email can only consist of letters and numbers between 1 and 55 characters.
   + password: `bloodboy` (string, optional) - between 1 and 55 characters.
 
 ### NewUser
-  + firstName: `Michael` (string, optional) - the user's first name, between 1 and 55 characters. **Required to Create a New User.**
-  + lastName: `Hueter` (string, optional) - the user's last name, between 1 and 55 characters. **Required to Create a New User.**
-  + username: `hueter` (string, optional) - username can only consist of letters and numbers between 1 and 55 characters. **Required to Create a New User. Immutable.**
+  + current_company_handle: 2 (number, optional) - This should reference an id for a company IF IT EXISTS
   + email: `michael@rithmschool.com` (string, optional) - email can only consist of letters and numbers between 1 and 55 characters. **Required to Create a New User.**
+  + first_name: `Michael` (string, optional) - the user's first name, between 1 and 55 characters. **Required to Create a New User.**
+  + last_name: `Hueter` (string, optional) - the user's last name, between 1 and 55 characters. **Required to Create a New User.**
   + password: `foo123` (string, optional) - between 1 and 55 characters. **Required to Create a New User.**
-  + currentCompanyName: `Hooli` - This should be the name of a company
-  + currentCompany: `5a21b155ac27667d3de5bfaa` - This should reference an ObjectId for a company IF IT EXISTS
   + photo: `https://www.michaelhueter.com` (string, optional) - A valid URL for a photo
+  + username: `hueter` (string, optional) - username can only consist of letters and numbers between 1 and 55 characters. **Required to Create a New User. Immutable.**
 
 ### User
-  + firstName: `Michael` (string, optional) - the user's first name, between 1 and 55 characters. **Required to Create a New User.**
-  + lastName: `Hueter` (string, optional) - the user's last name, between 1 and 55 characters. **Required to Create a New User.**
-  + username: `hueter` (string, optional) - username can only consist of letters and numbers between 1 and 55 characters. **Required to Create a New User. Immutable.**
+  + applied: 2, 3 (array[number], optional) - an array of job IDs the user has applied to
+  + current_company_handle: 2 (number, optional) - This should reference an id for a company IF IT EXISTS
   + email: `michael@rithmschool.com` (string, optional) - email can only consist of letters and numbers between 1 and 55 characters. **Required to Create a New User.**
+  + first_name: `Michael` (string, optional) - the user's first name, between 1 and 55 characters. **Required to Create a New User.**
+  + last_name: `Hueter` (string, optional) - the user's last name, between 1 and 55 characters. **Required to Create a New User.**
   + password: `foo123` (string, optional) - between 1 and 55 characters. **Required to Create a New User.**
-  + currentCompanyName: `Hooli` - This should be the name of a company
-  + currentCompany: `5a21b155ac27667d3de5bfaa` - This should reference an ObjectId for a company IF IT EXISTS
   + photo: `https://www.michaelhueter.com` (string, optional) - A valid URL for a photo
-  + experience (array, optional)
-    + (object)
-      + jobTitle: `Instructor In Chief`
-      + companyName: `Hooli` - The name of a company
-      + company: `5a21b155ac27667d3de5bfaa` - This should reference an ObjectId for a company IF IT EXISTS
-      + startDate: `2016-06-15T21:39:25.435000+00:00` (string, optional) - ISO date-format timestamp when experience began.
-      + endDate: `2017-06-15T21:39:25.435000+00:00` (string, optional) - ISO date-format timestamp when experience ended.
-  + education (array, optional)
-    + (object)
-      + institution: `School of Hard Knocks` - the institution where the user enrolled or is currently enrolled in.
-      + degree: `Bachelors in Science` - the degree that the user earned or is currently earning.
-      + endDate: `2014-06-15T21:39:25.435000+00:00` (string, optional) - ISO date-format timestamp when education ended.
-  + applied: 5a21b155ac27667d3de5bfaa, 5a21b155ac27667d3de5bfab (array[string], optional)
-  + skills: Python, JavaScript (array[string])
-  + createdAt: `017-11-09T18:38:39.409Z` (string, optional) - auto-generated timestamp of when the user was originally created.
-  + updatedAt: `017-11-09T18:38:39.409Z`  (string, optional) - auto-generated timestamp of when the user was last updated.
+  + username: `hueter` (string, optional) - username can only consist of letters and numbers between 1 and 55 characters. **Required to Create a New User. Immutable.**
 
 
 ### NewCompany
+  + email: `gavinhooli.com` (string, optional) - between 1 and 55 characters. **Required to Create a New Company.**
+  + handle: `hooli` (string, optional) - between 1 and 55 characters. **Required to Create a New Company.**
+  + logo: `https://assets-cdn.github.com/images/modules/logos_page/GitHub-Mark.png` (string, optional) - a valid URL for the logo of the company
   + name: `Hooli` (string, optional) - username can only consist of letters and numbers between 1 and 55 characters. **Required to Create a New Company. Immutable.**
   + password: `bloodboy` (string, optional) - between 1 and 55 characters. **Required to Create a New Company.**
-  + email: `gavin@hooli.com` (string, optional) - between 1 and 55 characters. **Required to Create a New Company.**
-  + handle: `@hooli` (string, optional) - between 1 and 55 characters. **Required to Create a New Company.**
-  + logo: `https://assets-cdn.github.com/images/modules/logos_page/GitHub-Mark.png` (string, optional) - a valid URL for the logo of the company
 
 ### Company
+  + email: `gavinhooli.com` (string, optional) - between 1 and 55 characters. **Required to Create a New Company.**
+  + employees: hueter, mmmaaatttttt (array[string], optional) - array of usernames who work at the company
+  + handle: hooli (string, optional) - between 1 and 55 characters. **Required to Create a New Company.**
+  + jobs: 2, 3 (array[number]) - array of Job IDs
+  + logo: `https://assets-cdn.github.com/images/modules/logos_page/GitHub-Mark.png` (string, optional) - a valid URL for the logo of the company
   + name: `Hooli` (string, optional) - username can only consist of letters and numbers between 1 and 55 characters. **Required to Create a New Company. Immutable.**
   + password: `bloodboy` (string, optional) - between 1 and 55 characters. **Required to Create a New Company.**
-  + email: `gavin@hooli.com` (string, optional) - between 1 and 55 characters. **Required to Create a New Company.**
-  + handle: `@hooli` (string, optional) - between 1 and 55 characters. **Required to Create a New Company.**
-  + logo: `https://assets-cdn.github.com/images/modules/logos_page/GitHub-Mark.png` (string, optional) - a valid URL for the logo of the company
-  + employees: hueter, elie, mmmaaatttttt (array[string], optional) - array of usernames
-  + jobs: 5a21b155ac27667d3de5bfaa, 5a21b155ac27667d3de5bfab (array[string]) - array of Job IDs
 
 #### Job
-  + title: `Software Developer` (string, optional) - the title for the job posting.
-  + company: `5a21b155ac27667d3de5bfaa` - This should reference an ObjectId for a company
-  + salary: 150000 (number, optional) - a number for the salary offered in this post
+  + company: hooli (string, optional) - This should reference a company handle
   + equity: 2.1 (number, optional) - a float for the equity offered in this post
-  + createdAt: `017-11-09T18:38:39.409Z` (string, optional) - auto-generated timestamp of when the job was originally created.
-  + updatedAt: `017-11-09T18:38:39.409Z`  (string, optional) - auto-generated timestamp of when the job was last updated.
+  + salary: `150000` (string, optional) - a string containing the salary offered in this post
+  + title: `Software Developer` (string, optional) - the title for the job posting.
 
 ### Bad Request
   + status: 400 (number, required) - HTTP status code
