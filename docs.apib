@@ -1,4 +1,5 @@
 FORMAT: 1A
+HOST: https://linkedlist-rithm.herokuapp.com
 
 # LinkedList
 
@@ -88,7 +89,7 @@ See the [Reference section](/#reference/0/auth) for fully-detailed resource docu
 
 ```sh
 curl -X POST \
-  http://localhost:3000/users \
+  https://linkedlist-rithm.herokuapp.com/users \
   -H 'Cache-Control: no-cache' \
   -H 'Content-Type: application/json' \
   -d '{
@@ -124,7 +125,7 @@ curl -X POST \
 
 ```sh
 curl -X POST \
-  http://localhost:3000/user-auth \
+  https://linkedlist-rithm.herokuapp.com/user-auth \
   -H 'Cache-Control: no-cache' \
   -H 'Content-Type: application/json' \
   -d '{
@@ -162,7 +163,7 @@ curl -X POST \
 
 ```sh
 curl -X PATCH \
-  http://localhost:3000/users/hueter \
+  https://linkedlist-rithm.herokuapp.com/users/hueter \
   -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.zzZ1a2VybmFtZSI6Imh1ZXRlciIsImlhdCI6MTUyNDY5Mzc5OX0.fn0LbvCTbw21W4-fKeDpAz2Fod0iWPl7oBKcnyjGUwI' \
   -H 'Cache-Control: no-cache' \
   -H 'Content-Type: application/json' \
@@ -176,7 +177,7 @@ curl -X PATCH \
 ## UserAuth [/user-auth]
 Endpoint for authenticating a user by getting a JWT from the server.
 
-### Auth to Receive Token [POST]
+### User Auth to Receive Token (POST) [POST]
 
 + Request
     + Attributes
@@ -185,14 +186,14 @@ Endpoint for authenticating a user by getting a JWT from the server.
     + Attributes
         + token: `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im1odWV0ZXIiLCJpYXQiOjE1MTAyMDcwMDl9.5oUeihYn2AkqGy6z3g5F5B46gWWgvGKilFr9S4gg-p4` (string, required) - JWT used to authenticate in the future. Put in `Authorization` request header like: `Bearer <TOKEN>`.
 
-+ Request Bad Request
+
     + Attributes
         + UserAuth
 + Response 400 (application/json; charset=utf-8)
     + Attributes
         + error (Bad Request)
 
-+ Request Unauthorized
+
     + Attributes
         + UserAuth
 + Response 401 (application/json; charset=utf-8)
@@ -209,7 +210,7 @@ Endpoint for authenticating a user by getting a JWT from the server.
 ## CompanyAuth [/company-auth]
 Endpoint for authenticating a company by getting a JWT from the server.
 
-### Auth to Receive Token [POST]
+### Company Auth to Receive Token (POST) [POST]
 
 + Request
     + Attributes
@@ -218,14 +219,14 @@ Endpoint for authenticating a company by getting a JWT from the server.
     + Attributes
         + token: `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im1odWV0ZXIiLCJpYXQiOjE1MTAyMDcwMDl9.5oUeihYn2AkqGy6z3g5F5B46gWWgvGKilFr9S4gg-p4` (string, required) - JWT used to authenticate in the future. Put in `Authorization` request header like: `Bearer <TOKEN>`.
 
-+ Request Bad Request
+
     + Attributes
         + CompanyAuth
 + Response 400 (application/json; charset=utf-8)
     + Attributes
         + error (Bad Request)
 
-+ Request Unauthorized
+
     + Attributes
         + CompanyAuth
 + Response 401 (application/json; charset=utf-8)
@@ -239,33 +240,30 @@ Endpoint for authenticating a company by getting a JWT from the server.
     + Attributes
         + error (Not Found)
 
-## Users [/users{?offset,limit,q}]
+## Users [/users{?offset,limit,search}]
 Endpoint to create a user or query for a list of users.
+
+### Get a List of Users (GET) [GET]
+**Auth Required**. Note: passwords are not visible at this endpoint. By default, `limit` is set to 50.
 
 + Parameters
     + offset: 0 (number, optional) - the list of results to skip over. Default is 0.
     + limit: 10 (number, optional) - the number of results to return. Default and maximum set to 50.
-    + q: `Matt Lane` (string, optional) - the field to search by.
+    + search: `Matt Lane` (string, optional) - the field to search by.
 
-### Get a List of Users [GET]
-**Auth Required**. Note: passwords are not visible at this endpoint. By default, `limit` is set to 50.
-
-+ Request
 + Response 200 (application/json; charset=utf-8)
     + Attributes
         + array[User]
 
-+ Request Bad Request
 + Response 400 (application/json; charset=utf-8)
     + Attributes
         + error (Bad Request)
 
-+ Request Unauthorized
 + Response 401 (application/json; charset=utf-8)
     + Attributes
         + error (Unauthorized)
 
-### Create a New User [POST]
+### Create a New User (POST) [POST]
 Note: password will not be present in the response.
 The fields `username`, `password`, and `name` cannot be null.
 
@@ -276,12 +274,10 @@ The fields `username`, `password`, and `name` cannot be null.
     + Attributes
         + User
 
-+ Request Bad Request
 + Response 400 (application/json; charset=utf-8)
     + Attributes
         + error (Bad Request)
 
-+ Request Conflict
 + Response 409 (application/json; charset=utf-8)
     + Attributes
         + error (Conflict)
@@ -293,28 +289,26 @@ Endpoint for reading, updating, or deleting a single user.
 + Parameters
     + username: hueter (string, required) - the username to lookup.
 
-### Get a User [GET]
+### Get a User (GET) [GET]
 **Auth Required**. Retrieve a single user by their `username`.
 
-+ Request
 + Response 200 (application/json; charset=utf-8)
     + Attributes
         + User
 
-+ Request Unauthorized
+
     + Attributes
         + User
 + Response 401 (application/json; charset=utf-8)
     + Attributes
         + error (Unauthorized)
 
-+ Request Not Found
 + Response 404 (application/json; charset=utf-8)
     + Attributes
         + error (Not Found)
 
 
-### Update a User [PATCH]
+### Update a User (PATCH) [PATCH]
 **Auth Required. Correct User Required.** Update a single user by its `username`.
 
 + Request
@@ -324,14 +318,14 @@ Endpoint for reading, updating, or deleting a single user.
     + Attributes
         + User
 
-+ Request Bad Request
+
     + Attributes
         + User
 + Response 400 (application/json; charset=utf-8)
     + Attributes
         + error (Bad Request)
 
-+ Request Unauthorized
+
     + Attributes
         + User
 + Response 401 (application/json; charset=utf-8)
@@ -345,173 +339,45 @@ Endpoint for reading, updating, or deleting a single user.
     + Attributes
         + error (Not Found)
 
-### Delete a User [DELETE]
+### Delete a User (DELETE) [DELETE]
 **Auth Required. Correct User Required.** Remove a single user by their `username`.
 
-+ Request
 + Response 200 (application/json; charset=utf-8)
     + Attributes
         + Success
 
-+ Request Unauthorized
 + Response 401 (application/json; charset=utf-8)
     + Attributes
         + error (Unauthorized)
 
-+ Request Not Found
 + Response 404 (application/json; charset=utf-8)
     + Attributes
         + error (Not Found)
 
-## Jobs [/jobs{?offset,limit,q}]
-Endpoint to create a user or query for a list of users.
+## Companies [/companies{?offset,limit,search}]
+Endpoint to create a user or query for a list of companies.
 
-+ Parameters
-    + offset: 0 (number, optional) - the list of documents to offset over. Default is 0.
-    + limit: 50 (number, optional) - the number of documents to return. Default and maximum set to 50.
-    + q: `Github` (string, optional) - the field to search by
-
-### Get a List of Jobs [GET]
+### Get a List of Companies (GET) [GET]
 **Auth Required**. By default, `limit` is set to 50.
-
-+ Request
-+ Response 200 (application/json; charset=utf-8)
-    + Attributes
-        + array[Job]
-
-+ Request Bad Request
-+ Response 400 (application/json; charset=utf-8)
-    + Attributes
-        + error (Bad Request)
-
-+ Request Unauthorized
-+ Response 401 (application/json; charset=utf-8)
-    + Attributes
-        + error (Unauthorized)
-
-### Create a New Job [POST]
-**Auth Required (Companies Only)**. The fields `title`, `company`, and `salary` cannot be null.
-
-+ Request
-    + Attributes
-        + Job
-+ Response 201 (application/json; charset=utf-8)
-    + Attributes
-        + Job
-
-+ Request Bad Request
-+ Response 400 (application/json; charset=utf-8)
-    + Attributes
-        + error (Bad Request)
-
-+ Request Conflict
-+ Response 409 (application/json; charset=utf-8)
-    + Attributes
-        + error (Conflict)
-
-## Job [/jobs/{id}]
-Endpoint for reading, updating, or deleting a single user.
-
-+ Parameters
-    + id: 4 (string, required) - the job to lookup.
-
-### Get a Job [GET]
-**Auth Required**. Retrieve a single job by its `id`.
-
-+ Request
-+ Response 200 (application/json; charset=utf-8)
-    + Attributes
-        + Job
-
-+ Request Unauthorized
-    + Attributes
-        + Job
-+ Response 401 (application/json; charset=utf-8)
-    + Attributes
-        + error (Unauthorized)
-
-+ Request Not Found
-+ Response 404 (application/json; charset=utf-8)
-    + Attributes
-        + error (Not Found)
-
-
-### Update a Job [PATCH]
-**Auth Required. Correct Company Required.** Update a single job by `id`.
-
-+ Request
-    + Attributes
-        + Job
-+ Response 200 (application/json; charset=utf-8)
-    + Attributes
-        + Job
-
-+ Request Bad Request
-    + Attributes
-        + Job
-+ Response 400 (application/json; charset=utf-8)
-    + Attributes
-        + error (Bad Request)
-
-+ Request Unauthorized
-    + Attributes
-        + Job
-+ Response 401 (application/json; charset=utf-8)
-    + Attributes
-        + error (Unauthorized)
-
-+ Request Not Found
-    + Attributes
-        + Job
-+ Response 404 (application/json; charset=utf-8)
-    + Attributes
-        + error (Not Found)
-
-### Delete a Job [DELETE]
-**Auth Required. Correct Company Required.** Remove a single job by its `id`.
-
-+ Request
-+ Response 200 (application/json; charset=utf-8)
-    + Attributes
-        + Success
-
-+ Request Unauthorized
-+ Response 401 (application/json; charset=utf-8)
-    + Attributes
-        + error (Unauthorized)
-
-+ Request Not Found
-+ Response 404 (application/json; charset=utf-8)
-    + Attributes
-        + error (Not Found)
-
-## Companies [/companies{?offset,limit,q}]
-Endpoint to create a user or query for a list of users.
 
 + Parameters
     + offset: 0 (number, optional) - the list of results to skip over. Default is 0.
     + limit: 50 (number, optional) - the number of results to return. Default and maximum set to 50.
-    + q: `Github` (string, optional) - the field to search by
+    + search:  `Github` (string, optional) - the field to search by
 
-### Get a List of Companies [GET]
-**Auth Required**. By default, `limit` is set to 50.
-
-+ Request
 + Response 200 (application/json; charset=utf-8)
     + Attributes
         + array[Company]
 
-+ Request Bad Request
 + Response 400 (application/json; charset=utf-8)
     + Attributes
         + error (Bad Request)
 
-+ Request Unauthorized
 + Response 401 (application/json; charset=utf-8)
     + Attributes
         + error (Unauthorized)
 
-### Create a New Company [POST]
+### Create a New Company (POST) [POST]
 The fields `name`, `password`, `email`, and `handle` are cannot be null.
 
 + Request
@@ -521,12 +387,10 @@ The fields `name`, `password`, `email`, and `handle` are cannot be null.
     + Attributes
         + Company
 
-+ Request Bad Request
 + Response 400 (application/json; charset=utf-8)
     + Attributes
         + error (Bad Request)
 
-+ Request Conflict
 + Response 409 (application/json; charset=utf-8)
     + Attributes
         + error (Conflict)
@@ -537,28 +401,26 @@ Endpoint for reading, updating, or deleting a single company.
 + Parameters
     + handle: `hooli` (string, required) - the company to lookup.
 
-### Get a Company [GET]
+### Get a Company (GET) [GET]
 **Auth Required**. Retrieve a single company by its `handle`.
 
-+ Request
 + Response 200 (application/json; charset=utf-8)
     + Attributes
         + Company
 
-+ Request Unauthorized
+
     + Attributes
         + Company
 + Response 401 (application/json; charset=utf-8)
     + Attributes
         + error (Unauthorized)
 
-+ Request Not Found
 + Response 404 (application/json; charset=utf-8)
     + Attributes
         + error (Not Found)
 
 
-### Update a Company [PATCH]
+### Update a Company (PATCH) [PATCH]
 **Auth Required. Correct Company Required.** Update a single company by its `handle`
 
 + Request
@@ -568,45 +430,165 @@ Endpoint for reading, updating, or deleting a single company.
     + Attributes
         + Company
 
-+ Request Bad Request
-    + Attributes
-        + Company
 + Response 400 (application/json; charset=utf-8)
     + Attributes
         + error (Bad Request)
 
-+ Request Unauthorized
-    + Attributes
-        + Company
 + Response 401 (application/json; charset=utf-8)
     + Attributes
         + error (Unauthorized)
 
-+ Request Not Found
-    + Attributes
-        + Company
 + Response 404 (application/json; charset=utf-8)
     + Attributes
         + error (Not Found)
 
-### Delete a Company [DELETE]
+### Delete a Company (DELETE) [DELETE]
 **Auth Required. Correct Company Required.** Remove a single company by its `handle`.
 
-+ Request
 + Response 200 (application/json; charset=utf-8)
     + Attributes
         + Success
 
-+ Request Unauthorized
 + Response 401 (application/json; charset=utf-8)
     + Attributes
         + error (Unauthorized)
 
-+ Request Not Found
 + Response 404 (application/json; charset=utf-8)
     + Attributes
         + error (Not Found)
 
+## Jobs [/jobs{?offset,limit,search}]
+Endpoint to create a user or query for a list of jobs.
+
+### Get a List of Jobs (GET) [GET]
+**Auth Required**. By default, `limit` is set to 50.
+
++ Parameters
+    + offset: 0 (number, optional) - the list of documents to offset over. Default is 0.
+    + limit: 50 (number, optional) - the number of documents to return. Default and maximum set to 50.
+    + search:  `Github` (string, optional) - the field to search by
+
++ Response 200 (application/json; charset=utf-8)
+    + Attributes
+        + array[Job]
+
++ Response 400 (application/json; charset=utf-8)
+    + Attributes
+        + error (Bad Request)
+
++ Response 401 (application/json; charset=utf-8)
+    + Attributes
+        + error (Unauthorized)
+
+### Create a New Job (POST) [POST]
+**Auth Required (Companies Only)**. The fields `title`, `company`, and `salary` cannot be null.
+
++ Request
+    + Attributes
+        + Job
++ Response 201 (application/json; charset=utf-8)
+    + Attributes
+        + Job
+
++ Response 400 (application/json; charset=utf-8)
+    + Attributes
+        + error (Bad Request)
+
++ Response 409 (application/json; charset=utf-8)
+    + Attributes
+        + error (Conflict)
+
+## Job [/jobs/{id}]
+Endpoint for reading, updating, or deleting a single job.
+
++ Parameters
+    + id: 4 (string, required) - the job to lookup.
+
+### Get a Job (GET) [GET]
+**Auth Required**. Retrieve a single job by its `id`.
+
++ Response 200 (application/json; charset=utf-8)
+    + Attributes
+        + Job
+
++ Response 401 (application/json; charset=utf-8)
+    + Attributes
+        + error (Unauthorized)
+
++ Response 404 (application/json; charset=utf-8)
+    + Attributes
+        + error (Not Found)
+
+
+### Update a Job (PATCH) [PATCH]
+**Auth Required. Correct Company Required.** Update a single job by `id`.
+
++ Request
+    + Attributes
+        + Job
++ Response 200 (application/json; charset=utf-8)
+    + Attributes
+        + Job
+
++ Response 400 (application/json; charset=utf-8)
+    + Attributes
+        + error (Bad Request)
+
++ Response 401 (application/json; charset=utf-8)
+    + Attributes
+        + error (Unauthorized)
+
++ Response 404 (application/json; charset=utf-8)
+    + Attributes
+        + error (Not Found)
+
+### Delete a Job (DELETE) [DELETE]
+**Auth Required. Correct Company Required.** Remove a single job by its `id`.
+
++ Response 200 (application/json; charset=utf-8)
+    + Attributes
+        + Success
+
++ Response 401 (application/json; charset=utf-8)
+    + Attributes
+        + error (Unauthorized)
+
++ Response 404 (application/json; charset=utf-8)
+    + Attributes
+        + error (Not Found)
+
+## Job Applications [/jobs/{id}/apply]
+Endpoint for applying to or deleting an application to a specific job.
+
+### Apply for a Job (GET) [GET]
+**Auth Required (Users Only)**. Apply to a job by its `id`, the username is collected from the token.
+
++ Response 200 (application/json; charset=utf-8)
+    + Attributes
+        + Success
+
++ Response 401 (application/json; charset=utf-8)
+    + Attributes
+        + error (Unauthorized)
+
++ Response 404 (application/json; charset=utf-8)
+    + Attributes
+        + error (Not Found)
+
+### Delete a Job Application (DELETE) [DELETE]
+**Auth Required. Correct User/Company Required.**. A user may withdraw their application, or a company may delete it.
+
++ Response 200 (application/json; charset=utf-8)
+    + Attributes
+        + Success
+
++ Response 401 (application/json; charset=utf-8)
+    + Attributes
+        + error (Unauthorized)
+
++ Response 404 (application/json; charset=utf-8)
+    + Attributes
+        + error (Not Found)
 
 ## Data Structures
 
@@ -628,7 +610,7 @@ Endpoint for reading, updating, or deleting a single company.
   + username: `hueter` (string, optional) - username can only consist of letters and numbers between 1 and 55 characters. **Required to Create a New User. Immutable.**
 
 ### User
-  + applied: 2, 3 (array[number], optional) - an array of job IDs the user has applied to
+  + applied_to: 2, 3 (array[number], optional) - an array of job IDs the user has applied to
   + current_company: rithm (string, optional) - This should reference a handle for a company IF IT EXISTS
   + email: `michael@rithmschool.com` (string, optional) - email can only consist of letters and numbers between 1 and 55 characters. **Required to Create a New User.**
   + first_name: `Michael` (string, optional) - the user's first name, between 1 and 55 characters. **Required to Create a New User.**
