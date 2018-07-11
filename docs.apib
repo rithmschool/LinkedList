@@ -28,7 +28,7 @@ Both collections have full CRUD operations.
   - `first_name` - the user's first name, between 1 and 55 characters. Required to Create a New User.
   - `last_name` - the user's last name, between 1 and 55 characters. Required to Create a New User.
   - `username` - username can only consist of letters and numbers between 1 and 55 characters. Required to Create a New User. MUST BE UNIQUE.
-  - `email` - between 6 and 60 characters. Required to Create a New User.
+  - `email` - between 6 and 60 characters. Required to Create a New User. MUST BE UNIQUE.
   - `password` - between 5 and 55 characters. Required to Create a New User.
   - `photo` - A valid URL for a photo
   - `current_company` - this should reference a company handle IF IT EXISTS 
@@ -41,7 +41,7 @@ Both collections have full CRUD operations.
 - **Attributes**:
   - `name` - username can only consist of letters and numbers between 1 and 55 characters. Required to Create a New Company.
   - `email` - between 6 and 60 characters. Required to Create a New Company. MUST BE UNIQUE.
-  - `handle` - between 1 and 55 characters. Required to Create a New Company.
+  - `handle` - between 1 and 55 characters. Required to Create a New Company. MUST BE UNIQUE.
   - `password` - between 1 and 55 characters. Required to Create a New Company.
   - `logo` - a valid URL for the logo of the company
   - `employees` - array of usernames who work at the company
