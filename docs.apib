@@ -28,8 +28,8 @@ Both collections have full CRUD operations.
   - `first_name` - the user's first name, between 1 and 55 characters. Required to Create a New User.
   - `last_name` - the user's last name, between 1 and 55 characters. Required to Create a New User.
   - `username` - username can only consist of letters and numbers between 1 and 55 characters. Required to Create a New User. MUST BE UNIQUE.
-  - `email` - between 1 and 55 characters. Required to Create a New User.
-  - `password` - between 1 and 55 characters. Required to Create a New User.
+  - `email` - between 6 and 60 characters. Required to Create a New User.
+  - `password` - between 5 and 55 characters. Required to Create a New User.
   - `photo` - A valid URL for a photo
   - `current_company` - this should reference a company handle IF IT EXISTS 
   - `applied_to` - array of Job IDs that user applied to
@@ -40,7 +40,7 @@ Both collections have full CRUD operations.
 - **Singular Endpoint**: `/companies/{handle}`
 - **Attributes**:
   - `name` - username can only consist of letters and numbers between 1 and 55 characters. Required to Create a New Company.
-  - `email` - between 1 and 55 characters. Required to Create a New Company. MUST BE UNIQUE.
+  - `email` - between 6 and 60 characters. Required to Create a New Company. MUST BE UNIQUE.
   - `handle` - between 1 and 55 characters. Required to Create a New Company.
   - `password` - between 1 and 55 characters. Required to Create a New Company.
   - `logo` - a valid URL for the logo of the company
@@ -508,8 +508,8 @@ Endpoint for reading, updating, or deleting a single job.
 ## Job Applications [/jobs/{id}/apply]
 Endpoint for applying to or deleting an application to a specific job.
 
-### Apply for a Job (GET) [GET]
-**Auth Required (Users Only)**. Apply to a job by its `id`, the username is collected from the token.
+### Apply for a Job (POST) [POST]
+**Auth Required (Users Only)**. Apply to a job by its `id`, the username is collected from the token. No POST body required.
 
 + Response 200 (application/json; charset=utf-8)
     + Attributes (Success)
@@ -548,7 +548,7 @@ Endpoint for applying to or deleting an application to a specific job.
 
 ### NewUser
   + current_company: rithm (string, optional) - This should reference a handle for a company IF IT EXISTS
-  + email: `michael@rithmschool.com` (string, optional) - email can only consist of letters and numbers between 1 and 55 characters. **Required to Create a New User.**
+  + email: `michael@rithmschool.com` (string, optional) - email can only consist of letters and numbers between 6 and 60 characters. **Required to Create a New User.**
   + first_name: `Michael` (string, optional) - the user's first name, between 1 and 55 characters. **Required to Create a New User.**
   + last_name: `Hueter` (string, optional) - the user's last name, between 1 and 55 characters. **Required to Create a New User.**
   + password: `foo123` (string, optional) - between 1 and 55 characters. **Required to Create a New User.**
@@ -558,7 +558,7 @@ Endpoint for applying to or deleting an application to a specific job.
 ### User
   + applied_to: 2, 3 (array[number], optional) - an array of job IDs the user has applied to
   + current_company: rithm (string, optional) - This should reference a handle for a company IF IT EXISTS
-  + email: `michael@rithmschool.com` (string, optional) - email can only consist of letters and numbers between 1 and 55 characters. **Required to Create a New User.**
+  + email: `michael@rithmschool.com` (string, optional) - email can only consist of letters and numbers between 6 and 55 characters. **Required to Create a New User.**
   + first_name: `Michael` (string, optional) - the user's first name, between 1 and 55 characters. **Required to Create a New User.**
   + last_name: `Hueter` (string, optional) - the user's last name, between 1 and 55 characters. **Required to Create a New User.**
   + password: `foo123` (string, optional) - between 1 and 55 characters. **Required to Create a New User.**

@@ -4,11 +4,26 @@ LinkedIn/AngelList type of clone.
 
 ## Backend
 
+### High-Level Requirements
+
 1.  The backend should be a RESTful API using JSON.
 1.  The server must be Node.js and Express.js, and the database must be PostgreSQL.
 1.  The API must be built to spec according to the [documentation on Apiary](https://linkedlist.docs.apiary.io/).
 1.  The server must implement authentication using JWT and encrypt passwords in the database.
 1.  The server must be deployed to Heroku.
+
+### Specific Requirements
+
+1.  The server should validate bad inputs for every POST and PATCH request and issue `400 - Bad Request` responses.
+    - (BONUS) The server should validate proper email formats.
+    - (BONUS) The server should validate proper URI formats.
+1.  The server should issue `409 - Conflict` responses when trying to create a `username` or company `handle` that already exists.
+1.  Users cannot edit or delete users other than themselves.
+1.  Companies cannot edit or delete companies other than themselves.
+1.  Users can create or delete job applications `POST -> /jobs/:id/apply`. Companies can only delete job applications.
+1.  Companies cannot edit or delete job listings by other companies.
+1.  (BONUS) For the following three endpoints: `GET /users`, `GET /companies`, `GET /jobs` implement `offset` and `limit` query parameters. For instance `/users?limit=10` should return the first 10 users, and `/users?offset=10&limit=10` should return the next 10 users.
+1.  (BONUS) For the following three endpoints: `GET /users`, `GET /companies`, `GET /jobs` implement `search` queries, for instance `/users?search=Matt+Lane` should issue a search for `Matt Lane` in the database.
 
 ### Backend Solution
 
