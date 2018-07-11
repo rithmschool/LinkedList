@@ -10,7 +10,8 @@ LinkedIn/AngelList type of clone.
 1.  The server must be Node.js and Express.js, and the database must be PostgreSQL.
 1.  The API must be built to spec according to the [documentation on Apiary](https://linkedlist.docs.apiary.io/).
 1.  The server must implement authentication using JWT and encrypt passwords in the database.
-1.  The server must be deployed to Heroku.
+1.  The server must have automated endpoint tests, written with Jest/SuperTest, for each endpoint.
+1.  (BONUS) The server must be deployed to Heroku.
 
 ### Specific Requirements
 
