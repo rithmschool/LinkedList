@@ -30,7 +30,7 @@ Both collections have full CRUD operations.
   - `username` - username can only consist of letters and numbers between 1 and 55 characters. Required to Create a New User. MUST BE UNIQUE.
   - `email` - between 6 and 60 characters. Required to Create a New User. MUST BE UNIQUE.
   - `password` - between 5 and 55 characters. Required to Create a New User.
-  - `photo` - A valid URL for a photo
+  - `photo` - A valid URL for a photo.
   - `current_company` - this should reference a company handle IF IT EXISTS 
   - `applied_to` - array of Job IDs that user applied to
 
@@ -43,8 +43,8 @@ Both collections have full CRUD operations.
   - `email` - between 6 and 60 characters. Required to Create a New Company. MUST BE UNIQUE.
   - `handle` - between 1 and 55 characters. Required to Create a New Company. MUST BE UNIQUE.
   - `password` - between 1 and 55 characters. Required to Create a New Company.
-  - `logo` - a valid URL for the logo of the company
-  - `employees` - array of usernames who work at the company
+  - `logo` - a valid URL for the logo of the company.
+  - `employees` - array of usernames who work at the company.
   - `jobs` - array of Job IDs company has listed
 
 #### Jobs
@@ -52,10 +52,10 @@ Both collections have full CRUD operations.
 - **Collection Endpoint**: `/jobs`
 - **Singular Endpoint**: `/jobs/{id}`
 - **Attributes**:
-  - `title` - the title for the job posting.
-  - `company` - this should reference a handle for a company
-  - `salary` - a number for the salary offered in this post
-  - `equity` - a float for the equity offered in this post
+  - `title` - the title for the job posting. Required to post a job.
+  - `company` - this should reference a handle for a company. Companies cannot post on behalf of other companies. Required to post a job.
+  - `salary` - a text for the salary offered in this post. Required to post a job. Examples: `"100,000-150,000"`, `"TBD"`, `"Based on Experience"`.
+  - `equity` - a float for the equity offered in this post.
 
 See the [Reference section](/#reference/0/auth) for fully-detailed resource documentation.
 
