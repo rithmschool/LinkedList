@@ -315,7 +315,7 @@ The fields `username`, `password`, and `name` cannot be null.
 **Auth Required. Correct User Required.** Remove a single user by their `username`.
 
 + Response 200 (application/json; charset=utf-8)
-    + Attributes (Success)
+    + Attributes (User)
 
 + Response 401 (application/json; charset=utf-8)
     + Attributes
@@ -413,7 +413,7 @@ The fields `name`, `password`, `email`, and `handle` are cannot be null.
 **Auth Required. Correct Company Required.** Remove a single company by its `handle`.
 
 + Response 200 (application/json; charset=utf-8)
-    + Attributes (Success)
+    + Attributes (Company)
 
 + Response 401 (application/json; charset=utf-8)
     + Attributes
@@ -512,7 +512,7 @@ The fields `name`, `password`, `email`, and `handle` are cannot be null.
 **Auth Required. Correct Company Required.** Remove a single job by its `id`.
 
 + Response 200 (application/json; charset=utf-8)
-    + Attributes (Success)
+    + Attributes (Job)
 
 + Response 401 (application/json; charset=utf-8)
     + Attributes
@@ -531,7 +531,7 @@ The fields `name`, `password`, `email`, and `handle` are cannot be null.
 **Auth Required (Users Only)**. Apply to a job by its `id`, the username is collected from the token. No POST body required.
 
 + Response 200 (application/json; charset=utf-8)
-    + Attributes (Success)
+    + Attributes (Job Apply Success)
 
 + Response 401 (application/json; charset=utf-8)
     + Attributes
@@ -545,7 +545,7 @@ The fields `name`, `password`, `email`, and `handle` are cannot be null.
 **Auth Required. Correct User/Company Required.**. A user may withdraw their application, or a company may delete it.
 
 + Response 200 (application/json; charset=utf-8)
-    + Attributes (Success)
+    + Attributes (Job Delete Success)
 
 + Response 401 (application/json; charset=utf-8)
     + Attributes
@@ -627,7 +627,8 @@ The fields `name`, `password`, `email`, and `handle` are cannot be null.
   + title: Conflict (string, required) - text accompanying the status code
   + message: `Another record with the same ID already exists.` (string, required) - description of the error
 
-### Success
-  + status: 200 (number, required) - HTTP status code
-  + title: Success (string, required) - text accompanying the status code
-  + message: `The operation was successful.` (string, required) - description of the event
+### Job Apply Success
+  + message: `Successfully applied for job.` (string, required) - description of the event
+
+### Job Delete Success
+  + message: `Successfully deleted job application.` (string, required) - description of the event
