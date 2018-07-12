@@ -25,6 +25,7 @@ LinkedIn/AngelList type of clone.
 1.  Companies cannot edit or delete job listings by other companies.
 1.  Deleting a company should delete all of the jobs that the company posted.
 1.  Deleting a company should make users who work at that company have `null` for their `current_company` fields.
+1.  Hashed passwords should not be visible on any of the responses.
 1.  (BONUS) For the following three endpoints: `GET /users`, `GET /companies`, `GET /jobs` implement `offset` and `limit` query parameters. For instance `/users?limit=10` should return the first 10 users, and `/users?offset=10&limit=10` should return the next 10 users.
 1.  (BONUS) For the following three endpoints: `GET /users`, `GET /companies`, `GET /jobs` implement `search` queries, for instance `/users?search=Matt+Lane` should issue a search for `Matt Lane` in the database.
 
