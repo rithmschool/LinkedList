@@ -175,7 +175,9 @@ curl -X PATCH \
 ---
 
 ## UserAuth [/user-auth]
-Endpoint for authenticating a user by getting a JWT from the server.
+**Endpoint:** `/user-auth` 
+
+**Purpose:** Authenticate a user by getting a JWT from the server.
 
 ### User Auth to Receive Token (POST) [POST]
 
@@ -199,7 +201,9 @@ Endpoint for authenticating a user by getting a JWT from the server.
         + error (Not Found)
 
 ## CompanyAuth [/company-auth]
-Endpoint for authenticating a company by getting a JWT from the server.
+**Endpoint:** `/company-auth` 
+
+**Purpose:** Authenticate a company by getting a JWT from the server.
 
 ### Company Auth to Receive Token (POST) [POST]
 
@@ -223,7 +227,9 @@ Endpoint for authenticating a company by getting a JWT from the server.
         + error (Not Found)
 
 ## Users [/users{?offset,limit,search}]
-Endpoint to create a user or query for a list of users.
+**Endpoint:** `/users` 
+
+**Purpose:** Create a user, query a list of users, or search for users
 
 ### Get a List of Users (GET) [GET]
 **Auth Required**. Note: passwords are not visible at this endpoint. By default, `limit` is set to 50.
@@ -264,7 +270,9 @@ The fields `username`, `password`, and `name` cannot be null.
 
 
 ## User [/users/{username}]
-Endpoint for reading, updating, or deleting a single user.
+**Endpoint:** `/users/{username}`
+
+**Purpose:** Reading, updating, or deleting a single user.
 
 + Parameters
     + username: hueter (string, required) - the username to lookup.
@@ -318,7 +326,9 @@ Endpoint for reading, updating, or deleting a single user.
         + error (Not Found)
 
 ## Companies [/companies{?offset,limit,search}]
-Endpoint to create a user or query for a list of companies.
+**Endpoint:** `/companies` 
+
+**Purpose:** Create a company, query for a list of companies, or search for companies.
 
 ### Get a List of Companies (GET) [GET]
 **Auth Required**. By default, `limit` is set to 50.
@@ -357,7 +367,9 @@ The fields `name`, `password`, `email`, and `handle` are cannot be null.
         + error (Conflict)
 
 ## Company [/companies/{handle}]
-Endpoint for reading, updating, or deleting a single company.
+**Endpoint:** `/company/{handle}` 
+
+**Purpose:** Reading, updating, or deleting a single company.
 
 + Parameters
     + handle: `hooli` (string, required) - the company to lookup.
@@ -412,7 +424,9 @@ Endpoint for reading, updating, or deleting a single company.
         + error (Not Found)
 
 ## Jobs [/jobs{?offset,limit,search}]
-Endpoint to create a user or query for a list of jobs.
+**Endpoint:** `/jobs` 
+
+**Purpose:** Create a new job listing, query a list of job listings, or search for job listings.
 
 ### Get a List of Jobs (GET) [GET]
 **Auth Required**. By default, `limit` is set to 50.
@@ -450,7 +464,10 @@ Endpoint to create a user or query for a list of jobs.
         + error (Conflict)
 
 ## Job [/jobs/{id}]
-Endpoint for reading, updating, or deleting a single job.
+
+**Endpoint:** `/jobs/{id}`
+
+**Purpose:** Reading, updating, or deleting a single job.
 
 + Parameters
     + id: 4 (string, required) - the job to lookup.
@@ -506,7 +523,9 @@ Endpoint for reading, updating, or deleting a single job.
         + error (Not Found)
 
 ## Job Applications [/jobs/{id}/apply]
-Endpoint for applying to or deleting an application to a specific job.
+**Endpoint:** `/jobs/{id}/apply` 
+
+**Purpose:** Apply for a job or delete a job application.
 
 ### Apply for a Job (POST) [POST]
 **Auth Required (Users Only)**. Apply to a job by its `id`, the username is collected from the token. No POST body required.

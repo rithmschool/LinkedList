@@ -28,15 +28,6 @@ function fourOhFiveHandler(request, response, next) {
 }
 
 function globalErrorHandler(error, request, response, next) {
-  // format validation errors
-  if (Array.isArray(error)) {
-    error = new APIError(
-      400,
-      'Bad Request',
-      error.map(e => e.name).join('. \n')
-    ); // join with a period and newline
-  }
-
   // format built-in errors
   if (!(error instanceof APIError)) {
     error = new APIError(500, error.type, error.message);
