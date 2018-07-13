@@ -21,7 +21,7 @@ LinkedIn/AngelList type of clone.
 1.  The server should issue `409 - Conflict` responses when trying to create a `username` or company `handle` that already exists.
 1.  Users cannot edit or delete users other than themselves.
 1.  Companies cannot edit or delete companies other than themselves.
-1.  Users can create or delete job applications `POST -> /jobs/:id/apply`. Companies can only delete job applications.
+1.  Users can create, view, or delete job applications `/jobs/:id/applications`. Companies can only view or delete job applications.
 1.  Companies cannot edit or delete job listings by other companies.
 1.  Deleting a company should delete all of the jobs that the company posted.
 1.  Deleting a company should make users who work at that company have `null` for their `current_company` fields.

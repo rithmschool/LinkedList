@@ -182,7 +182,7 @@ curl -X PATCH \
 ### User Auth to Receive Token (POST) [POST]
 
 + Request
-    + Attributes (UserAuth)
+    + Attributes (User Auth)
 
 + Response 200 (application/json; charset=utf-8)
     + Attributes
@@ -208,7 +208,7 @@ curl -X PATCH \
 ### Company Auth to Receive Token (POST) [POST]
 
 + Request
-    + Attributes (CompanyAuth)
+    + Attributes (Company Auth)
 
 + Response 200 (application/json; charset=utf-8)
     + Attributes
@@ -255,7 +255,7 @@ Note: password will not be present in the response.
 The fields `username`, `password`, and `name` cannot be null.
 
 + Request
-    + Attributes (NewUser)
+    + Attributes (New User)
 
 + Response 201 (application/json; charset=utf-8)
     + Attributes (User)
@@ -353,7 +353,7 @@ The fields `username`, `password`, and `name` cannot be null.
 The fields `name`, `password`, `email`, and `handle` are cannot be null.
 
 + Request
-    + Attributes (NewCompany)
+    + Attributes (New Company)
 
 + Response 201 (application/json; charset=utf-8)
     + Attributes (Company)
@@ -372,7 +372,7 @@ The fields `name`, `password`, `email`, and `handle` are cannot be null.
 **Purpose:** Reading, updating, or deleting a single company.
 
 + Parameters
-    + handle: `hooli` (string, required) - the company to lookup.
+    + handle: `hooli` (string, required) - the company's handle.
 
 ### Get a Company (GET) [GET]
 **Auth Required**. Retrieve a single company by its `handle`.
@@ -470,7 +470,7 @@ The fields `name`, `password`, `email`, and `handle` are cannot be null.
 **Purpose:** Reading, updating, or deleting a single job.
 
 + Parameters
-    + id: 4 (string, required) - the job to lookup.
+    + id: 4 (string, required) - the ID of the job.
 
 ### Get a Job (GET) [GET]
 **Auth Required**. Retrieve a single job by its `id`.
@@ -522,16 +522,57 @@ The fields `name`, `password`, `email`, and `handle` are cannot be null.
     + Attributes
         + error (Not Found)
 
-## Job Applications [/jobs/{id}/apply]
-**Endpoint:** `/jobs/{id}/apply` 
+## Job Applications [/jobs/{job_id}/applications]
+**Endpoint:** `/jobs/{job_id}/applications` 
 
-**Purpose:** Apply for a job or delete a job application.
+**Purpose:** Apply for a job, or query jobs by company.
+
++ Parameters
+    + job_id: 4 (string, required) - the ID of the job.
 
 ### Apply for a Job (POST) [POST]
 **Auth Required (Users Only)**. Apply to a job by its `id`, the username is collected from the token. No POST body required.
 
 + Response 200 (application/json; charset=utf-8)
-    + Attributes (Job Apply Success)
+    + Attributes (Job Application)
+
++ Response 401 (application/json; charset=utf-8)
+    + Attributes
+        + error (Unauthorized)
+
++ Response 404 (application/json; charset=utf-8)
+    + Attributes
+        + error (Not Found)
+
+
+### List Job Applications (GET) [GET]
+**Auth Required. Company must be the company that listed the job. User must be user that applied for the job.**. Get a list of job applications, based on the logged in user or company. Users can only see job applications they submitted. Companies can only see job applications for jobs they listed.
+
++ Response 200 (application/json; charset=utf-8)
+    + Attributes (array[Job Application])
+
++ Response 401 (application/json; charset=utf-8)
+    + Attributes
+        + error (Unauthorized)
+
++ Response 404 (application/json; charset=utf-8)
+    + Attributes
+        + error (Not Found)
+
+## Job Application [/jobs/{job_id}/applications/{application_id}]
+**Endpoint:** `/jobs/{job_id}/applications/{application_id}` 
+
+**Purpose:** Manage a job application.
+
++ Parameters
+    + job_id: 4 (string, required) - the ID of the job.
+    + application_id: 16 (string, required) - the ID of the job application.
+
+### Get a Job Application (GET) [GET]
+**Auth Required. Correct User/Company Required.**. A user or company may view an application by its ID.
+
++ Response 200 (application/json; charset=utf-8)
+    + Attributes (Job Application)
 
 + Response 401 (application/json; charset=utf-8)
     + Attributes
@@ -545,7 +586,7 @@ The fields `name`, `password`, `email`, and `handle` are cannot be null.
 **Auth Required. Correct User/Company Required.**. A user may withdraw their application, or a company may delete it.
 
 + Response 200 (application/json; charset=utf-8)
-    + Attributes (Job Delete Success)
+    + Attributes (Job Application)
 
 + Response 401 (application/json; charset=utf-8)
     + Attributes
@@ -557,22 +598,22 @@ The fields `name`, `password`, `email`, and `handle` are cannot be null.
 
 ## Data Structures
 
-### UserAuth
-  + username: `hueter` (string, optional) - username can only consist of letters and numbers between 1 and 55 characters.
-  + password: `foo123` (string, optional) - between 1 and 55 characters.
+### User Auth
+  + username: `hueter` (string, required) - username can only consist of letters and numbers between 1 and 55 characters.
+  + password: `foo123` (string, required) - between 1 and 55 characters.
 
-### CompanyAuth
-  + handle: `hooli` (string, optional) - email can only consist of letters and numbers between 1 and 55 characters.
-  + password: `bloodboy` (string, optional) - between 1 and 55 characters.
+### Company Auth
+  + handle: `hooli` (string, required) - email can only consist of letters and numbers between 1 and 55 characters.
+  + password: `bloodboy` (string, required) - between 1 and 55 characters.
 
-### NewUser
+### New User
   + current_company: rithm (string, optional) - This should reference a handle for a company IF IT EXISTS
-  + email: `michael@rithmschool.com` (string, optional) - email can only consist of letters and numbers between 6 and 60 characters. **Required to Create a New User.**
-  + first_name: `Michael` (string, optional) - the user's first name, between 1 and 55 characters. **Required to Create a New User.**
-  + last_name: `Hueter` (string, optional) - the user's last name, between 1 and 55 characters. **Required to Create a New User.**
-  + password: `foo123` (string, optional) - between 1 and 55 characters. **Required to Create a New User.**
+  + email: `michael@rithmschool.com` (string, required) - email can only consist of letters and numbers between 6 and 60 characters. **Required to Create a New User.**
+  + first_name: `Michael` (string, required) - the user's first name, between 1 and 55 characters. **Required to Create a New User.**
+  + last_name: `Hueter` (string, required) - the user's last name, between 1 and 55 characters. **Required to Create a New User.**
+  + password: `foo123` (string, required) - between 1 and 55 characters. **Required to Create a New User.**
   + photo: `https://www.michaelhueter.com` (string, optional) - A valid URL for a photo
-  + username: `hueter` (string, optional) - username can only consist of letters and numbers between 1 and 55 characters. **Required to Create a New User. Immutable.**
+  + username: `hueter` (string, required) - username can only consist of letters and numbers between 1 and 55 characters. **Required to Create a New User. Immutable.**
 
 ### User
   + applied_to: 2, 3 (array[number], optional) - an array of job IDs the user has applied to
@@ -584,13 +625,12 @@ The fields `name`, `password`, `email`, and `handle` are cannot be null.
   + photo: `https://www.michaelhueter.com` (string, optional) - A valid URL for a photo
   + username: `hueter` (string, optional) - username can only consist of letters and numbers between 1 and 55 characters. **Required to Create a New User. Immutable.**
 
-
-### NewCompany
-  + email: `gavinhooli.com` (string, optional) - between 1 and 55 characters. **Required to Create a New Company.**
-  + handle: `hooli` (string, optional) - between 1 and 55 characters. **Required to Create a New Company.**
+### New Company
+  + email: `gavinhooli.com` (string, required) - between 1 and 55 characters. **Required to Create a New Company.**
+  + handle: `hooli` (string, required) - between 1 and 55 characters. **Required to Create a New Company.**
   + logo: `https://assets-cdn.github.com/images/modules/logos_page/GitHub-Mark.png` (string, optional) - a valid URL for the logo of the company
-  + name: `Hooli` (string, optional) - username can only consist of letters and numbers between 1 and 55 characters. **Required to Create a New Company. Immutable.**
-  + password: `bloodboy` (string, optional) - between 1 and 55 characters. **Required to Create a New Company.**
+  + name: `Hooli` (string, required) - username can only consist of letters and numbers between 1 and 55 characters. **Required to Create a New Company. Immutable.**
+  + password: `bloodboy` (string, required) - between 1 and 55 characters. **Required to Create a New Company.**
 
 ### Company
   + email: `gavinhooli.com` (string, optional) - between 1 and 55 characters. **Required to Create a New Company.**
@@ -602,10 +642,21 @@ The fields `name`, `password`, `email`, and `handle` are cannot be null.
   + password: `bloodboy` (string, optional) - between 1 and 55 characters. **Required to Create a New Company.**
 
 ### Job
+  + id: 4 (number, optional) - This should reference the job ID
   + company: hooli (string, optional) - This should reference a company handle
   + equity: 2.1 (number, optional) - a float for the equity offered in this post
   + salary: `150000` (string, optional) - a string containing the salary offered in this post
   + title: `Software Developer` (string, optional) - the title for the job posting.
+
+### New Job
+  + company: hooli (string, required) - This should reference a company handle
+  + salary: `150000` (string, required) - a string containing the salary offered in this post
+  + title: `Software Developer` (string, required) - the title for the job posting.
+
+### Job Application
+  + id: 16 (number, optional) - This should reference the Job Application ID
+  + username: hueter (string, optional) - This should reference the user who applied
+  + job_id: 4 (number, optional) - This should reference the Job ID
 
 ### Bad Request
   + status: 400 (number, required) - HTTP status code
@@ -626,9 +677,3 @@ The fields `name`, `password`, `email`, and `handle` are cannot be null.
   + status: 409 (number, required) - HTTP status code
   + title: Conflict (string, required) - text accompanying the status code
   + message: `Another record with the same ID already exists.` (string, required) - description of the error
-
-### Job Apply Success
-  + message: `Successfully applied for job.` (string, required) - description of the event
-
-### Job Delete Success
-  + message: `Successfully deleted job application.` (string, required) - description of the event
