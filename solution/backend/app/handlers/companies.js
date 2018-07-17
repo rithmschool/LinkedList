@@ -12,9 +12,9 @@ const { companyNewSchema, companyUpdateSchema } = require('../schemas');
 async function readCompanies(req, res, next) {
   /* pagination validation */
   let { offset, limit } = processOffsetLimit(req.query.offset, req.query.limit);
-  if (offset && typeof offset !== 'number') {
+  if (offset && offset instanceof APIError) {
     return next(offset);
-  } else if (limit && typeof limit !== 'number') {
+  } else if (limit && limit instanceof APIError) {
     return next(limit);
   }
 
@@ -40,10 +40,15 @@ async function readCompanies(req, res, next) {
 async function createCompany(req, res, next) {
   const validation = validate(req.body, companyNewSchema);
   if (!validation.valid) {
-    return next(validation.errors);
+    return next(
+      new APIError(
+        400,
+        'Bad Request',
+        validation.errors.map(e => e.stack).join('. ')
+      )
+    );
   }
-
-  const { name, logo, handle, password } = req.body.data;
+  const { name, logo, handle, password } = req.body;
 
   try {
     const result = await db.query(
@@ -59,14 +64,14 @@ async function createCompany(req, res, next) {
 
 /**
  * Get a single company
- * @param {String} id - the id of the Company to retrieve
+ * @param {String} handle - the handle of the Company to retrieve
  */
 async function readCompany(req, res, next) {
   const { handle } = req.params;
 
   try {
-    const result = await db.query('SELECT * FROM companies WHERE id=$1', [
-      req.params.id
+    const result = await db.query('SELECT * FROM companies WHERE handle=$1', [
+      handle
     ]);
     const company = result.rows[0];
     if (!company) {
@@ -74,17 +79,18 @@ async function readCompany(req, res, next) {
         new APIError(
           404,
           'Company Not Found',
-          `No Company with ID ${id} found.`
+          `No Company with handle '${handle}' found.`
         )
       );
     }
-    const users = await db.query('SELECT * FROM users WHERE company_id=$1', [
-      req.params.id
+    const users = await db.query(
+      'SELECT * FROM users WHERE current_company=$1',
+      [handle]
+    );
+    const jobs = await db.query('SELECT * FROM jobs WHERE company=$1', [
+      handle
     ]);
-    const jobs = await db.query('SELECT * FROM jobs WHERE company_id=$1', [
-      req.params.id
-    ]);
-    company.users = users.rows.map(u => u.id);
+    company.users = users.rows.map(u => u.username);
     company.jobs = jobs.rows.map(j => j.id);
     return res.json(company);
   } catch (err) {
@@ -94,17 +100,23 @@ async function readCompany(req, res, next) {
 
 /**
  * Update a single company
- * @param {String} id - the id of the Company to update
+ * @param {String} handle - the handle of the Company to update
  */
 async function updateCompany(req, res, next) {
   const { handle } = req.params;
 
   const validation = validate(req.body, companyUpdateSchema);
   if (!validation.valid) {
-    return next(validation.errors);
+    return next(
+      new APIError(
+        400,
+        'Bad Request',
+        validation.errors.map(e => e.stack).join('. ')
+      )
+    );
   }
 
-  const { name, logo, password } = req.body.data;
+  const { name, logo, password } = req.body;
 
   try {
     const result = await db.query(
@@ -131,7 +143,7 @@ async function updateCompany(req, res, next) {
 
 /**
  * Remove a single company
- * @param {String} id - the id of the Company to remove
+ * @param {String} handle - the handle of the Company to remove
  */
 async function deleteCompany(req, res, next) {
   const { handle } = req.params;

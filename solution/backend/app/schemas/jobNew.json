@@ -2,43 +2,38 @@
   "$id": "http://example.com/example.json",
   "type": "object",
   "properties": {
-    "data": {
-      "$id": "/properties/data",
-      "type": "object",
-      "properties": {
-        "title": {
-          "$id": "/properties/data/properties/title",
-          "type": "string",
-          "title": "The Title Schema ",
-          "default": "",
-          "examples": ["Lead Instructor"]
-        },
-        "salary": {
-          "$id": "/properties/data/properties/salary",
-          "type": "integer",
-          "title": "The Salary Schema ",
-          "default": 0,
-          "examples": [1000000000]
-        },
-        "equity": {
-          "$id": "/properties/data/properties/equity",
-          "type": "number",
-          "title": "The Equity Schema ",
-          "default": 0,
-          "examples": [0.5]
-        },
-        "company": {
-          "$id": "/properties/data/properties/company",
-          "type": "string",
-          "title": "The Company Schema ",
-          "default": "",
-          "minLength": 24,
-          "maxLength": 24,
-          "examples": ["5ae0560299e7d30986390ba0"]
-        }
-      },
-      "required": ["title", "company"]
+    "title": {
+      "$id": "/properties/title",
+      "type": "string",
+      "title": "The Title Schema ",
+      "default": "",
+      "minLength": 1,
+      "maxLength": 55,
+      "examples": ["Lead Instructor"]
+    },
+    "salary": {
+      "$id": "/properties/salary",
+      "type": "string",
+      "title": "The Salary Schema ",
+      "default": "",
+      "minLength": 1,
+      "maxLength": 55,
+      "examples": ["1000000000"]
+    },
+    "equity": {
+      "$id": "/properties/equity",
+      "type": "number",
+      "title": "The Equity Schema ",
+      "default": 0,
+      "examples": [0.5]
+    },
+    "company": {
+      "$id": "/properties/company",
+      "type": "string",
+      "title": "The Company Schema ",
+      "default": "",
+      "examples": ["rithm"]
     }
   },
-  "required": ["data"]
+  "required": ["title", "salary", "company"]
 }

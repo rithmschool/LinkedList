@@ -2,27 +2,20 @@
   "$id": "http://example.com/example.json",
   "type": "object",
   "properties": {
-    "data": {
-      "$id": "/properties/data",
-      "type": "object",
-      "properties": {
-        "handle": {
-          "$id": "/properties/data/properties/handle",
-          "type": "string",
-          "title": "The Handle Schema ",
-          "default": "",
-          "examples": ["hooli"]
-        },
-        "password": {
-          "$id": "/properties/data/properties/password",
-          "type": "string",
-          "title": "The Password Schema ",
-          "default": "",
-          "examples": ["foo123"]
-        }
-      },
-      "required": ["handle", "password"]
+    "handle": {
+      "$id": "/properties/handle",
+      "type": "string",
+      "title": "The Handle Schema ",
+      "default": "",
+      "examples": ["rithm"]
+    },
+    "password": {
+      "$id": "/properties/password",
+      "type": "string",
+      "title": "The Password Schema ",
+      "default": "",
+      "examples": ["foo123"]
     }
   },
-  "required": ["data"]
+  "required": ["handle", "password"]
 }

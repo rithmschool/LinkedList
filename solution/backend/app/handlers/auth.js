@@ -23,7 +23,7 @@ async function user(req, res, next) {
         )
       );
     }
-    const { username, password } = req.body.data;
+    const { username, password } = req.body;
 
     // check if user exists
     const result = await db.query('SELECT * FROM users WHERE username=$1', [
@@ -65,7 +65,7 @@ async function company(req, res, next) {
         )
       );
     }
-    const { handle, password } = req.body.data;
+    const { handle, password } = req.body;
 
     // check if the company exists
     const result = await db.query('SELECT * FROM companys WHERE handle=$1', [

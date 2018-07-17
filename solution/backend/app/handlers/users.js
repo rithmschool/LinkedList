@@ -12,9 +12,9 @@ const { userNewSchema, userUpdateSchema } = require('../schemas');
 async function readUsers(req, res, next) {
   /* pagination validation */
   let { offset, limit } = processOffsetLimit(req.query.offset, req.query.limit);
-  if (offset && typeof offset !== 'number') {
+  if (offset && offset instanceof APIError) {
     return next(offset);
-  } else if (limit && typeof limit !== 'number') {
+  } else if (limit && limit instanceof APIError) {
     return next(limit);
   }
 
@@ -41,25 +41,32 @@ async function readUsers(req, res, next) {
 async function createUser(req, res, next) {
   const validation = validate(req.body, userNewSchema);
   if (!validation.valid) {
-    return next(validation.errors);
+    return next(
+      new APIError(
+        400,
+        'Bad Request',
+        validation.errors.map(e => e.stack).join('. ')
+      )
+    );
   }
 
   const {
-    firstName,
-    lastName,
+    first_name,
+    last_name,
     email,
     photo,
-    company_id,
+    current_company,
     username,
     password
-  } = req.body.data;
+  } = req.body;
 
   try {
     const result = await db.query(
-      'INSERT INTO users (first_name, last_name, email, photo, company_id, username, password) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *',
-      [firstName, lastName, email, photo, company_id, username, password]
+      'INSERT INTO users (first_name, last_name, email, photo, current_company, username, password) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *',
+      [first_name, last_name, email, photo, current_company, username, password]
     );
     const newUser = result.rows[0];
+    delete newUser.password;
     return res.json(newUser);
   } catch (err) {
     return next(err);
@@ -68,21 +75,27 @@ async function createUser(req, res, next) {
 
 /**
  * Get a single user
- * @param {String} id - the id of the User to retrieve
+ * @param {String} username - the username of the User to retrieve
  */
 async function readUser(req, res, next) {
   const { username } = req.params;
 
   try {
-    const result = await db.query('SELECT * FROM users WHERE id=$1', [id]);
+    const result = await db.query('SELECT * FROM users WHERE username=$1', [
+      username
+    ]);
     const jobs = await db.query(
-      'SELECT job_id FROM jobs_users WHERE user_id=$1',
-      [id]
+      'SELECT job_id FROM jobs_users WHERE username=$1',
+      [username]
     );
     const user = result.rows[0];
     if (!user) {
       return next(
-        new APIError(404, 'User Not Found', `No User with ID ${id} found.`)
+        new APIError(
+          404,
+          'User Not Found',
+          `No User with username ${username} found.`
+        )
       );
     }
     user.jobs = jobs.rows.map(job => job.id);
@@ -94,36 +107,54 @@ async function readUser(req, res, next) {
 
 /**
  * Update a single user
- * @param {String} id - the id of the User to update
+ * @param {String} username - the username of the User to update
  */
 async function updateUser(req, res, next) {
   const { username } = req.params;
 
   const validation = validate(req.body, userUpdateSchema);
   if (!validation.valid) {
-    return next(validation.errors);
+    return next(
+      new APIError(
+        400,
+        'Bad Request',
+        validation.errors.map(e => e.stack).join('. ')
+      )
+    );
   }
 
   const {
-    firstName,
-    lastName,
+    first_name,
+    last_name,
     email,
     photo,
-    company_id,
-    username,
+    current_company,
     password
-  } = req.body.data;
+  } = req.body;
 
   try {
     const result = await db.query(
-      'UPDATE users SET first_name=($1), last_name=($2), email=($3), photo=($4),company_id=($5),username=($6),password=($7) WHERE id=($8) RETURNING *',
-      [firstName, lastName, email, photo, company_id, username, password, id]
+      'UPDATE users SET first_name=($1), last_name=($2), email=($3), photo=($4), current_company=($5), username=($6), password=($7) WHERE username=($8) RETURNING *',
+      [
+        first_name,
+        last_name,
+        email,
+        photo,
+        current_company,
+        username,
+        password,
+        username
+      ]
     );
 
     const updatedUser = result.rows[0];
     if (!updatedUser) {
       return next(
-        new APIError(404, 'User Not Found', `No User with ID ${id} found.`)
+        new APIError(
+          404,
+          'User Not Found',
+          `No User with username ${username} found.`
+        )
       );
     }
 
@@ -135,13 +166,15 @@ async function updateUser(req, res, next) {
 
 /**
  * Remove a single user
- * @param {String} id - the id of the User to remove
+ * @param {String} username - the username of the User to remove
  */
 async function deleteUser(req, res, next) {
   const { username } = req.params;
 
   try {
-    const result = await db.query('DELETE FROM users WHERE id=$1', [id]);
+    const result = await db.query('DELETE FROM users WHERE username=$1', [
+      username
+    ]);
     const deletedUser = result.rows[0];
     return res.json(deletedUser);
   } catch (err) {

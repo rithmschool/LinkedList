@@ -12,9 +12,9 @@ const { jobNewSchema, jobUpdateSchema } = require('../schemas');
 async function readJobs(req, res, next) {
   /* pagination validation */
   let { offset, limit } = processOffsetLimit(req.query.offset, req.query.limit);
-  if (offset && typeof offset !== 'number') {
+  if (offset && offset instanceof APIError) {
     return next(offset);
-  } else if (limit && typeof limit !== 'number') {
+  } else if (limit && limit instanceof APIError) {
     return next(limit);
   }
 
@@ -40,15 +40,21 @@ async function readJobs(req, res, next) {
 async function createJob(req, res, next) {
   const validation = validate(req.body, jobNewSchema);
   if (!validation.valid) {
-    return next(validation.errors);
+    return next(
+      new APIError(
+        400,
+        'Bad Request',
+        validation.errors.map(e => e.stack).join('. ')
+      )
+    );
   }
 
-  const { title, salary, equity, companyId } = req.body.data;
+  const { title, salary, equity, company } = req.body;
 
   try {
     const result = await db.query(
-      'INSERT INTO jobs (title, salary, equity, companyId) VALUES ($1, $2, $3, $4) RETURNING *',
-      [title, salary, equity, companyId]
+      'INSERT INTO jobs (title, salary, equity, company) VALUES ($1, $2, $3, $4) RETURNING *',
+      [title, salary, equity, company]
     );
     const newJob = result.rows[0];
     return res.json(newJob);
@@ -71,7 +77,7 @@ async function readJob(req, res, next) {
     const job = result.rows[0];
     if (!job) {
       return next(
-        new APIError(404, 'Job Not Found', `No Job with ID ${id} found.`)
+        new APIError(404, 'Job Not Found', `No Job with ID '${id}' found.`)
       );
     }
     return res.json(job);
@@ -89,21 +95,27 @@ async function updateJob(req, res, next) {
 
   const validation = validate(req.body, jobUpdateSchema);
   if (!validation.valid) {
-    return next(validation.errors);
+    return next(
+      new APIError(
+        400,
+        'Bad Request',
+        validation.errors.map(e => e.stack).join('. ')
+      )
+    );
   }
 
-  const { title, salary, equity, companyId } = req.body.data;
+  const { title, salary, equity, company } = req.body;
 
   try {
     const result = await db.query(
-      'UPDATE jobs SET title=($1), salary=($2), equity=($3), companyId=($4) WHERE id=($5) RETURNING *',
-      [title, salary, equity, companyId, id]
+      'UPDATE jobs SET title=($1), salary=($2), equity=($3), company=($4) WHERE id=($5) RETURNING *',
+      [title, salary, equity, company, id]
     );
 
     const updatedJob = result.rows[0];
     if (!updatedJob) {
       return next(
-        new APIError(404, 'Job Not Found', `No Job with ID ${id} found.`)
+        new APIError(404, 'Job Not Found', `No Job with ID '${id}' found.`)
       );
     }
 
