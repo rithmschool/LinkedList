@@ -1,41 +1,58 @@
 const { APIError } = require('../helpers');
+const { ENV } = require('../config');
 
-function bodyParserHandler(error, request, response, next) {
+/**
+ * Error handler for improperly-formatted request bodies.
+ */
+function bodyParserHandler(error, req, res, next) {
   if (error instanceof SyntaxError || error instanceof TypeError) {
     // console.error(error);
     return next(new APIError(400, 'Bad Request', 'Malformed JSON.'));
   }
 }
 
-function fourOhFourHandler(request, response, next) {
+/**
+ * Better-formatted 404 handler to replace the built-in
+ */
+function fourOhFourHandler(req, res, next) {
   return next(
     new APIError(
       404,
       'Resource Not Found',
-      `${request.path} is not valid path to a LinkedList API resource.`
+      `${req.path} is not valid path to a LinkedList API resource.`
     )
   );
 }
 
-function fourOhFiveHandler(request, response, next) {
+/**
+ *  Better-formatted 405 handler to replace the built-in
+ */
+function fourOhFiveHandler(req, res, next) {
   return next(
     new APIError(
       405,
       'Method Not Allowed',
-      `${request.method} method is not supported at ${request.path}.`
+      `${req.method} method is not supported at ${req.path}.`
     )
   );
 }
 
-function globalErrorHandler(error, request, response, next) {
+/**
+ * Handle any error in the app. If they aren't APIErrors,
+ *  format them into it.
+ */
+function globalErrorHandler(error, req, res, next) {
+  // log the error if we're in development
+  if (ENV === 'development') {
+    console.log(error);
+  }
+
   // format built-in errors
   if (!(error instanceof APIError)) {
     error = new APIError(500, error.type, error.message);
   }
-  // log the error stack if we're in development
-  process.env.NODE_ENV === 'development' && console.error(error.stack); //eslint-disable-line no-console
 
-  return response.status(error.status).json(error);
+  return res.status(error.status).json(error);
 }
 
 module.exports = {

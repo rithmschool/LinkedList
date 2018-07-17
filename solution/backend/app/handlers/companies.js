@@ -3,12 +3,7 @@ const { validate } = require('jsonschema');
 
 // app imports
 const db = require('../db');
-const {
-  APIError,
-  ensureCorrectUser,
-  formatResponse,
-  processOffsetLimit
-} = require('../helpers');
+const { APIError, processOffsetLimit } = require('../helpers');
 const { companyNewSchema, companyUpdateSchema } = require('../schemas');
 
 /**
@@ -33,7 +28,7 @@ async function readCompanies(req, res, next) {
     }
     const results = await db.query(query);
     const companies = results.rows;
-    return res.json(formatResponse(companies));
+    return res.json(companies);
   } catch (err) {
     return next(err);
   }
@@ -44,7 +39,7 @@ async function readCompanies(req, res, next) {
  */
 async function createCompany(req, res, next) {
   const validation = validate(req.body, companyNewSchema);
-  if (!validation.isValid) {
+  if (!validation.valid) {
     return next(validation.errors);
   }
 
@@ -56,7 +51,7 @@ async function createCompany(req, res, next) {
       [name, logo, handle, password]
     );
     const newCompany = result.rows[0];
-    return res.json(formatResponse(newCompany));
+    return res.json(newCompany);
   } catch (err) {
     return next(err);
   }
@@ -67,7 +62,7 @@ async function createCompany(req, res, next) {
  * @param {String} id - the id of the Company to retrieve
  */
 async function readCompany(req, res, next) {
-  const { id } = req.params;
+  const { handle } = req.params;
 
   try {
     const result = await db.query('SELECT * FROM companies WHERE id=$1', [
@@ -91,7 +86,7 @@ async function readCompany(req, res, next) {
     ]);
     company.users = users.rows.map(u => u.id);
     company.jobs = jobs.rows.map(j => j.id);
-    return res.json(formatResponse(company));
+    return res.json(company);
   } catch (err) {
     return next(err);
   }
@@ -102,24 +97,19 @@ async function readCompany(req, res, next) {
  * @param {String} id - the id of the Company to update
  */
 async function updateCompany(req, res, next) {
-  const { id } = req.params;
-
-  const correctCompany = ensureCorrectUser(req.headers.authorization, id, true);
-  if (correctCompany !== 'correct') {
-    return next(correctCompany);
-  }
+  const { handle } = req.params;
 
   const validation = validate(req.body, companyUpdateSchema);
-  if (!validation.isValid) {
+  if (!validation.valid) {
     return next(validation.errors);
   }
 
-  const { name, logo, handle, password } = req.body.data;
+  const { name, logo, password } = req.body.data;
 
   try {
     const result = await db.query(
-      'UPDATE companies SET name=($1), logo=($2), handle=($3), password=($4) WHERE id=($5) RETURNING *',
-      [name, logo, handle, password, id]
+      'UPDATE companies SET name=($1), logo=($2), handle=($3), password=($4) WHERE handle=($5) RETURNING *',
+      [name, logo, handle, password, handle]
     );
 
     const updatedCompany = result.rows[0];
@@ -128,12 +118,12 @@ async function updateCompany(req, res, next) {
         new APIError(
           404,
           'Company Not Found',
-          `No Company with ID ${id} found.`
+          `No Company with handle ${handle} found.`
         )
       );
     }
 
-    return res.json(formatResponse(updatedCompany));
+    return res.json(updatedCompany);
   } catch (err) {
     return next(err);
   }
@@ -144,17 +134,14 @@ async function updateCompany(req, res, next) {
  * @param {String} id - the id of the Company to remove
  */
 async function deleteCompany(req, res, next) {
-  const { id } = req.params;
-
-  const correctCompany = ensureCorrectUser(req.headers.authorization, id, true);
-  if (correctCompany !== 'correct') {
-    return next(correctCompany);
-  }
+  const { handle } = req.params;
 
   try {
-    const result = await db.query('DELETE FROM companies WHERE id=$1', [id]);
+    const result = await db.query('DELETE FROM companies WHERE handle=$1', [
+      handle
+    ]);
     const deletedCompany = result.rows[0];
-    return res.json(formatResponse(deletedCompany));
+    return res.json(deletedCompany);
   } catch (err) {
     return next(err);
   }

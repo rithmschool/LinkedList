@@ -1,0 +1,1 @@
+exports.ensureAuth = require('./ensureAuth');

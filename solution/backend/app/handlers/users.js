@@ -3,12 +3,7 @@ const { validate } = require('jsonschema');
 
 // app imports
 const db = require('../db');
-const {
-  APIError,
-  ensureCorrectUser,
-  formatResponse,
-  processOffsetLimit
-} = require('../helpers');
+const { APIError, processOffsetLimit } = require('../helpers');
 const { userNewSchema, userUpdateSchema } = require('../schemas');
 
 /**
@@ -34,7 +29,7 @@ async function readUsers(req, res, next) {
 
     const results = await db.query(query);
     const users = results.rows;
-    return res.json(formatResponse(users));
+    return res.json(users);
   } catch (err) {
     return next(err);
   }
@@ -45,7 +40,7 @@ async function readUsers(req, res, next) {
  */
 async function createUser(req, res, next) {
   const validation = validate(req.body, userNewSchema);
-  if (!validation.isValid) {
+  if (!validation.valid) {
     return next(validation.errors);
   }
 
@@ -65,7 +60,7 @@ async function createUser(req, res, next) {
       [firstName, lastName, email, photo, company_id, username, password]
     );
     const newUser = result.rows[0];
-    return res.json(formatResponse(newUser));
+    return res.json(newUser);
   } catch (err) {
     return next(err);
   }
@@ -76,7 +71,7 @@ async function createUser(req, res, next) {
  * @param {String} id - the id of the User to retrieve
  */
 async function readUser(req, res, next) {
-  const { id } = req.params;
+  const { username } = req.params;
 
   try {
     const result = await db.query('SELECT * FROM users WHERE id=$1', [id]);
@@ -91,7 +86,7 @@ async function readUser(req, res, next) {
       );
     }
     user.jobs = jobs.rows.map(job => job.id);
-    return res.json(formatResponse(user));
+    return res.json(user);
   } catch (err) {
     return next(err);
   }
@@ -102,15 +97,10 @@ async function readUser(req, res, next) {
  * @param {String} id - the id of the User to update
  */
 async function updateUser(req, res, next) {
-  const { id } = req.params;
-
-  const correctUser = ensureCorrectUser(req.headers.authorization, id);
-  if (correctUser !== 'correct') {
-    return next(correctUser);
-  }
+  const { username } = req.params;
 
   const validation = validate(req.body, userUpdateSchema);
-  if (!validation.isValid) {
+  if (!validation.valid) {
     return next(validation.errors);
   }
 
@@ -137,7 +127,7 @@ async function updateUser(req, res, next) {
       );
     }
 
-    return res.json(formatResponse(updatedUser));
+    return res.json(updatedUser);
   } catch (err) {
     return next(err);
   }
@@ -148,17 +138,12 @@ async function updateUser(req, res, next) {
  * @param {String} id - the id of the User to remove
  */
 async function deleteUser(req, res, next) {
-  const { id } = req.params;
-
-  const correctUser = ensureCorrectUser(req.headers.authorization, id);
-  if (correctUser !== 'correct') {
-    return next(correctUser);
-  }
+  const { username } = req.params;
 
   try {
     const result = await db.query('DELETE FROM users WHERE id=$1', [id]);
     const deletedUser = result.rows[0];
-    return res.json(formatResponse(deletedUser));
+    return res.json(deletedUser);
   } catch (err) {
     return next(err);
   }

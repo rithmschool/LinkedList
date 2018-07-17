@@ -9,26 +9,34 @@
   },
   "main": "index.js",
   "scripts": {
-    "start": "pm2 start process.yml",
+    "start": "NODE_ENV=production pm2 start process.yml",
+    "dev": "NODE_ENV=development pm2-dev ./app/server.js",
     "db-setup": "psql < schema.sql",
-    "test": "jest"
+    "test": "NODE_ENV=test jest --runInBand"
+  },
+  "jest": {
+    "collectCoverage": true,
+    "testPathIgnorePatterns": [
+      "/node_modules/",
+      "config"
+    ]
   },
   "license": "MIT",
   "dependencies": {
     "bcrypt": "3.0.0",
-    "bluebird": "3.5.1",
     "body-parser": "1.18.3",
     "dotenv": "6.0.0",
     "express": "4.16.3",
     "jsonschema": "1.2.4",
     "jsonwebtoken": "8.3.0",
     "morgan": "1.9.0",
-    "pg": "^7.4.3",
+    "pg": "7.4.3",
     "pm2": "3.0.0",
     "uuid": "3.3.2"
   },
   "devDependencies": {
     "eslint": "^5.1.0",
-    "jest": "^23.3.0"
+    "jest": "^23.4.1",
+    "supertest": "^3.1.0"
   }
 }

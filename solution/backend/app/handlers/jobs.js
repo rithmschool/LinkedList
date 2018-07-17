@@ -3,12 +3,7 @@ const { validate } = require('jsonschema');
 
 // app imports
 const db = require('../db');
-const {
-  APIError,
-  ensureCorrectUser,
-  formatResponse,
-  processOffsetLimit
-} = require('../helpers');
+const { APIError, processOffsetLimit } = require('../helpers');
 const { jobNewSchema, jobUpdateSchema } = require('../schemas');
 
 /**
@@ -33,7 +28,7 @@ async function readJobs(req, res, next) {
     }
     const results = await db.query(query);
     const jobs = results.rows;
-    return res.json(formatResponse(jobs));
+    return res.json(jobs);
   } catch (err) {
     return next(err);
   }
@@ -44,7 +39,7 @@ async function readJobs(req, res, next) {
  */
 async function createJob(req, res, next) {
   const validation = validate(req.body, jobNewSchema);
-  if (!validation.isValid) {
+  if (!validation.valid) {
     return next(validation.errors);
   }
 
@@ -56,7 +51,7 @@ async function createJob(req, res, next) {
       [title, salary, equity, companyId]
     );
     const newJob = result.rows[0];
-    return res.json(formatResponse(newJob));
+    return res.json(newJob);
   } catch (err) {
     return next(err);
   }
@@ -79,7 +74,7 @@ async function readJob(req, res, next) {
         new APIError(404, 'Job Not Found', `No Job with ID ${id} found.`)
       );
     }
-    return res.json(formatResponse(job));
+    return res.json(job);
   } catch (err) {
     return next(err);
   }
@@ -92,13 +87,8 @@ async function readJob(req, res, next) {
 async function updateJob(req, res, next) {
   const { id } = req.params;
 
-  const correctJob = ensureCorrectUser(req.headers.authorization, id, true);
-  if (correctJob !== 'correct') {
-    return next(correctJob);
-  }
-
   const validation = validate(req.body, jobUpdateSchema);
-  if (!validation.isValid) {
+  if (!validation.valid) {
     return next(validation.errors);
   }
 
@@ -117,7 +107,7 @@ async function updateJob(req, res, next) {
       );
     }
 
-    return res.json(formatResponse(updatedJob));
+    return res.json(updatedJob);
   } catch (err) {
     return next(err);
   }
@@ -130,15 +120,10 @@ async function updateJob(req, res, next) {
 async function deleteJob(req, res, next) {
   const { id } = req.params;
 
-  const correctJob = ensureCorrectUser(req.headers.authorization, id, true);
-  if (correctJob !== 'correct') {
-    return next(correctJob);
-  }
-
   try {
     const result = await db.query('DELETE FROM jobs WHERE id=$1', [id]);
     const deletedJob = result.rows[0];
-    return res.json(formatResponse(deletedJob));
+    return res.json(deletedJob);
   } catch (err) {
     return next(err);
   }

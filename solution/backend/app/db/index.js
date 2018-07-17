@@ -1,9 +1,10 @@
 const { Client } = require('pg');
-const { POSTGRESQL_URI } = require('../config');
+const { DATABASE_URL } = require('../config');
 const client = new Client({
-  connectionString: POSTGRESQL_URI
+  connectionString: DATABASE_URL
 });
 
+console.log(`Connected to database: ${DATABASE_URL}`);
 client.connect();
 
 module.exports = client;
