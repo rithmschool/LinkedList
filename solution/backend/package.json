@@ -12,7 +12,7 @@
     "start": "NODE_ENV=production pm2 start process.yml",
     "dev": "NODE_ENV=development pm2-dev ./app/server.js",
     "db-setup": "psql < schema.sql",
-    "test": "NODE_ENV=test jest --runInBand"
+    "test": "NODE_ENV=test jest -i"
   },
   "jest": {
     "collectCoverage": true,

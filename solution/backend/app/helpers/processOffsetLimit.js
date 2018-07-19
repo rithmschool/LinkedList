@@ -2,7 +2,9 @@ const APIError = require('./APIError');
 
 /**
  * Validate the 'offset' and `limit` query params
-
+ * @param {String} offset - the offset query key
+ * @param {String} limit - the limit query key
+ * @return {Object} an object containing a limit and offset key
  */
 function processOffsetLimit(offset, limit) {
   offset = validateNum(offset);
@@ -19,7 +21,7 @@ function processOffsetLimit(offset, limit) {
  * @return {Number} numerical form of the val
  */
 function validateNum(val, max = 1000, type = 'limit') {
-  if (!val) {
+  if (val === undefined) {
     return null;
   }
   const min = type === 'offset' ? 0 : 1;

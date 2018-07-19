@@ -25,10 +25,10 @@ beforeEach(async () => {
 describe('GET /jobs', async () => {
   test('Gets a list of 1 job successfully', async () => {
     const response = await request(app)
-      .get('/users')
+      .get('/jobs')
       .set('authorization', `Bearer ${auth.token}`);
-    expect(response).toHaveLength(1);
-    expect(response[0]).toHaveProperty('id');
+    expect(response.body).toHaveLength(1);
+    expect(response.body[0]).toHaveProperty('id');
   });
 });
 

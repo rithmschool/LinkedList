@@ -19,7 +19,8 @@ async function readUsers(req, res, next) {
   }
 
   try {
-    let query = 'SELECT * FROM users';
+    let query =
+      'SELECT first_name, last_name, email, photo, current_company, username FROM users';
     if (limit) {
       query += ` LIMIT ${limit}`;
     }
@@ -62,11 +63,10 @@ async function createUser(req, res, next) {
 
   try {
     const result = await db.query(
-      'INSERT INTO users (first_name, last_name, email, photo, current_company, username, password) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *',
+      'INSERT INTO users (first_name, last_name, email, photo, current_company, username, password) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING first_name, last_name, email, photo, current_company, username',
       [first_name, last_name, email, photo, current_company, username, password]
     );
     const newUser = result.rows[0];
-    delete newUser.password;
     return res.json(newUser);
   } catch (err) {
     return next(err);
@@ -81,9 +81,10 @@ async function readUser(req, res, next) {
   const { username } = req.params;
 
   try {
-    const result = await db.query('SELECT * FROM users WHERE username=$1', [
-      username
-    ]);
+    const result = await db.query(
+      'SELECT first_name, last_name, email, photo, current_company, username FROM users WHERE username=$1',
+      [username]
+    );
     const jobs = await db.query(
       'SELECT job_id FROM jobs_users WHERE username=$1',
       [username]
@@ -134,7 +135,7 @@ async function updateUser(req, res, next) {
 
   try {
     const result = await db.query(
-      'UPDATE users SET first_name=($1), last_name=($2), email=($3), photo=($4), current_company=($5), username=($6), password=($7) WHERE username=($8) RETURNING *',
+      'UPDATE users SET first_name=($1), last_name=($2), email=($3), photo=($4), current_company=($5), username=($6), password=($7) WHERE username=($8) RETURNING first_name, last_name, email, photo, current_company, username',
       [
         first_name,
         last_name,

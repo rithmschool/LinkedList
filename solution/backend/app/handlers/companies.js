@@ -19,7 +19,7 @@ async function readCompanies(req, res, next) {
   }
 
   try {
-    let query = 'SELECT * FROM companies';
+    let query = 'SELECT handle, logo, name FROM companies';
     if (limit) {
       query += `LIMIT ${limit}`;
     }
@@ -52,7 +52,7 @@ async function createCompany(req, res, next) {
 
   try {
     const result = await db.query(
-      'INSERT INTO companies (name, logo, handle, password) VALUES ($1, $2, $3, $4) RETURNING *',
+      'INSERT INTO companies (name, logo, handle, password) VALUES ($1, $2, $3, $4) RETURNING  handle, name, logo',
       [name, logo, handle, password]
     );
     const newCompany = result.rows[0];
@@ -70,9 +70,10 @@ async function readCompany(req, res, next) {
   const { handle } = req.params;
 
   try {
-    const result = await db.query('SELECT * FROM companies WHERE handle=$1', [
-      handle
-    ]);
+    const result = await db.query(
+      'SELECT handle, name, logo FROM companies WHERE handle=$1',
+      [handle]
+    );
     const company = result.rows[0];
     if (!company) {
       return next(
@@ -84,10 +85,10 @@ async function readCompany(req, res, next) {
       );
     }
     const users = await db.query(
-      'SELECT * FROM users WHERE current_company=$1',
+      'SELECT username FROM users WHERE current_company=$1',
       [handle]
     );
-    const jobs = await db.query('SELECT * FROM jobs WHERE company=$1', [
+    const jobs = await db.query('SELECT id FROM jobs WHERE company=$1', [
       handle
     ]);
     company.users = users.rows.map(u => u.username);
@@ -120,7 +121,7 @@ async function updateCompany(req, res, next) {
 
   try {
     const result = await db.query(
-      'UPDATE companies SET name=($1), logo=($2), handle=($3), password=($4) WHERE handle=($5) RETURNING *',
+      'UPDATE companies SET name=($1), logo=($2), handle=($3), password=($4) WHERE handle=($5) RETURNING name, logo, handle',
       [name, logo, handle, password, handle]
     );
 

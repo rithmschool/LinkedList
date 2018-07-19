@@ -27,9 +27,9 @@ describe('GET /companies', async () => {
     const response = await request(app)
       .get('/companies')
       .set('authorization', `Bearer ${auth.company_token}`);
-    expect(response).toHaveLength(1);
-    expect(response[0]).toHaveProperty('handle');
-    expect(response[0]).not.toHaveProperty('password');
+    expect(response.body).toHaveLength(1);
+    expect(response.body[0]).toHaveProperty('handle');
+    expect(response.body[0]).not.toHaveProperty('password');
   });
 });
 

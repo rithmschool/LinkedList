@@ -4,8 +4,8 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 
 // app imports
-const app = require('../../app');
-const db = require('../../db');
+const app = require('../../app/app');
+const db = require('../../app/db');
 
 // Database DDL (for tests)
 const db_tables = {
@@ -26,7 +26,7 @@ const db_tables = {
     last_name TEXT,
     email TEXT,
     photo TEXT,
-    company TEXT REFERENCES companies (handle) ON DELETE SET NULL
+    current_company TEXT REFERENCES companies (handle) ON DELETE SET NULL
   )`,
   jobs: `CREATE TABLE jobs
 (
@@ -34,7 +34,7 @@ const db_tables = {
   title TEXT NOT NULL,
   salary TEXT NOT NULL,
   equity FLOAT,
-  company TEXT NOT NULL REFERENCES companies(handle) ON DELETE CASCADE
+  company TEXT NOT NULL REFERENCES companies (handle) ON DELETE CASCADE
 )`,
   jobs_users: `CREATE TABLE jobs_users
 (
@@ -45,8 +45,13 @@ const db_tables = {
 };
 
 async function beforeAllHook() {
-  for (let table in db_tables) {
-    await db.query(db_tables[table]);
+  try {
+    await db.query(db_tables['companies']);
+    await db.query(db_tables['users']);
+    await db.query(db_tables['jobs']);
+    await db.query(db_tables['jobs_users']);
+  } catch (error) {
+    console.error(error);
   }
 }
 
@@ -57,51 +62,71 @@ async function beforeAllHook() {
  * @param {Object} auth - build the auth object
  */
 async function beforeEachHook(auth) {
-  // login a user, get a token, store the user ID and token
-  const hashedPassword = await bcrypt.hash('secret', 1);
-  await db.query("INSERT INTO users (username, password) VALUES ('test', $1)", [
-    hashedPassword
-  ]);
+  try {
+    // login a user, get a token, store the user ID and token
+    const hashedPassword = await bcrypt.hash('secret', 1);
+    await db.query(
+      "INSERT INTO users (username, password, first_name, last_name) VALUES ('test', $1, 'tester', 'mctest')",
+      [hashedPassword]
+    );
 
-  const response = await request(app)
-    .post('/user-auth')
-    .send({
-      username: 'test',
-      password: 'secret'
-    });
+    const response = await request(app)
+      .post('/user-auth')
+      .send({
+        username: 'test',
+        password: 'secret'
+      });
 
-  auth.user_token = response.body.token;
-  auth.current_username = jwt.decode(auth.user_token).username;
+    auth.user_token = response.body.token;
+    auth.current_username = jwt.decode(auth.user_token).username;
 
-  // do the same for company "companies"
-  const hashedCompanyPassword = await bcrypt.hash('secret', 1);
-  await db.query(
-    "INSERT INTO companies (handle, password) VALUES ('testcompany', $1)",
-    [hashedCompanyPassword]
-  );
+    // do the same for company "companies"
+    const hashedCompanyPassword = await bcrypt.hash('secret', 1);
+    await db.query(
+      "INSERT INTO companies (handle, password, name) VALUES ('testcompany', $1, 'Test Company')",
+      [hashedCompanyPassword]
+    );
 
-  const companyResponse = await request(app)
-    .post('/company-auth')
-    .send({
-      handle: 'testcompany',
-      password: 'secret'
-    });
+    const companyResponse = await request(app)
+      .post('/company-auth')
+      .send({
+        handle: 'testcompany',
+        password: 'secret'
+      });
 
-  auth.company_token = companyResponse.body.token;
-  auth.current_company_handle = jwt.decode(auth.company_token).handle;
+    auth.company_token = companyResponse.body.token;
+    auth.current_company_handle = jwt.decode(auth.company_token).handle;
+
+    await db.query(
+      "INSERT INTO jobs (title, salary, company) VALUES ('Software Engineer', 'TBD', $1)",
+      [auth.current_company_handle]
+    );
+  } catch (error) {
+    console.error(error);
+  }
 }
 
 async function afterEachHook() {
-  for (let table in db_tables) {
-    await db.query(`DELETE FROM ${table}`);
+  try {
+    await db.query('DELETE FROM jobs_users');
+    await db.query('DELETE FROM jobs');
+    await db.query('DELETE FROM users');
+    await db.query('DELETE FROM companies');
+  } catch (error) {
+    console.error(error);
   }
 }
 
 async function afterAllHook() {
-  for (let table in db_tables) {
-    await db.query(`DROP TABLE IF EXISTS ${table}`);
+  try {
+    await db.query('DROP TABLE IF EXISTS jobs_users');
+    await db.query('DROP TABLE IF EXISTS jobs');
+    await db.query('DROP TABLE IF EXISTS users');
+    await db.query('DROP TABLE IF EXISTS companies');
+    await db.end();
+  } catch (err) {
+    console.error(err);
   }
-  await db.end();
 }
 
 module.exports = {

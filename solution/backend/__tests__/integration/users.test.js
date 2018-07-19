@@ -27,9 +27,9 @@ describe('GET /users', async () => {
     const response = await request(app)
       .get('/users')
       .set('authorization', `Bearer ${auth.token}`);
-    expect(response).toHaveLength(1);
-    expect(response[0]).toHaveProperty('username');
-    expect(response[0]).not.toHaveProperty('password');
+    expect(response.body).toHaveLength(1);
+    expect(response.body[0]).toHaveProperty('username');
+    expect(response.body[0]).not.toHaveProperty('password');
   });
 });
 

@@ -68,7 +68,7 @@ async function company(req, res, next) {
     const { handle, password } = req.body;
 
     // check if the company exists
-    const result = await db.query('SELECT * FROM companys WHERE handle=$1', [
+    const result = await db.query('SELECT * FROM companies WHERE handle=$1', [
       handle
     ]);
     const company = result.rows[0];
