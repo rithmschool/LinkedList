@@ -14,7 +14,8 @@ const db_tables = {
     id SERIAL PRIMARY KEY,
     handle TEXT UNIQUE NOT NULL,
     password TEXT NOT NULL,
-    name TEXT,
+    email TEXT NOT NULL,
+    name TEXT NOT NULL,
     logo TEXT
   )`,
   users: `CREATE TABLE users
@@ -86,7 +87,7 @@ async function beforeEachHook(auth) {
     // do the same for company "companies"
     const hashedCompanyPassword = await bcrypt.hash('secret', 1);
     await db.query(
-      "INSERT INTO companies (handle, password, name) VALUES ('testcompany', $1, 'Test Company')",
+      "INSERT INTO companies (handle, password, name, email) VALUES ('testcompany', $1, 'Test Company', 'test@rithmschool.com')",
       [hashedCompanyPassword]
     );
 

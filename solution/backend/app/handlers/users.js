@@ -25,7 +25,7 @@ async function readUsers(req, res, next) {
     const { search } = req.query;
 
     if (search) {
-      query = `SELECT * FROM users
+      query = `SELECT first_name, last_name, email, photo, current_company, username FROM users
                 WHERE concat_ws(' ', first_name, last_name) ILIKE $1
                   OR username ILIKE $1 LIMIT $2 OFFSET $3`;
       results = await db.query(query, [`%${search}%`, limit, offset]);

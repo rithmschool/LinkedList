@@ -25,11 +25,12 @@ async function readCompanies(req, res, next) {
     const { search } = req.query;
 
     if (search) {
-      query = `SELECT * FROM companies
+      query = `SELECT handle, logo, name, email FROM companies
       WHERE name ILIKE $1 OR handle ILIKE $1 LIMIT $2 OFFSET $3`;
       results = await db.query(query, [`%${search}%`, limit, offset]);
     } else {
-      query = 'SELECT handle, logo, name FROM companies LIMIT $1 OFFSET $2';
+      query =
+        'SELECT handle, logo, name, email FROM companies LIMIT $1 OFFSET $2';
       results = await db.query(query, [limit, offset]);
     }
 
@@ -54,7 +55,7 @@ async function createCompany(req, res, next) {
       )
     );
   }
-  const { name, logo, handle, password } = req.body;
+  const { name, logo, handle, password, email } = req.body;
   const duplicateCheck = await db.query(
     'SELECT * FROM companies WHERE handle=$1',
     [handle]
@@ -74,9 +75,9 @@ async function createCompany(req, res, next) {
 
   try {
     const result = await db.query(
-      `INSERT INTO companies (name, logo, handle, password)
-        VALUES ($1, $2, $3, $4) RETURNING  handle, name, logo`,
-      [name, logo, handle, hashedPassword]
+      `INSERT INTO companies (name, logo, handle, password, email)
+        VALUES ($1, $2, $3, $4, $5) RETURNING  handle, name, logo, email`,
+      [name, logo, handle, hashedPassword, email]
     );
     const newCompany = result.rows[0];
     return res.status(201).json(newCompany);

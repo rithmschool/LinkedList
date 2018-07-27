@@ -8,31 +8,32 @@ CREATE DATABASE "linkedlist";
 CREATE TABLE companies
 (
   id SERIAL PRIMARY KEY,
+  email TEXT NOT NULL,
   handle TEXT UNIQUE NOT NULL,
-  password TEXT NOT NULL,
-  name TEXT,
-  logo TEXT
+  logo TEXT,
+  name TEXT NOT NULL,
+  password TEXT NOT NULL
 );
 
 CREATE TABLE jobs
 (
   id SERIAL PRIMARY KEY,
-  title TEXT NOT NULL,
-  salary TEXT NOT NULL,
+  company TEXT NOT NULL REFERENCES companies(handle) ON DELETE CASCADE,
   equity FLOAT,
-  company TEXT NOT NULL REFERENCES companies(handle) ON DELETE CASCADE
+  salary TEXT NOT NULL,
+  title TEXT NOT NULL
 );
 
 CREATE TABLE users
 (
   id SERIAL PRIMARY KEY,
-  username TEXT UNIQUE NOT NULL UNIQUE,
-  password TEXT NOT NULL,
+  current_company TEXT REFERENCES companies (handle) ON DELETE SET NULL,
+  email TEXT,
   first_name TEXT,
   last_name TEXT,
-  email TEXT,
+  password TEXT NOT NULL,
   photo TEXT,
-  current_company TEXT REFERENCES companies (handle) ON DELETE SET NULL
+  username TEXT UNIQUE NOT NULL UNIQUE
 );
 
 CREATE TABLE jobs_users
