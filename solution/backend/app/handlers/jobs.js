@@ -38,6 +38,12 @@ async function readJobs(req, res, next) {
  * Validate the POST req body and create a new Job
  */
 async function createJob(req, res, next) {
+  if (!req.handle) {
+    return next(
+      new APIError(403, 'Forbidden', 'Only companies are allowed to post jobs.')
+    );
+  }
+
   const validation = validate(req.body, jobNewSchema);
   if (!validation.valid) {
     return next(
@@ -93,6 +99,19 @@ async function readJob(req, res, next) {
 async function updateJob(req, res, next) {
   const { id } = req.params;
 
+  const checkCompany = db.query('SELECT company FROM jobs WHERE id=$1', [id]);
+  const companyHandle = checkCompany.rows[0].company;
+
+  if (!req.handle || req.handle !== companyHandle) {
+    return next(
+      new APIError(
+        403,
+        'Forbidden',
+        'You are not allowed to edit this job posting.'
+      )
+    );
+  }
+
   const validation = validate(req.body, jobUpdateSchema);
   if (!validation.valid) {
     return next(
@@ -131,6 +150,19 @@ async function updateJob(req, res, next) {
  */
 async function deleteJob(req, res, next) {
   const { id } = req.params;
+
+  const checkCompany = db.query('SELECT company FROM jobs WHERE id=$1', [id]);
+  const companyHandle = checkCompany.rows[0].company;
+
+  if (!req.handle || req.handle !== companyHandle) {
+    return next(
+      new APIError(
+        403,
+        'Forbidden',
+        'You are not allowed to delete this job posting.'
+      )
+    );
+  }
 
   try {
     const result = await db.query('DELETE FROM jobs WHERE id=$1', [id]);

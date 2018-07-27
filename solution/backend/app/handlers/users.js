@@ -1,10 +1,12 @@
 // npm packages
+const bcrypt = require('bcrypt');
 const { validate } = require('jsonschema');
 
 // app imports
 const db = require('../db');
-const { APIError, processOffsetLimit } = require('../helpers');
+const { APIError, processOffsetLimit, partialUpdate } = require('../helpers');
 const { userNewSchema, userUpdateSchema } = require('../schemas');
+const { SALT_FACTOR } = require('../config');
 
 /**
  * List all the users. Query params ?offset=0&limit=1000 by default
@@ -61,13 +63,41 @@ async function createUser(req, res, next) {
     password
   } = req.body;
 
+  const duplicateCheck = await db.query(
+    'SELECT * FROM users WHERE username=$1',
+    [username]
+  );
+
+  if (duplicateCheck.rows[0]) {
+    return next(
+      new APIError(
+        409,
+        'Conflict',
+        `There already exists a user with username '${username}'.`
+      )
+    );
+  }
+
+  // hash password
+  const hashedPassword = await bcrypt.hash(password, SALT_FACTOR);
+
   try {
     const result = await db.query(
-      'INSERT INTO users (first_name, last_name, email, photo, current_company, username, password) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING first_name, last_name, email, photo, current_company, username',
-      [first_name, last_name, email, photo, current_company, username, password]
+      `INSERT INTO users (first_name, last_name, email, photo, current_company, username, password)
+        VALUES ($1, $2, $3, $4, $5, $6, $7)
+        RETURNING first_name, last_name, email, photo, current_company, username`,
+      [
+        first_name,
+        last_name,
+        email,
+        photo,
+        current_company,
+        username,
+        hashedPassword
+      ]
     );
     const newUser = result.rows[0];
-    return res.json(newUser);
+    return res.status(201).json(newUser);
   } catch (err) {
     return next(err);
   }
@@ -95,7 +125,7 @@ async function readUser(req, res, next) {
         new APIError(
           404,
           'User Not Found',
-          `No User with username ${username} found.`
+          `No User with username '${username}' found.`
         )
       );
     }
@@ -113,6 +143,12 @@ async function readUser(req, res, next) {
 async function updateUser(req, res, next) {
   const { username } = req.params;
 
+  if (!req.username || req.username !== username) {
+    return next(
+      new APIError(403, 'Forbidden', 'You are not allowed to edit this user.')
+    );
+  }
+
   const validation = validate(req.body, userUpdateSchema);
   if (!validation.valid) {
     return next(
@@ -124,29 +160,23 @@ async function updateUser(req, res, next) {
     );
   }
 
-  const {
-    first_name,
-    last_name,
-    email,
-    photo,
-    current_company,
-    password
-  } = req.body;
-
   try {
-    const result = await db.query(
-      'UPDATE users SET first_name=($1), last_name=($2), email=($3), photo=($4), current_company=($5), username=($6), password=($7) WHERE username=($8) RETURNING first_name, last_name, email, photo, current_company, username',
-      [
-        first_name,
-        last_name,
-        email,
-        photo,
-        current_company,
-        username,
-        password,
-        username
-      ]
+    // see if the user is changing their password
+    let updateFields = { ...req.body };
+    if (updateFields.password) {
+      updateFields.password = await bcrypt.hash(
+        updateFields.password,
+        SALT_FACTOR
+      );
+    }
+    // apply partial update to get a query and values for the query
+    let { query, values } = partialUpdate(
+      'users',
+      updateFields,
+      'username',
+      username
     );
+    const result = await db.query(query, values);
 
     const updatedUser = result.rows[0];
     if (!updatedUser) {
@@ -154,10 +184,11 @@ async function updateUser(req, res, next) {
         new APIError(
           404,
           'User Not Found',
-          `No User with username ${username} found.`
+          `No User with username '${username}' found.`
         )
       );
     }
+    delete updatedUser.password;
 
     return res.json(updatedUser);
   } catch (err) {
@@ -172,11 +203,28 @@ async function updateUser(req, res, next) {
 async function deleteUser(req, res, next) {
   const { username } = req.params;
 
+  if (!req.username || req.username !== username) {
+    return next(
+      new APIError(403, 'Forbidden', 'You are not allowed to delete this user.')
+    );
+  }
+
   try {
-    const result = await db.query('DELETE FROM users WHERE username=$1', [
-      username
-    ]);
+    const result = await db.query(
+      'DELETE FROM users WHERE username=$1 RETURNING *',
+      [username]
+    );
     const deletedUser = result.rows[0];
+    if (!deletedUser) {
+      return next(
+        new APIError(
+          404,
+          'User Not Found',
+          `No User with username '${username}' found.`
+        )
+      );
+    }
+    delete deletedUser.password;
     return res.json(deletedUser);
   } catch (err) {
     return next(err);

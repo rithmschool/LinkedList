@@ -1,10 +1,12 @@
 // npm packages
+const bcrypt = require('bcrypt');
 const { validate } = require('jsonschema');
 
 // app imports
 const db = require('../db');
-const { APIError, processOffsetLimit } = require('../helpers');
+const { APIError, partialUpdate, processOffsetLimit } = require('../helpers');
 const { companyNewSchema, companyUpdateSchema } = require('../schemas');
+const { SALT_FACTOR } = require('../config');
 
 /**
  * List all the companies. Query params ?offset=0&limit=1000 by default
@@ -21,10 +23,10 @@ async function readCompanies(req, res, next) {
   try {
     let query = 'SELECT handle, logo, name FROM companies';
     if (limit) {
-      query += `LIMIT ${limit}`;
+      query += ` LIMIT ${limit}`;
     }
     if (offset) {
-      query += `OFFSET ${offset}`;
+      query += ` OFFSET ${offset}`;
     }
     const results = await db.query(query);
     const companies = results.rows;
@@ -49,14 +51,31 @@ async function createCompany(req, res, next) {
     );
   }
   const { name, logo, handle, password } = req.body;
+  const duplicateCheck = await db.query(
+    'SELECT * FROM companies WHERE handle=$1',
+    [handle]
+  );
+
+  if (duplicateCheck.rows[0]) {
+    return next(
+      new APIError(
+        409,
+        'Conflict',
+        `There already exists a company with handle '${handle}'.`
+      )
+    );
+  }
+  // hash password
+  const hashedPassword = await bcrypt.hash(password, SALT_FACTOR);
 
   try {
     const result = await db.query(
-      'INSERT INTO companies (name, logo, handle, password) VALUES ($1, $2, $3, $4) RETURNING  handle, name, logo',
-      [name, logo, handle, password]
+      `INSERT INTO companies (name, logo, handle, password)
+        VALUES ($1, $2, $3, $4) RETURNING  handle, name, logo`,
+      [name, logo, handle, hashedPassword]
     );
     const newCompany = result.rows[0];
-    return res.json(newCompany);
+    return res.status(201).json(newCompany);
   } catch (err) {
     return next(err);
   }
@@ -106,6 +125,16 @@ async function readCompany(req, res, next) {
 async function updateCompany(req, res, next) {
   const { handle } = req.params;
 
+  if (!req.handle || req.handle !== handle) {
+    return next(
+      new APIError(
+        403,
+        'Forbidden',
+        'You are not allowed to edit this company.'
+      )
+    );
+  }
+
   const validation = validate(req.body, companyUpdateSchema);
   if (!validation.valid) {
     return next(
@@ -117,15 +146,36 @@ async function updateCompany(req, res, next) {
     );
   }
 
-  const { name, logo, password } = req.body;
+  let updateFields = { ...req.body };
+  if (updateFields.password) {
+    updateFields.password = await bcrypt.hash(
+      updateFields.password,
+      SALT_FACTOR
+    );
+  }
 
   try {
-    const result = await db.query(
-      'UPDATE companies SET name=($1), logo=($2), handle=($3), password=($4) WHERE handle=($5) RETURNING name, logo, handle',
-      [name, logo, handle, password, handle]
+    let { query, values } = partialUpdate(
+      'companies',
+      updateFields,
+      'handle',
+      handle
     );
 
+    const result = await db.query(query, values);
+
     const updatedCompany = result.rows[0];
+    if (!updatedCompany) {
+      return next(
+        new APIError(
+          404,
+          'Company Not Found',
+          `No Company with handle '${handle}' found.`
+        )
+      );
+    }
+    delete updatedCompany.password;
+
     if (!updatedCompany) {
       return next(
         new APIError(
@@ -149,11 +199,32 @@ async function updateCompany(req, res, next) {
 async function deleteCompany(req, res, next) {
   const { handle } = req.params;
 
+  if (!req.handle || req.handle !== handle) {
+    return next(
+      new APIError(
+        403,
+        'Forbidden',
+        'You are not allowed to delete this company.'
+      )
+    );
+  }
+
   try {
-    const result = await db.query('DELETE FROM companies WHERE handle=$1', [
-      handle
-    ]);
+    const result = await db.query(
+      'DELETE FROM companies WHERE handle=$1 RETURNING *',
+      [handle]
+    );
     const deletedCompany = result.rows[0];
+    if (!deletedCompany) {
+      return next(
+        new APIError(
+          404,
+          'Company Not Found',
+          `No Company with handle '${handle}' found.`
+        )
+      );
+    }
+    delete deletedCompany.password;
     return res.json(deletedCompany);
   } catch (err) {
     return next(err);

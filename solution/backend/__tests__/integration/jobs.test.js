@@ -5,14 +5,12 @@ const request = require('supertest');
 const app = require('../../app/app');
 
 const {
+  auth,
   afterEachHook,
   afterAllHook,
   beforeAllHook,
   beforeEachHook
 } = require('./config');
-
-// global auth variable to store things for all the tests
-const auth = {};
 
 beforeAll(async () => {
   await beforeAllHook();
@@ -26,7 +24,7 @@ describe('GET /jobs', async () => {
   test('Gets a list of 1 job successfully', async () => {
     const response = await request(app)
       .get('/jobs')
-      .set('authorization', `Bearer ${auth.token}`);
+      .set('authorization', `Bearer ${auth.user_token}`);
     expect(response.body).toHaveLength(1);
     expect(response.body[0]).toHaveProperty('id');
   });

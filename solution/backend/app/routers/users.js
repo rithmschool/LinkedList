@@ -3,6 +3,7 @@ const express = require('express');
 
 // app imports
 const { usersHandler } = require('../handlers');
+const { ensureAuth } = require('../middleware');
 
 // globals
 const router = new express.Router();
@@ -19,16 +20,16 @@ const {
 */
 router
   .route('')
-  .get(readUsers)
+  .get(ensureAuth, readUsers)
   .post(createUser);
 
 /*
   /users/:id
 */
 router
-  .route('/:id')
-  .get(readUser)
-  .patch(updateUser)
-  .delete(deleteUser);
+  .route('/:username')
+  .get(ensureAuth, readUser)
+  .patch(ensureAuth, updateUser)
+  .delete(ensureAuth, deleteUser);
 
 module.exports = router;

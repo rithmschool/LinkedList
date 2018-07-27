@@ -3,6 +3,7 @@ const express = require('express');
 
 // app imports
 const { companiesHandler } = require('../handlers');
+const { ensureAuth } = require('../middleware');
 
 // globals
 const router = new express.Router();
@@ -19,16 +20,16 @@ const {
 */
 router
   .route('')
-  .get(readCompanies)
+  .get(ensureAuth, readCompanies)
   .post(createCompany);
 
 /*
   /companies/:id
 */
 router
-  .route('/:id')
-  .get(readCompany)
-  .patch(updateCompany)
-  .delete(deleteCompany);
+  .route('/:handle')
+  .get(ensureAuth, readCompany)
+  .patch(ensureAuth, updateCompany)
+  .delete(ensureAuth, deleteCompany);
 
 module.exports = router;

@@ -44,6 +44,9 @@ const db_tables = {
 )`
 };
 
+// global auth variable to store things for all the tests
+const auth = {};
+
 async function beforeAllHook() {
   try {
     await db.query(db_tables['companies']);
@@ -130,8 +133,9 @@ async function afterAllHook() {
 }
 
 module.exports = {
-  afterEachHook,
   afterAllHook,
+  afterEachHook,
+  auth,
   beforeAllHook,
   beforeEachHook,
   db_tables

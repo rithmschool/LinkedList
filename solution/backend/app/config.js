@@ -7,10 +7,12 @@ if (ENV === 'test') {
 }
 const PORT = process.env.PORT || 3000;
 const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY || 'test';
+const SALT_FACTOR = process.env.SALT_FACTOR || 10;
 
 module.exports = {
   ENV,
   JWT_SECRET_KEY,
   DATABASE_URL,
-  PORT
+  PORT,
+  SALT_FACTOR
 };
