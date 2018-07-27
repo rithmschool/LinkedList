@@ -21,16 +21,20 @@ async function readUsers(req, res, next) {
   }
 
   try {
-    let query =
-      'SELECT first_name, last_name, email, photo, current_company, username FROM users';
-    if (limit) {
-      query += ` LIMIT ${limit}`;
-    }
-    if (offset) {
-      query += ` OFFSET ${offset}`;
+    let query, results;
+    const { search } = req.query;
+
+    if (search) {
+      query = `SELECT * FROM users
+                WHERE concat_ws(' ', first_name, last_name) ILIKE $1
+                  OR username ILIKE $1 LIMIT $2 OFFSET $3`;
+      results = await db.query(query, [`%${search}%`, limit, offset]);
+    } else {
+      query = `SELECT first_name, last_name, email, photo, current_company, username
+      FROM users LIMIT $1 OFFSET $2`;
+      results = await db.query(query, [limit, offset]);
     }
 
-    const results = await db.query(query);
     const users = results.rows;
     return res.json(users);
   } catch (err) {

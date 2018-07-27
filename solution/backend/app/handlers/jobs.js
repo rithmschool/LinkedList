@@ -3,7 +3,7 @@ const { validate } = require('jsonschema');
 
 // app imports
 const db = require('../db');
-const { APIError, processOffsetLimit } = require('../helpers');
+const { APIError, partialUpdate, processOffsetLimit } = require('../helpers');
 const { jobNewSchema, jobUpdateSchema } = require('../schemas');
 
 /**
@@ -19,14 +19,18 @@ async function readJobs(req, res, next) {
   }
 
   try {
-    let query = 'SELECT * FROM jobs';
-    if (limit) {
-      query += `LIMIT ${limit}`;
+    let query, results;
+    const { search } = req.query;
+
+    if (search) {
+      query = `SELECT * FROM jobs
+                WHERE title ILIKE $1 OR company ILIKE $1 LIMIT $2 OFFSET $3`;
+      results = await db.query(query, [`%${search}%`, limit, offset]);
+    } else {
+      query = 'SELECT * FROM jobs LIMIT $1 OFFSET $2';
+      results = await db.query(query, [limit, offset]);
     }
-    if (offset) {
-      query += `OFFSET ${offset}`;
-    }
-    const results = await db.query(query);
+
     const jobs = results.rows;
     return res.json(jobs);
   } catch (err) {
@@ -123,15 +127,14 @@ async function updateJob(req, res, next) {
     );
   }
 
-  const { title, salary, equity, company } = req.body;
-
   try {
-    const result = await db.query(
-      'UPDATE jobs SET title=($1), salary=($2), equity=($3), company=($4) WHERE id=($5) RETURNING *',
-      [title, salary, equity, company, id]
-    );
+    let updateFields = { ...req.body };
 
+    let { query, values } = partialUpdate('jobs', updateFields, 'id', id);
+
+    const result = await db.query(query, values);
     const updatedJob = result.rows[0];
+
     if (!updatedJob) {
       return next(
         new APIError(404, 'Job Not Found', `No Job with ID '${id}' found.`)

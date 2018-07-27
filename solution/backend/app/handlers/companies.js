@@ -21,14 +21,18 @@ async function readCompanies(req, res, next) {
   }
 
   try {
-    let query = 'SELECT handle, logo, name FROM companies';
-    if (limit) {
-      query += ` LIMIT ${limit}`;
+    let query, results;
+    const { search } = req.query;
+
+    if (search) {
+      query = `SELECT * FROM companies
+      WHERE name ILIKE $1 OR handle ILIKE $1 LIMIT $2 OFFSET $3`;
+      results = await db.query(query, [`%${search}%`, limit, offset]);
+    } else {
+      query = 'SELECT handle, logo, name FROM companies LIMIT $1 OFFSET $2';
+      results = await db.query(query, [limit, offset]);
     }
-    if (offset) {
-      query += ` OFFSET ${offset}`;
-    }
-    const results = await db.query(query);
+
     const companies = results.rows;
     return res.json(companies);
   } catch (err) {

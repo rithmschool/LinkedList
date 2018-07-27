@@ -10,7 +10,8 @@ function processOffsetLimit(offset, limit) {
   offset = validateNum(offset);
   limit = validateNum(limit);
 
-  return { offset, limit };
+  // default offset is 0 and default limit is 50
+  return { offset: offset || 0, limit: limit || 50 };
 }
 
 /**
