@@ -8,7 +8,7 @@ const app = require('../../app/app');
 const db = require('../../app/db');
 
 // Database DDL (for tests)
-const db_tables = {
+const DB_TABLES = {
   companies: `CREATE TABLE companies
   (
     id SERIAL PRIMARY KEY,
@@ -46,14 +46,14 @@ const db_tables = {
 };
 
 // global auth variable to store things for all the tests
-const auth = {};
+const TEST_DATA = {};
 
 async function beforeAllHook() {
   try {
-    await db.query(db_tables['companies']);
-    await db.query(db_tables['users']);
-    await db.query(db_tables['jobs']);
-    await db.query(db_tables['jobs_users']);
+    await db.query(DB_TABLES['companies']);
+    await db.query(DB_TABLES['users']);
+    await db.query(DB_TABLES['jobs']);
+    await db.query(DB_TABLES['jobs_users']);
   } catch (error) {
     console.error(error);
   }
@@ -62,15 +62,16 @@ async function beforeAllHook() {
 /**
  * Hooks to insert a user, company, and job, and to authenticate
  *  the user and the company for respective tokens that are stored
- *  in the input `auth` parameter.
- * @param {Object} auth - build the auth object
+ *  in the input `testData` parameter.
+ * @param {Object} TEST_DATA - build the TEST_DATA object
  */
-async function beforeEachHook(auth) {
+async function beforeEachHook(TEST_DATA) {
   try {
     // login a user, get a token, store the user ID and token
     const hashedPassword = await bcrypt.hash('secret', 1);
     await db.query(
-      "INSERT INTO users (username, password, first_name, last_name) VALUES ('test', $1, 'tester', 'mctest')",
+      `INSERT INTO users (username, password, first_name, last_name, email)
+                  VALUES ('test', $1, 'tester', 'mctest', 'test@rithmschool.com')`,
       [hashedPassword]
     );
 
@@ -81,13 +82,13 @@ async function beforeEachHook(auth) {
         password: 'secret'
       });
 
-    auth.user_token = response.body.token;
-    auth.current_username = jwt.decode(auth.user_token).username;
+    TEST_DATA.userToken = response.body.token;
+    TEST_DATA.currentUsername = jwt.decode(TEST_DATA.userToken).username;
 
     // do the same for company "companies"
     const hashedCompanyPassword = await bcrypt.hash('secret', 1);
     await db.query(
-      "INSERT INTO companies (handle, password, name, email) VALUES ('testcompany', $1, 'Test Company', 'test@rithmschool.com')",
+      "INSERT INTO companies (handle, password, name, email) VALUES ('testcompany', $1, 'Test Company', 'testcompany@rithmschool.com')",
       [hashedCompanyPassword]
     );
 
@@ -98,13 +99,14 @@ async function beforeEachHook(auth) {
         password: 'secret'
       });
 
-    auth.company_token = companyResponse.body.token;
-    auth.current_company_handle = jwt.decode(auth.company_token).handle;
+    TEST_DATA.companyToken = companyResponse.body.token;
+    TEST_DATA.currentCompanyHandle = jwt.decode(TEST_DATA.companyToken).handle;
 
-    await db.query(
-      "INSERT INTO jobs (title, salary, company) VALUES ('Software Engineer', 'TBD', $1)",
-      [auth.current_company_handle]
+    const newJob = await db.query(
+      "INSERT INTO jobs (title, salary, company) VALUES ('Software Engineer', 'TBD', $1) RETURNING *",
+      [TEST_DATA.currentCompanyHandle]
     );
+    TEST_DATA.jobId = newJob.rows[0].id;
   } catch (error) {
     console.error(error);
   }
@@ -136,8 +138,8 @@ async function afterAllHook() {
 module.exports = {
   afterAllHook,
   afterEachHook,
-  auth,
+  TEST_DATA,
   beforeAllHook,
   beforeEachHook,
-  db_tables
+  DB_TABLES
 };

@@ -61,13 +61,23 @@ async function createJob(req, res, next) {
 
   const { title, salary, equity, company } = req.body;
 
+  if (req.handle !== company) {
+    return next(
+      new APIError(
+        403,
+        'Forbidden',
+        'You are not allowed to post a job on behalf of that company.'
+      )
+    );
+  }
+
   try {
     const result = await db.query(
       'INSERT INTO jobs (title, salary, equity, company) VALUES ($1, $2, $3, $4) RETURNING *',
       [title, salary, equity, company]
     );
     const newJob = result.rows[0];
-    return res.json(newJob);
+    return res.status(201).json(newJob);
   } catch (err) {
     return next(err);
   }
@@ -80,10 +90,18 @@ async function createJob(req, res, next) {
 async function readJob(req, res, next) {
   const { id } = req.params;
 
+  if (!Number.isSafeInteger(+id)) {
+    return next(
+      new APIError(
+        400,
+        'Bad Request',
+        `Job IDs must consist only of valid integers. '${id}' is not a valid integer..`
+      )
+    );
+  }
+
   try {
-    const result = await db.query('SELECT * FROM jobs WHERE id=$1', [
-      req.params.id
-    ]);
+    const result = await db.query('SELECT * FROM jobs WHERE id=$1', [id]);
     const job = result.rows[0];
     if (!job) {
       return next(
@@ -103,7 +121,17 @@ async function readJob(req, res, next) {
 async function updateJob(req, res, next) {
   const { id } = req.params;
 
-  const checkCompany = db.query('SELECT company FROM jobs WHERE id=$1', [id]);
+  if (!Number.isSafeInteger(+id)) {
+    return next(
+      new APIError(
+        400,
+        'Bad Request',
+        `Job IDs must consist only of valid integers. '${id}' is not a valid integer..`
+      )
+    );
+  }
+
+  const checkCompany = await db.query('SELECT * FROM jobs WHERE id=$1', [id]);
   const companyHandle = checkCompany.rows[0].company;
 
   if (!req.handle || req.handle !== companyHandle) {
@@ -154,7 +182,17 @@ async function updateJob(req, res, next) {
 async function deleteJob(req, res, next) {
   const { id } = req.params;
 
-  const checkCompany = db.query('SELECT company FROM jobs WHERE id=$1', [id]);
+  if (!Number.isSafeInteger(+id)) {
+    return next(
+      new APIError(
+        400,
+        'Bad Request',
+        `Job IDs must consist only of valid integers. '${id}' is not a valid integer..`
+      )
+    );
+  }
+
+  const checkCompany = await db.query('SELECT * FROM jobs WHERE id=$1', [id]);
   const companyHandle = checkCompany.rows[0].company;
 
   if (!req.handle || req.handle !== companyHandle) {
@@ -168,7 +206,9 @@ async function deleteJob(req, res, next) {
   }
 
   try {
-    const result = await db.query('DELETE FROM jobs WHERE id=$1', [id]);
+    const result = await db.query('DELETE FROM jobs WHERE id=$1 RETURNING *', [
+      id
+    ]);
     const deletedJob = result.rows[0];
     return res.json(deletedJob);
   } catch (err) {

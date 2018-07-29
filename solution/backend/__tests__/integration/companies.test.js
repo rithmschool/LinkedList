@@ -5,7 +5,7 @@ const request = require('supertest');
 const app = require('../../app/app');
 
 const {
-  auth,
+  TEST_DATA,
   afterEachHook,
   afterAllHook,
   beforeAllHook,
@@ -17,7 +17,7 @@ beforeAll(async () => {
 });
 
 beforeEach(async () => {
-  await beforeEachHook(auth);
+  await beforeEachHook(TEST_DATA);
 });
 
 describe('POST /companies', async () => {
@@ -63,7 +63,7 @@ describe('GET /companies', async () => {
   test('Gets a list of 1 company', async () => {
     const response = await request(app)
       .get('/companies')
-      .set('authorization', `Bearer ${auth.company_token}`);
+      .set('authorization', `Bearer ${TEST_DATA.companyToken}`);
     expect(response.body).toHaveLength(1);
     expect(response.body[0]).toHaveProperty('handle');
     expect(response.body[0]).not.toHaveProperty('password');
@@ -72,21 +72,21 @@ describe('GET /companies', async () => {
   test('Gets a list of 0 companies with offset and limit', async () => {
     const response = await request(app)
       .get('/companies?offset=1&limit=99')
-      .set('authorization', `Bearer ${auth.company_token}`);
+      .set('authorization', `Bearer ${TEST_DATA.companyToken}`);
     expect(response.body).toHaveLength(0);
   });
 
   test('Responds with a 400 for invalid offset', async () => {
     const response = await request(app)
       .get('/companies?offset=foo&limit=99')
-      .set('authorization', `Bearer ${auth.company_token}`);
+      .set('authorization', `Bearer ${TEST_DATA.companyToken}`);
     expect(response.statusCode).toBe(400);
   });
 
   test('Responds with a 400 for invalid limit', async () => {
     const response = await request(app)
       .get('/companies?offset=1&limit=-1')
-      .set('authorization', `Bearer ${auth.company_token}`);
+      .set('authorization', `Bearer ${TEST_DATA.companyToken}`);
     expect(response.statusCode).toBe(400);
   });
 
@@ -111,7 +111,7 @@ describe('GET /companies', async () => {
 
     const response = await request(app)
       .get('/companies?search=hooli')
-      .set('authorization', `Bearer ${auth.user_token}`);
+      .set('authorization', `Bearer ${TEST_DATA.userToken}`);
     expect(response.body).toHaveLength(1);
     expect(response.body[0]).toHaveProperty('handle');
     expect(response.body[0]).not.toHaveProperty('password');
@@ -121,8 +121,8 @@ describe('GET /companies', async () => {
 describe('GET /companies/:handle', async () => {
   test('Gets a single a company', async () => {
     const response = await request(app)
-      .get(`/companies/${auth.current_company_handle}`)
-      .set('authorization', `Bearer ${auth.company_token}`);
+      .get(`/companies/${TEST_DATA.currentCompanyHandle}`)
+      .set('authorization', `Bearer ${TEST_DATA.companyToken}`);
     expect(response.body).toHaveProperty('handle');
     expect(response.body).not.toHaveProperty('password');
     expect(response.body.handle).toBe('testcompany');
@@ -131,7 +131,7 @@ describe('GET /companies/:handle', async () => {
   test('Responds with a 404 if it cannot find the company in question', async () => {
     const response = await request(app)
       .get(`/companies/yaaasss`)
-      .set('authorization', `Bearer ${auth.company_token}`);
+      .set('authorization', `Bearer ${TEST_DATA.companyToken}`);
     expect(response.statusCode).toBe(404);
   });
 });
@@ -139,8 +139,8 @@ describe('GET /companies/:handle', async () => {
 describe('PATCH /companies/:handle', async () => {
   test("Updates a single a company's name", async () => {
     const response = await request(app)
-      .patch(`/companies/${auth.current_company_handle}`)
-      .set('authorization', `Bearer ${auth.company_token}`)
+      .patch(`/companies/${TEST_DATA.currentCompanyHandle}`)
+      .set('authorization', `Bearer ${TEST_DATA.companyToken}`)
       .send({ name: 'xkcd' });
     expect(response.body).toHaveProperty('handle');
     expect(response.body).not.toHaveProperty('password');
@@ -150,8 +150,8 @@ describe('PATCH /companies/:handle', async () => {
 
   test("Updates a single a company's password", async () => {
     const response = await request(app)
-      .patch(`/companies/${auth.current_company_handle}`)
-      .set('authorization', `Bearer ${auth.company_token}`)
+      .patch(`/companies/${TEST_DATA.currentCompanyHandle}`)
+      .set('authorization', `Bearer ${TEST_DATA.companyToken}`)
       .send({ password: 'foo12345' });
     expect(response.body).toHaveProperty('handle');
     expect(response.body).not.toHaveProperty('password');
@@ -159,8 +159,8 @@ describe('PATCH /companies/:handle', async () => {
 
   test('Prevents a bad company update', async () => {
     const response = await request(app)
-      .patch(`/companies/${auth.current_company_handle}`)
-      .set('authorization', `Bearer ${auth.company_token}`)
+      .patch(`/companies/${TEST_DATA.currentCompanyHandle}`)
+      .set('authorization', `Bearer ${TEST_DATA.companyToken}`)
       .send({ cactus: false });
     expect(response.statusCode).toBe(400);
   });
@@ -168,7 +168,7 @@ describe('PATCH /companies/:handle', async () => {
   test('Forbids a company from editing another company', async () => {
     const response = await request(app)
       .patch(`/companies/notme`)
-      .set('authorization', `Bearer ${auth.company_token}`)
+      .set('authorization', `Bearer ${TEST_DATA.companyToken}`)
       .send({ password: 'foo12345' });
     expect(response.statusCode).toBe(403);
   });
@@ -176,11 +176,11 @@ describe('PATCH /companies/:handle', async () => {
   test('Responds with a 404 if it cannot find the company in question', async () => {
     // delete company first
     await request(app)
-      .delete(`/companies/${auth.current_company_handle}`)
-      .set('authorization', `Bearer ${auth.company_token}`);
+      .delete(`/companies/${TEST_DATA.currentCompanyHandle}`)
+      .set('authorization', `Bearer ${TEST_DATA.companyToken}`);
     const response = await request(app)
-      .patch(`/companies/${auth.current_company_handle}`)
-      .set('authorization', `Bearer ${auth.company_token}`)
+      .patch(`/companies/${TEST_DATA.currentCompanyHandle}`)
+      .set('authorization', `Bearer ${TEST_DATA.companyToken}`)
       .send({ password: 'foo12345' });
     expect(response.statusCode).toBe(404);
   });
@@ -189,8 +189,8 @@ describe('PATCH /companies/:handle', async () => {
 describe('DELETE /companies/:handle', async () => {
   test('Deletes a single a company', async () => {
     const response = await request(app)
-      .delete(`/companies/${auth.current_company_handle}`)
-      .set('authorization', `Bearer ${auth.company_token}`);
+      .delete(`/companies/${TEST_DATA.currentCompanyHandle}`)
+      .set('authorization', `Bearer ${TEST_DATA.companyToken}`);
     expect(response.body).toHaveProperty('handle');
     expect(response.body).not.toHaveProperty('password');
   });
@@ -198,18 +198,18 @@ describe('DELETE /companies/:handle', async () => {
   test('Forbids a company from deleting another company', async () => {
     const response = await request(app)
       .delete(`/companies/notme`)
-      .set('authorization', `Bearer ${auth.company_token}`);
+      .set('authorization', `Bearer ${TEST_DATA.companyToken}`);
     expect(response.statusCode).toBe(403);
   });
 
   test('Responds with a 404 if it cannot find the company in question', async () => {
     // delete company first
     await request(app)
-      .delete(`/companies/${auth.current_company_handle}`)
-      .set('authorization', `Bearer ${auth.company_token}`);
+      .delete(`/companies/${TEST_DATA.currentCompanyHandle}`)
+      .set('authorization', `Bearer ${TEST_DATA.companyToken}`);
     const response = await request(app)
-      .delete(`/companies/${auth.current_company_handle}`)
-      .set('authorization', `Bearer ${auth.company_token}`);
+      .delete(`/companies/${TEST_DATA.currentCompanyHandle}`)
+      .set('authorization', `Bearer ${TEST_DATA.companyToken}`);
     expect(response.statusCode).toBe(404);
   });
 });

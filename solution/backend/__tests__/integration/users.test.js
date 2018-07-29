@@ -5,7 +5,7 @@ const request = require('supertest');
 const app = require('../../app/app');
 
 const {
-  auth,
+  TEST_DATA,
   afterEachHook,
   afterAllHook,
   beforeAllHook,
@@ -17,7 +17,7 @@ beforeAll(async () => {
 });
 
 beforeEach(async () => {
-  await beforeEachHook(auth);
+  await beforeEachHook(TEST_DATA);
 });
 
 describe('POST /users', async () => {
@@ -66,7 +66,7 @@ describe('GET /users', async () => {
   test('Gets a list of 1 user', async () => {
     const response = await request(app)
       .get('/users')
-      .set('authorization', `Bearer ${auth.user_token}`);
+      .set('authorization', `Bearer ${TEST_DATA.userToken}`);
     expect(response.body).toHaveLength(1);
     expect(response.body[0]).toHaveProperty('username');
     expect(response.body[0]).not.toHaveProperty('password');
@@ -75,7 +75,7 @@ describe('GET /users', async () => {
   test('Gets a list of 0 users with offset and limit', async () => {
     const response = await request(app)
       .get('/users?offset=1&limit=99')
-      .set('authorization', `Bearer ${auth.user_token}`);
+      .set('authorization', `Bearer ${TEST_DATA.userToken}`);
     expect(response.body).toHaveLength(0);
   });
 
@@ -102,7 +102,7 @@ describe('GET /users', async () => {
 
     const response = await request(app)
       .get('/users?search=whiskey')
-      .set('authorization', `Bearer ${auth.user_token}`);
+      .set('authorization', `Bearer ${TEST_DATA.userToken}`);
     expect(response.body).toHaveLength(1);
     expect(response.body[0]).toHaveProperty('username');
     expect(response.body[0]).not.toHaveProperty('password');
@@ -111,13 +111,13 @@ describe('GET /users', async () => {
   test('Responds with a 400 for invalid offset', async () => {
     const response = await request(app)
       .get('/users?offset=foo&limit=99')
-      .set('authorization', `Bearer ${auth.user_token}`);
+      .set('authorization', `Bearer ${TEST_DATA.userToken}`);
     expect(response.statusCode).toBe(400);
   });
   test('Responds with a 400 for invalid limit', async () => {
     const response = await request(app)
       .get('/users?offset=1&limit=-1')
-      .set('authorization', `Bearer ${auth.user_token}`);
+      .set('authorization', `Bearer ${TEST_DATA.userToken}`);
     expect(response.statusCode).toBe(400);
   });
 });
@@ -125,8 +125,8 @@ describe('GET /users', async () => {
 describe('GET /users/:username', async () => {
   test('Gets a single a user', async () => {
     const response = await request(app)
-      .get(`/users/${auth.current_username}`)
-      .set('authorization', `Bearer ${auth.user_token}`);
+      .get(`/users/${TEST_DATA.currentUsername}`)
+      .set('authorization', `Bearer ${TEST_DATA.userToken}`);
     expect(response.body).toHaveProperty('username');
     expect(response.body).not.toHaveProperty('password');
     expect(response.body.username).toBe('test');
@@ -134,7 +134,7 @@ describe('GET /users/:username', async () => {
   test('Responds with a 404 if it cannot find the user in question', async () => {
     const response = await request(app)
       .get(`/users/yaaasss`)
-      .set('authorization', `Bearer ${auth.user_token}`);
+      .set('authorization', `Bearer ${TEST_DATA.userToken}`);
     expect(response.statusCode).toBe(404);
   });
 });
@@ -142,8 +142,8 @@ describe('GET /users/:username', async () => {
 describe('PATCH /users/:username', async () => {
   test("Updates a single a user's first_name", async () => {
     const response = await request(app)
-      .patch(`/users/${auth.current_username}`)
-      .set('authorization', `Bearer ${auth.user_token}`)
+      .patch(`/users/${TEST_DATA.currentUsername}`)
+      .set('authorization', `Bearer ${TEST_DATA.userToken}`)
       .send({ first_name: 'xkcd' });
     expect(response.body).toHaveProperty('username');
     expect(response.body).not.toHaveProperty('password');
@@ -153,8 +153,8 @@ describe('PATCH /users/:username', async () => {
 
   test("Updates a single a user's password", async () => {
     const response = await request(app)
-      .patch(`/users/${auth.current_username}`)
-      .set('authorization', `Bearer ${auth.user_token}`)
+      .patch(`/users/${TEST_DATA.currentUsername}`)
+      .set('authorization', `Bearer ${TEST_DATA.userToken}`)
       .send({ password: 'foo12345' });
     expect(response.body).toHaveProperty('username');
     expect(response.body).not.toHaveProperty('password');
@@ -162,8 +162,8 @@ describe('PATCH /users/:username', async () => {
 
   test('Prevents a bad user update', async () => {
     const response = await request(app)
-      .patch(`/users/${auth.current_username}`)
-      .set('authorization', `Bearer ${auth.user_token}`)
+      .patch(`/users/${TEST_DATA.currentUsername}`)
+      .set('authorization', `Bearer ${TEST_DATA.userToken}`)
       .send({ cactus: false });
     expect(response.statusCode).toBe(400);
   });
@@ -171,7 +171,7 @@ describe('PATCH /users/:username', async () => {
   test('Forbids a user from editing another user', async () => {
     const response = await request(app)
       .patch(`/users/notme`)
-      .set('authorization', `Bearer ${auth.user_token}`)
+      .set('authorization', `Bearer ${TEST_DATA.userToken}`)
       .send({ password: 'foo12345' });
     expect(response.statusCode).toBe(403);
   });
@@ -179,11 +179,11 @@ describe('PATCH /users/:username', async () => {
   test('Responds with a 404 if it cannot find the user in question', async () => {
     // delete user first
     await request(app)
-      .delete(`/users/${auth.current_username}`)
-      .set('authorization', `Bearer ${auth.user_token}`);
+      .delete(`/users/${TEST_DATA.currentUsername}`)
+      .set('authorization', `Bearer ${TEST_DATA.userToken}`);
     const response = await request(app)
-      .patch(`/users/${auth.current_username}`)
-      .set('authorization', `Bearer ${auth.user_token}`)
+      .patch(`/users/${TEST_DATA.currentUsername}`)
+      .set('authorization', `Bearer ${TEST_DATA.userToken}`)
       .send({ password: 'foo12345' });
     expect(response.statusCode).toBe(404);
   });
@@ -192,8 +192,8 @@ describe('PATCH /users/:username', async () => {
 describe('DELETE /users/:username', async () => {
   test('Deletes a single a user', async () => {
     const response = await request(app)
-      .delete(`/users/${auth.current_username}`)
-      .set('authorization', `Bearer ${auth.user_token}`);
+      .delete(`/users/${TEST_DATA.currentUsername}`)
+      .set('authorization', `Bearer ${TEST_DATA.userToken}`);
     expect(response.body).toHaveProperty('username');
     expect(response.body).not.toHaveProperty('password');
   });
@@ -201,18 +201,18 @@ describe('DELETE /users/:username', async () => {
   test('Forbids a user from deleting another user', async () => {
     const response = await request(app)
       .delete(`/users/notme`)
-      .set('authorization', `Bearer ${auth.user_token}`);
+      .set('authorization', `Bearer ${TEST_DATA.userToken}`);
     expect(response.statusCode).toBe(403);
   });
 
   test('Responds with a 404 if it cannot find the user in question', async () => {
     // delete user first
     await request(app)
-      .delete(`/users/${auth.current_username}`)
-      .set('authorization', `Bearer ${auth.user_token}`);
+      .delete(`/users/${TEST_DATA.currentUsername}`)
+      .set('authorization', `Bearer ${TEST_DATA.userToken}`);
     const response = await request(app)
-      .delete(`/users/${auth.current_username}`)
-      .set('authorization', `Bearer ${auth.user_token}`);
+      .delete(`/users/${TEST_DATA.currentUsername}`)
+      .set('authorization', `Bearer ${TEST_DATA.userToken}`);
     expect(response.statusCode).toBe(404);
   });
 });
