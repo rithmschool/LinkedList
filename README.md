@@ -31,7 +31,13 @@ LinkedIn/AngelList type of clone.
 
 ### Backend Solution
 
-[Here](https://github.com/rithmschool/LinkedList/tree/master/backend) is the instructor solution for the backend. There are instructions in this folder's README for how to run the app locally so you can build the frontend.
+[Here](/rithmschool/LinkedList/tree/master/solution/backend) is the instructor solution for the backend. There are instructions in this folder's README for how to run the app locally so you can build the frontend.
+
+The production app of the solution code, deployed on Heroku, is available at this base-URL:
+
+`https://linkedlist-rithm.herokuapp.com/`
+
+For the frontend, you may use this deployed version or fork/clone and run the app locally (instructions below) if you want.
 
 ## Frontend
 

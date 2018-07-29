@@ -1,5 +1,11 @@
 # LinkedList Backend (Instructor Solution)
 
+The production app of the solution code, deployed on Heroku, is available at this base-URL:
+
+`https://linkedlist-rithm.herokuapp.com/`
+
+For the frontend, you may use this version or fork/clone and run the app locally (instructions below).
+
 ## How to Install & Run
 
 1.  Fork the repo, clone it onto your machine, then run `git remote add upstream git@github.com:rithmschool/LinkedList.git` and `git pull upstream master`.
