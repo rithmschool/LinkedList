@@ -41,9 +41,36 @@ describe('POST /jobs', async () => {
       .set('authorization', `Bearer ${TEST_DATA.companyToken}`)
       .send({
         salary: '120k',
-        equity: 2
+        equity: 2,
+        company: TEST_DATA.currentCompanyHandle
       });
     expect(response.statusCode).toBe(400);
+  });
+
+  test('Prevents creating a job as a non-company user', async () => {
+    const response = await request(app)
+      .post('/jobs')
+      .set('authorization', `Bearer ${TEST_DATA.userToken}`)
+      .send({
+        title: 'Software Engineer in Test',
+        salary: '120k',
+        equity: 2,
+        company: 'testcompany'
+      });
+    expect(response.statusCode).toBe(403);
+  });
+
+  test('Prevents creating a job for a different company', async () => {
+    const response = await request(app)
+      .post('/jobs')
+      .set('authorization', `Bearer ${TEST_DATA.companyToken}`)
+      .send({
+        title: 'Software Engineer in Test',
+        salary: '120k',
+        equity: 2,
+        company: 'rithm'
+      });
+    expect(response.statusCode).toBe(403);
   });
 });
 
@@ -115,6 +142,13 @@ describe('GET /jobs/:id', async () => {
     expect(response.body.id).toBe(TEST_DATA.jobId);
   });
 
+  test('Sends a 400 if a non-integer job ID is sent', async () => {
+    const response = await request(app)
+      .get(`/jobs/foo`)
+      .set('authorization', `Bearer ${TEST_DATA.companyToken}`);
+    expect(response.statusCode).toBe(400);
+  });
+
   test('Responds with a 404 if it cannot find the job in question', async () => {
     const response = await request(app)
       .get(`/jobs/999`)
@@ -133,6 +167,14 @@ describe('PATCH /jobs/:id', async () => {
 
     expect(response.body.title).toBe('xkcd');
     expect(response.body.id).not.toBe(null);
+  });
+
+  test('Sends a 400 if a non-integer job ID is sent', async () => {
+    const response = await request(app)
+      .patch(`/jobs/foo`)
+      .set('authorization', `Bearer ${TEST_DATA.companyToken}`)
+      .send({ title: 'xkcd' });
+    expect(response.statusCode).toBe(400);
   });
 
   test("Updates a single a job's equity", async () => {
@@ -191,6 +233,13 @@ describe('DELETE /jobs/:id', async () => {
       .delete(`/jobs/${TEST_DATA.jobId}`)
       .set('authorization', `Bearer ${TEST_DATA.companyToken}`);
     expect(response.body).toHaveProperty('id');
+  });
+
+  test('Sends a 400 if a non-integer job ID is sent', async () => {
+    const response = await request(app)
+      .get(`/jobs/foo`)
+      .set('authorization', `Bearer ${TEST_DATA.companyToken}`);
+    expect(response.statusCode).toBe(400);
   });
 
   test("Forbids a company from deleting another company's job", async () => {
