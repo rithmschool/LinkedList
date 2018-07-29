@@ -1,3 +1,10 @@
+DROP DATABASE IF EXISTS  "linkedlist_test";
+CREATE DATABASE "linkedlist_test";
+
+DROP DATABASE IF EXISTS  "linkedlist";
+CREATE DATABASE "linkedlist";
+\c "linkedlist"
+
 CREATE TABLE companies
 (
   id SERIAL PRIMARY KEY,
@@ -35,3 +42,5 @@ CREATE TABLE jobs_users
   username TEXT NOT NULL REFERENCES users (username) ON DELETE CASCADE,
   job_id INTEGER NOT NULL REFERENCES jobs (id) ON DELETE CASCADE
 );
+
+\q
