@@ -193,10 +193,23 @@ describe('DELETE /jobs/:id', async () => {
     expect(response.body).toHaveProperty('id');
   });
 
-  test('Forbids a job from deleting another job', async () => {
+  test("Forbids a company from deleting another company's job", async () => {
+    await request(app)
+      .post('/companies')
+      .send({
+        name: 'hooli',
+        handle: 'hooli',
+        password: 'foo123',
+        email: 'test@hooli.com'
+      });
+
+    const authRes = await request(app)
+      .post('/company-auth')
+      .send({ handle: 'hooli', password: 'foo123' });
+    const otherCompanyToken = authRes.body.token;
     const response = await request(app)
-      .delete(`/jobs/notme`)
-      .set('authorization', `Bearer ${TEST_DATA.companyToken}`);
+      .delete(`/jobs/${TEST_DATA.jobId}`)
+      .set('authorization', `Bearer ${otherCompanyToken}`);
     expect(response.statusCode).toBe(403);
   });
 

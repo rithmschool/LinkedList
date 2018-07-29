@@ -131,8 +131,13 @@ async function updateJob(req, res, next) {
     );
   }
 
-  const checkCompany = await db.query('SELECT * FROM jobs WHERE id=$1', [id]);
-  const companyHandle = checkCompany.rows[0].company;
+  const checkJob = await db.query('SELECT * FROM jobs WHERE id=$1', [id]);
+  if (!checkJob.rows[0]) {
+    return next(
+      new APIError(404, 'Job Not Found', `No Job with ID '${id}' found.`)
+    );
+  }
+  const companyHandle = checkJob.rows[0].company;
 
   if (!req.handle || req.handle !== companyHandle) {
     return next(
@@ -163,12 +168,6 @@ async function updateJob(req, res, next) {
     const result = await db.query(query, values);
     const updatedJob = result.rows[0];
 
-    if (!updatedJob) {
-      return next(
-        new APIError(404, 'Job Not Found', `No Job with ID '${id}' found.`)
-      );
-    }
-
     return res.json(updatedJob);
   } catch (err) {
     return next(err);
@@ -192,8 +191,13 @@ async function deleteJob(req, res, next) {
     );
   }
 
-  const checkCompany = await db.query('SELECT * FROM jobs WHERE id=$1', [id]);
-  const companyHandle = checkCompany.rows[0].company;
+  const checkJob = await db.query('SELECT * FROM jobs WHERE id=$1', [id]);
+  if (!checkJob.rows[0]) {
+    return next(
+      new APIError(404, 'Job Not Found', `No Job with ID '${id}' found.`)
+    );
+  }
+  const companyHandle = checkJob.rows[0].company;
 
   if (!req.handle || req.handle !== companyHandle) {
     return next(
