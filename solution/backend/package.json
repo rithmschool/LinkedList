@@ -23,7 +23,8 @@
     "testPathIgnorePatterns": [
       "/node_modules/",
       "config"
-    ]
+    ],
+    "testURL": "http://localhost"
   },
   "license": "MIT",
   "dependencies": {
