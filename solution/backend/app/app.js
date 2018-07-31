@@ -3,6 +3,7 @@ const bodyParser = require('body-parser');
 const dotenv = require('dotenv');
 const express = require('express');
 const morgan = require('morgan');
+const cors = require('cors');
 
 // app imports
 const { ENV } = require('./config');
@@ -30,19 +31,10 @@ if (ENV === 'development') {
 }
 
 // response headers setup; CORS
-app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header(
-    'Access-Control-Allow-Headers',
-    'Origin, Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers, Authorization'
-  );
-  res.header('Access-Control-Allow-Methods', 'POST,GET,PATCH,DELETE,OPTIONS');
-  res.header('Content-Type', 'application/json');
-  return next();
-});
+app.use(cors());
 
-app.use('/company-auth', authHandler.company);
-app.use('/user-auth', authHandler.user);
+app.post('/company-auth', authHandler.company);
+app.post('/user-auth', authHandler.user);
 
 app.use('/companies', companiesRouter);
 app.use('/jobs', jobsRouter);
