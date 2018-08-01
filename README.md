@@ -55,6 +55,7 @@ Check out these interactive [mock-ups at moqups.com](https://app.moqups.com/mich
 
 1.  The frontend should be a single page application that utilizes React and Redux.
 1.  The frontend should have smoke and snapshot tests for every React component.
+1.  The frontend should have [Prop Types listed](https://reactjs.org/docs/typechecking-with-proptypes.html) for every React component that has props.
 1.  (_Bonus_) It would be nice if there were tests for Redux containers, action creators, and reducers.
 1.  (_Bonus_) It would be nice if the frontend were mobile-optimized.
 
