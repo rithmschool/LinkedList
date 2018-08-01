@@ -39,43 +39,49 @@ The production app of the solution code, deployed on Heroku, is available at thi
 
 For the frontend, you may use this deployed version or fork/clone and run the app locally (instructions below) if you want.
 
+---
+
 ## Frontend
 
-Check out these [mocks](https://app.moqups.com/michael@rithmschool.com/vgRzAjTRTd/view)!
+The Frontend should be a separate repository than the backend. [Here](https://github.com/rithmschool/linkedlist-frontend) is the starter code for the frontend.
 
-### Technical
+The Frontend requirements below are organized into [Agile Epics](https://www.atlassian.com/agile/project-management/epics) consisting of many related user stories. This is a super common way of listing requirements in the modern software industry.
+
+### Mock-Ups
+
+Check out these interactive [mock-ups at moqups.com](https://app.moqups.com/michael@rithmschool.com/vgRzAjTRTd/view)!
+
+### Technical Requirements
 
 1.  The frontend should be a single page application that utilizes React and Redux.
-1.  (BONUS) The frontend should be mobile-optimized.
+1.  (_Bonus_) It would be nice if the frontend were mobile-optimized.
 
 ### Users Epic
 
-1.  As a user, I should be able to sign up, which directs me to my feed.
-1.  As a user, I should be able to log in, which directs me to my feed.
+1.  ~~As a user, I should be able to sign up, which directs me to my feed.~~
+1.  ~~As a user, I should be able to log in, which directs me to my feed.~~
 1.  As a user, I should have a feed which consists of the latest job listings.
-1.  As a user, I should be able to have a resume which serves as my profile page.
+1.  As a user, I should be able to have a profile page with my photo, name, username, current company, and jobs that I have applied to listed.
+1.  As a user, I should be able to click `edit` in the top right corner of my profile, which lets me edit any of my user fields, including changing my `password`.
 1.  As a user, I should be able to visit a company's profile page.
-1.  As a user, I should be able to visit another user's profile page.
+1.  As a user, I should be able to visit another user's profile page. Their profile pages should have their photo, name, username, current company, and a `contact` button that is a `mailto:` link to their email address.
 1.  As a user, I should be able to apply to a job.
 1.  As a user, I should be able to search for companies.
 1.  As a user, I should be able to search for other users.
-1.  (_Bonus_) As a user, I should be able to connect or disconnect with another user by clicking on a button on their profile page.
-1.  (_Bonus_) As a user, I should have a feed of all of my connections.
-1.  (_Bonus_) As a user, I should be able to upload a profile picture.
-1.  (_Bonus_) As a user, I should be able to send a message to another user.
-1.  (_Bonus_) As a user, I should be able to respond to a message.
-1.  (_Bonus_) As a user, I should have a list of all of my messages from other users.
+1.  As a user, I should be able to search for jobs.
+1.  (_Bonus_) As a user, it would be nice if I were able to upload a profile picture instead of just providing a URL. _Hint: [UploadCare](https://uploadcare.com/)_
 
-### Companies Epic
+### (_Bonus_) Companies Epic
 
-1.  As a company, I should be able to sign up, which directs me to my job listings.
+All of the following user stories are bonuses. The intent of the 3-day project sprint is to finish the Users Epic.
+
+1.  As a company, I should be able to sign up, which directs me to _my_ job listings.
 1.  As a company, I should be able to log in, which directs me to my job listings.
 1.  As a company, I should have a feed which consists of all of my job listings.
-1.  As a company, I should be able to visit my profile page when logging in.
+1.  As a company, I should be able to visit my profile page after logging in.
 1.  As a company, I should be able to add a job listing.
-1.  As a company, I should be able to update a job listing.
-1.  As a company, I should be able to remove a job listing.
-1.  As a company, I should have a list of all of the users who applied to my job listings.
+1.  As a company, I should be able to edit my job listings.
+1.  As a company, I should be able to remove my job listings.
+1.  As a company, I should have a list of all of the users who applied to my job listings on my profile page.
 1.  As a company, I should be able to search for users.
-1.  (_Bonus_) As a company, I should be able to upload a company logo.
-1.  (_Bonus_) As a company, I should be able to respond to applicants.
+1.  (_Double Bonus_) As a company, it would be nice if I were able to upload a company logo instead of just providing a URL. _Hint: [UploadCare](https://uploadcare.com/)_
