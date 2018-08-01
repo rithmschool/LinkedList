@@ -58,6 +58,10 @@ Check out these interactive [mock-ups at moqups.com](https://app.moqups.com/mich
 
 ### Users Epic
 
+The following list of stories is the main objective for each group to finish by the end of the week.
+
+The first two stories here are crossed out because they have already been implemented for you! The third one is halfway-done, it just doesn't look pretty yet.
+
 1.  ~~As a user, I should be able to sign up, which directs me to my feed.~~
 1.  ~~As a user, I should be able to log in, which directs me to my feed.~~
 1.  As a user, I should have a feed which consists of the latest job listings.
@@ -73,7 +77,7 @@ Check out these interactive [mock-ups at moqups.com](https://app.moqups.com/mich
 
 ### (_Bonus_) Companies Epic
 
-All of the following user stories are bonuses. The intent of the 3-day project sprint is to finish the Users Epic.
+**All of the following user stories are bonuses. The intent of the 3-day project sprint is to finish the Users Epic.** That being said, definitely feel free to come back to your project and add to it!
 
 1.  As a company, I should be able to sign up, which directs me to _my_ job listings.
 1.  As a company, I should be able to log in, which directs me to my job listings.
