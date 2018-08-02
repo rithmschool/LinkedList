@@ -21,7 +21,7 @@ function processOffsetLimit(offset, limit) {
  * @param {String} type - what we're validating (offset or limit, default limit)
  * @return {Number} numerical form of the val
  */
-function validateNum(val, max = 1000, type = 'limit') {
+function validateNum(val, max = 50, type = 'limit') {
   if (val === undefined) {
     return null;
   }
