@@ -85,14 +85,14 @@ describe('GET /jobs', async () => {
 
   test('Gets a list of 0 jobs with offset and limit', async () => {
     const response = await request(app)
-      .get('/jobs?offset=1&limit=99')
+      .get('/jobs?offset=1&limit=50')
       .set('authorization', `Bearer ${TEST_DATA.companyToken}`);
     expect(response.body).toHaveLength(0);
   });
 
   test('Responds with a 400 for invalid offset', async () => {
     const response = await request(app)
-      .get('/jobs?offset=foo&limit=99')
+      .get('/jobs?offset=foo&limit=50')
       .set('authorization', `Bearer ${TEST_DATA.companyToken}`);
     expect(response.statusCode).toBe(400);
   });

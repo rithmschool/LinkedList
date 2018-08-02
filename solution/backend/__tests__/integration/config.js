@@ -107,6 +107,12 @@ async function beforeEachHook(TEST_DATA) {
       [TEST_DATA.currentCompanyHandle]
     );
     TEST_DATA.jobId = newJob.rows[0].id;
+
+    const newJobApp = await db.query(
+      'INSERT INTO jobs_users (job_id, username) VALUES ($1, $2) RETURNING *',
+      [TEST_DATA.jobId, TEST_DATA.currentUsername]
+    );
+    TEST_DATA.jobAppId = newJobApp.rows[0].id;
   } catch (error) {
     console.error(error);
   }

@@ -74,7 +74,7 @@ describe('GET /users', async () => {
 
   test('Gets a list of 0 users with offset and limit', async () => {
     const response = await request(app)
-      .get('/users?offset=1&limit=99')
+      .get('/users?offset=1&limit=50')
       .set('authorization', `Bearer ${TEST_DATA.userToken}`);
     expect(response.body).toHaveLength(0);
   });
@@ -110,7 +110,7 @@ describe('GET /users', async () => {
 
   test('Responds with a 400 for invalid offset', async () => {
     const response = await request(app)
-      .get('/users?offset=foo&limit=99')
+      .get('/users?offset=foo&limit=50')
       .set('authorization', `Bearer ${TEST_DATA.userToken}`);
     expect(response.statusCode).toBe(400);
   });
