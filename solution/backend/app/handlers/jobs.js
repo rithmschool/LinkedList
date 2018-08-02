@@ -7,7 +7,7 @@ const { APIError, partialUpdate, processOffsetLimit } = require('../helpers');
 const { jobNewSchema, jobUpdateSchema } = require('../schemas');
 
 /**
- * List all the jobs. Query params ?offset=0&limit=1000 by default
+ * List all the jobs. Query params ?offset=0&limit=50 by default
  */
 async function readJobs(req, res, next) {
   /* pagination validation */

@@ -9,7 +9,7 @@ const { companyNewSchema, companyUpdateSchema } = require('../schemas');
 const { SALT_FACTOR } = require('../config');
 
 /**
- * List all the companies. Query params ?offset=0&limit=1000 by default
+ * List all the companies. Query params ?offset=0&limit=50 by default
  */
 async function readCompanies(req, res, next) {
   /* pagination validation */

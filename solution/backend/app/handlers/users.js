@@ -9,7 +9,7 @@ const { userNewSchema, userUpdateSchema } = require('../schemas');
 const { SALT_FACTOR } = require('../config');
 
 /**
- * List all the users. Query params ?offset=0&limit=1000 by default
+ * List all the users. Query params ?offset=0&limit=50 by default
  */
 async function readUsers(req, res, next) {
   /* pagination validation */
