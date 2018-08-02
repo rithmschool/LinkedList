@@ -31,7 +31,7 @@ LinkedIn/AngelList type of clone.
 
 ### Backend Solution
 
-[Here](/rithmschool/LinkedList/tree/master/solution/backend) is the instructor solution for the backend. There are instructions in this folder's README for how to run the app locally so you can build the frontend.
+[Here](https://github.com/rithmschool/LinkedList/tree/master/solution/backend) is the instructor solution for the backend. There are instructions in this folder's README for how to run the app locally so you can build the frontend.
 
 The production app of the solution code, deployed on Heroku, is available at this base-URL:
 
@@ -54,6 +54,9 @@ Check out these interactive [mock-ups at moqups.com](https://app.moqups.com/mich
 ### Technical Requirements
 
 1.  The frontend should be a single page application that utilizes React and Redux.
+1.  The frontend should have smoke and snapshot tests for every React component.
+1.  The frontend should have [Prop Types listed](https://reactjs.org/docs/typechecking-with-proptypes.html) for every React component that has props.
+1.  (_Bonus_) It would be nice if there were tests for Redux containers, action creators, and reducers.
 1.  (_Bonus_) It would be nice if the frontend were mobile-optimized.
 
 ### Users Epic
