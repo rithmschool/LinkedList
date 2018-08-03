@@ -119,9 +119,10 @@ async function readUser(req, res, next) {
       'SELECT first_name, last_name, email, photo, current_company, username FROM users WHERE username=$1',
       [username]
     );
-    const jobs = await db.query('SELECT * FROM jobs_users WHERE username=$1', [
-      username
-    ]);
+    const jobApps = await db.query(
+      'SELECT * FROM jobs_users WHERE username=$1',
+      [username]
+    );
     const user = result.rows[0];
     if (!user) {
       return next(
@@ -132,7 +133,7 @@ async function readUser(req, res, next) {
         )
       );
     }
-    user.applied_to = jobs.rows.map(job => job.id);
+    user.applied_to = jobApps.rows.map(job => job.job_id);
     return res.json(user);
   } catch (err) {
     return next(err);
