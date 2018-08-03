@@ -119,10 +119,9 @@ async function readUser(req, res, next) {
       'SELECT first_name, last_name, email, photo, current_company, username FROM users WHERE username=$1',
       [username]
     );
-    const jobs = await db.query(
-      'SELECT job_id FROM jobs_users WHERE username=$1',
-      [username]
-    );
+    const jobs = await db.query('SELECT * FROM jobs_users WHERE username=$1', [
+      username
+    ]);
     const user = result.rows[0];
     if (!user) {
       return next(
