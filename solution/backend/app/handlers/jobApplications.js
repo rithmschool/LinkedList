@@ -35,8 +35,8 @@ async function applyForJob(req, res, next) {
     }
 
     const duplicateCheck = await db.query(
-      'SELECT * FROM jobs_users WHERE job_id=$1',
-      [jobId]
+      'SELECT * FROM jobs_users WHERE job_id=$1 AND username=$2',
+      [jobId, username]
     );
 
     if (duplicateCheck.rows[0]) {
