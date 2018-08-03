@@ -133,7 +133,7 @@ async function readUser(req, res, next) {
         )
       );
     }
-    user.jobs = jobs.rows.map(job => job.id);
+    user.applied_to = jobs.rows.map(job => job.id);
     return res.json(user);
   } catch (err) {
     return next(err);

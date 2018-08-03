@@ -115,7 +115,7 @@ async function readCompany(req, res, next) {
     const jobs = await db.query('SELECT id FROM jobs WHERE company=$1', [
       handle
     ]);
-    company.users = users.rows.map(u => u.username);
+    company.employees = users.rows.map(u => u.username);
     company.jobs = jobs.rows.map(j => j.id);
     return res.json(company);
   } catch (err) {
