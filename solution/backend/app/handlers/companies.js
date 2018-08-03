@@ -109,10 +109,10 @@ async function readCompany(req, res, next) {
       );
     }
     const users = await db.query(
-      'SELECT username FROM users WHERE current_company=$1',
+      'SELECT * FROM users WHERE current_company=$1',
       [handle]
     );
-    const jobs = await db.query('SELECT id FROM jobs WHERE company=$1', [
+    const jobs = await db.query('SELECT * FROM jobs WHERE company=$1', [
       handle
     ]);
     company.employees = users.rows.map(u => u.username);
